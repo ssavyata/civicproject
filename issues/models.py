@@ -7,6 +7,7 @@ class Department(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     email = models.EmailField()
+    categories = models.JSONField(default=list)  # List of categories this department handles
 
     def __str__(self):
         return self.name
@@ -27,6 +28,20 @@ class Issue(models.Model):
         ('resolved', 'Resolved'),
         ('rejected', 'Rejected'),
     ]
+
+    PRIORITY_CHOICES = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+        ('critical', 'Critical'),
+    ]
+
+    priority = models.CharField(
+        max_length=20,
+        choices=PRIORITY_CHOICES, 
+        default='medium'
+    )
+
 
     citizen = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
@@ -76,4 +91,3 @@ class Feedback(models.Model):
     comment = models.TextField(blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
-    

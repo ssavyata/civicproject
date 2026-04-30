@@ -9,8 +9,8 @@ class DepartmentAdmin(admin.ModelAdmin):
     
 @admin.register(Issue)
 class IssueAdmin(admin.ModelAdmin):
-    list_display = ('title', 'category', 'status', 'citizen', 'assigned_department', 'assigned_officer', 'submitted_at')
-    list_filter = ('status', 'category', 'ward_number', 'assigned_department')
+    list_display = ('title', 'category', 'priority','status', 'citizen', 'assigned_department', 'assigned_officer', 'submitted_at')
+    list_filter = ('status', 'category', 'priority','ward_number', 'assigned_department')
     search_fields = ('title', 'description', 'location')
     readonly_fields = ('submitted_at', 'updated_at')
 

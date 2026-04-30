@@ -5,6 +5,7 @@ from .decorators import citizen_required, officer_required
 from .forms import IssueReportForm, FeedbackForm, IssueStatusForm
 from django.contrib import messages
 from notifications.models import Notification
+from .utils import assign_issue 
 
 # Create your views here.
 
@@ -18,6 +19,7 @@ def report_issue(request):
             issue = form.save(commit=False)
             issue.citizen = request.user.ward_number
             issue.save()
+            assign_issue(issue)
             messages.success(request, 'Issue reported successfully! We will look into it.')
             return redirect('my_issues')
     else:

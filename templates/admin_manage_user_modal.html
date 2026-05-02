@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Management | CivicReport Pokhara</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#dde5d9",
+                    "primary-fixed": "#7ffc97",
+                    "outline-variant": "#bdcaba",
+                    "surface-dim": "#d5dcd1",
+                    "inverse-primary": "#62df7d",
+                    "error-container": "#ffdad6",
+                    "on-error": "#ffffff",
+                    "surface-container-high": "#e3eadf",
+                    "background": "#f4fcf0",
+                    "on-primary-fixed-variant": "#005320",
+                    "secondary-fixed": "#95f8a7",
+                    "surface-container-low": "#eff6ea",
+                    "tertiary": "#a72d51",
+                    "tertiary-container": "#c74668",
+                    "on-tertiary-container": "#fffbff",
+                    "on-secondary-container": "#007233",
+                    "surface-container-highest": "#dde5d9",
+                    "primary-container": "#00873a",
+                    "on-tertiary": "#ffffff",
+                    "primary-fixed-dim": "#62df7d",
+                    "on-secondary-fixed": "#00210a",
+                    "on-tertiary-fixed-variant": "#8a143c",
+                    "on-secondary": "#ffffff",
+                    "surface": "#f4fcf0",
+                    "on-primary-fixed": "#002109",
+                    "tertiary-fixed": "#ffd9de",
+                    "tertiary-fixed-dim": "#ffb2bf",
+                    "surface-bright": "#f4fcf0",
+                    "inverse-surface": "#2b322b",
+                    "on-secondary-fixed-variant": "#005323",
+                    "primary": "#006b2c",
+                    "outline": "#6e7b6c",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#e9f0e5",
+                    "on-surface-variant": "#3e4a3d",
+                    "surface-tint": "#006e2d",
+                    "on-error-container": "#93000a",
+                    "on-surface": "#171d16",
+                    "on-tertiary-fixed": "#3f0016",
+                    "secondary-fixed-dim": "#79db8d",
+                    "secondary-container": "#92f5a4",
+                    "secondary": "#006d30",
+                    "on-primary-container": "#f7fff2",
+                    "error": "#ba1a1a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-background": "#171d16",
+                    "inverse-on-surface": "#ecf3e7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "32px",
+                    "sm": "8px",
+                    "container-max": "1280px",
+                    "xxl": "48px",
+                    "unit": "8px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "xs": "4px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "h3": ["Public Sans"],
+                    "label-caps": ["Public Sans"],
+                    "body-md": ["Public Sans"],
+                    "body-lg": ["Public Sans"],
+                    "h1": ["Public Sans"],
+                    "button": ["Public Sans"],
+                    "body-sm": ["Public Sans"],
+                    "h2": ["Public Sans"]
+            },
+            "fontSize": {
+                    "h3": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "h1": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "button": ["16px", {"lineHeight": "1", "fontWeight": "500"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "h2": ["36px", {"lineHeight": "1.25", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #f4fcf0;
+            color: #171d16;
+            font-family: 'Public Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="font-body-md">
+<!-- Fixed SideNavBar -->
+<aside class="fixed h-full w-64 left-0 top-0 bg-emerald-950 flex flex-col py-8 px-4 border-r border-emerald-900/50 shadow-2xl shadow-emerald-950/50 font-['Public_Sans'] font-medium antialiased z-40">
+<div class="mb-10 px-4">
+<h1 class="text-2xl font-black text-white tracking-tight uppercase">CivicReport</h1>
+<p class="text-[10px] font-bold text-secondary-fixed tracking-widest uppercase opacity-80 mt-1">Pokhara Metropolitan City</p>
+</div>
+<nav class="flex-grow space-y-2">
+<a class="text-emerald-300/80 hover:text-white hover:bg-emerald-900 rounded-lg px-4 py-2.5 flex items-center gap-3 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="text-emerald-300/80 hover:text-white hover:bg-emerald-900 rounded-lg px-4 py-2.5 flex items-center gap-3 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="report_problem">report_problem</span>
+                All Issues
+            </a>
+<a class="bg-green-600 text-white rounded-lg px-4 py-2.5 flex items-center gap-3 transition-colors shadow-lg shadow-green-900/20" href="#">
+<span class="material-symbols-outlined" data-icon="group" style="font-variation-settings: 'FILL' 1;">group</span>
+                Users
+            </a>
+<a class="text-emerald-300/80 hover:text-white hover:bg-emerald-900 rounded-lg px-4 py-2.5 flex items-center gap-3 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="domain">domain</span>
+                Departments
+            </a>
+<a class="text-emerald-300/80 hover:text-white hover:bg-emerald-900 rounded-lg px-4 py-2.5 flex items-center gap-3 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="location_city">location_city</span>
+                Wards
+            </a>
+<a class="text-emerald-300/80 hover:text-white hover:bg-emerald-900 rounded-lg px-4 py-2.5 flex items-center gap-3 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+                Reports
+            </a>
+</nav>
+<div class="mt-auto pt-6 border-t border-emerald-900 px-2">
+<div class="flex items-center gap-3 px-2 mb-4">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-emerald-950 font-bold">
+                    SS
+                </div>
+<div>
+<p class="text-sm font-bold text-white leading-tight">Savyata Shrestha</p>
+<p class="text-[10px] font-medium text-emerald-300/70 uppercase">Admin Account</p>
+</div>
+</div>
+<a class="text-emerald-300/80 hover:text-white hover:bg-emerald-900 rounded-lg px-4 py-2 flex items-center gap-3 transition-all text-sm" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
+                Logout
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-64 h-16 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 border-b border-slate-200 z-30">
+<div class="flex items-center gap-4">
+<h2 class="text-xl font-bold text-slate-900 font-['Public_Sans']">User Management</h2>
+</div>
+<div class="flex items-center gap-4"><button class="p-2 text-slate-500 hover:text-green-600 transition-colors relative"><span class="material-symbols-outlined" data-icon="notifications">notifications</span><span class="absolute top-2 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-white"></span></button></div>
+</header>
+<!-- Content Canvas -->
+<div class="mt-16 p-xl max-w-container-max mx-auto">
+<div class="mb-lg">
+<p class="text-on-surface-variant font-body-md">Manage citizens and department officers across the Pokhara Metropolitan network.</p>
+</div>
+<!-- Custom Tabs -->
+<div class="flex border-b border-slate-200 mb-xl">
+<button class="px-lg py-md text-on-surface-variant font-semibold hover:text-primary transition-colors">
+                    Citizens
+                </button>
+<button class="px-lg py-md text-primary font-semibold border-b-4 border-primary-container relative">
+                    Officers
+                </button>
+</div>
+<!-- Officers Section -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(22,163,74,0.08)] border border-slate-100 overflow-hidden">
+<div class="p-lg flex justify-between items-center bg-surface-container-low/50 border-b border-slate-100">
+<h3 class="font-h3 text-on-surface">Department Officers</h3>
+<button class="bg-primary text-white font-button px-lg py-sm rounded-lg flex items-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                        Add Officer
+                    </button>
+</div>
+<!-- Officers Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low/30">
+<tr>
+<th class="px-lg py-md text-label-caps text-on-surface-variant">Name</th>
+<th class="px-lg py-md text-label-caps text-on-surface-variant">Email</th>
+<th class="px-lg py-md text-label-caps text-on-surface-variant">Department</th>
+<th class="px-lg py-md text-label-caps text-on-surface-variant">Assigned Ward</th>
+<th class="px-lg py-md text-label-caps text-on-surface-variant">Status</th>
+<th class="px-lg py-md text-label-caps text-on-surface-variant text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<tr class="hover:bg-background transition-colors">
+<td class="px-lg py-md font-semibold text-on-surface">Savyata Shrestha</td>
+<td class="px-lg py-md text-on-surface-variant">savyata.s@pokhara.gov</td>
+<td class="px-lg py-md text-on-surface">Water Supply</td>
+<td class="px-lg py-md text-on-surface">Ward 12</td>
+<td class="px-lg py-md">
+<span class="px-3 py-1 rounded-full text-xs font-bold bg-[#D1FAE5] text-[#065F46] uppercase tracking-wide">Active</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="text-tertiary font-semibold hover:underline text-sm">Deactivate</button>
+</td>
+</tr>
+<tr class="hover:bg-background transition-colors">
+<td class="px-lg py-md font-semibold text-on-surface">Ramesh Karki</td>
+<td class="px-lg py-md text-on-surface-variant">ramesh.k@pokhara.gov</td>
+<td class="px-lg py-md text-on-surface">Road Division</td>
+<td class="px-lg py-md text-on-surface">Ward 7</td>
+<td class="px-lg py-md">
+<span class="px-3 py-1 rounded-full text-xs font-bold bg-[#D1FAE5] text-[#065F46] uppercase tracking-wide">Active</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="text-tertiary font-semibold hover:underline text-sm">Deactivate</button>
+</td>
+</tr>
+<tr class="hover:bg-background transition-colors">
+<td class="px-lg py-md font-semibold text-on-surface">Anita Thapa</td>
+<td class="px-lg py-md text-on-surface-variant">anita.t@pokhara.gov</td>
+<td class="px-lg py-md text-on-surface">Street Lighting</td>
+<td class="px-lg py-md text-on-surface">Ward 3</td>
+<td class="px-lg py-md">
+<span class="px-3 py-1 rounded-full text-xs font-bold bg-[#D1FAE5] text-[#065F46] uppercase tracking-wide">Active</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="text-tertiary font-semibold hover:underline text-sm">Deactivate</button>
+</td>
+</tr>
+<tr class="hover:bg-background transition-colors">
+<td class="px-lg py-md font-semibold text-on-surface">Bikram Gurung</td>
+<td class="px-lg py-md text-on-surface-variant">bikram.g@pokhara.gov</td>
+<td class="px-lg py-md text-on-surface">Public Works</td>
+<td class="px-lg py-md text-on-surface">Ward 5</td>
+<td class="px-lg py-md">
+<span class="px-3 py-1 rounded-full text-xs font-bold bg-[#F3F4F6] text-[#6B7280] uppercase tracking-wide">Inactive</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="text-primary font-semibold hover:underline text-sm">Activate</button>
+</td>
+</tr>
+<tr class="hover:bg-background transition-colors">
+<td class="px-lg py-md font-semibold text-on-surface">Sita Poudel</td>
+<td class="px-lg py-md text-on-surface-variant">sita.p@pokhara.gov</td>
+<td class="px-lg py-md text-on-surface">Road Division</td>
+<td class="px-lg py-md text-on-surface">Ward 9</td>
+<td class="px-lg py-md">
+<span class="px-3 py-1 rounded-full text-xs font-bold bg-[#D1FAE5] text-[#065F46] uppercase tracking-wide">Active</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="text-tertiary font-semibold hover:underline text-sm">Deactivate</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Footer -->
+<footer class="mt-xxl py-xl border-t border-slate-200">
+<div class="flex flex-col md:flex-row justify-between items-center gap-md">
+<p class="text-body-sm text-on-surface-variant">© 2024 CivicReport Pokhara Metropolitan City. All rights reserved.</p>
+<div class="flex gap-lg">
+<a class="text-body-sm text-primary hover:underline" href="#">Privacy Policy</a>
+<a class="text-body-sm text-primary hover:underline" href="#">Terms of Service</a>
+<a class="text-body-sm text-primary hover:underline" href="#">Legal</a>
+</div>
+</div>
+</footer>
+</div>
+</main>
+<!-- Modal Overlay (Open) -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-md bg-emerald-950/60 backdrop-blur-sm">
+<!-- Modal Content -->
+<div class="bg-white w-full max-w-lg rounded-xl shadow-2xl animate-in fade-in zoom-in duration-300">
+<div class="p-lg border-b border-slate-100 flex justify-between items-center">
+<h3 class="font-h3 text-on-surface">Add New Officer</h3>
+<button class="text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<div class="p-lg space-y-md"><div class="space-y-xs"><label class="text-label-caps text-on-surface-variant">Full Name</label><input class="w-full px-md py-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-container focus:border-primary outline-none transition-all" placeholder="Enter full name" type="text"/></div><div class="space-y-xs"><label class="text-label-caps text-on-surface-variant">Email Address</label><input class="w-full px-md py-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-container focus:border-primary outline-none transition-all" placeholder="Enter email address" type="email"/></div><div class="space-y-xs"><label class="text-label-caps text-on-surface-variant">Phone Number</label><input class="w-full px-md py-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-container focus:border-primary outline-none transition-all" placeholder="Enter phone number" type="tel"/></div><div class="space-y-xs"><label class="text-label-caps text-on-surface-variant">Password</label><div class="relative"><input class="w-full px-md py-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-container focus:border-primary outline-none transition-all" placeholder="Set initial password" type="password"/><button class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary"><span class="material-symbols-outlined text-[20px]">visibility</span></button></div></div><div class="space-y-xs"><label class="text-label-caps text-on-surface-variant">Department</label><select class="w-full px-md py-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-container focus:border-primary outline-none transition-all appearance-none bg-white"><option>Select Department</option><option>Road Division</option><option>Water Supply</option><option>Street Lighting</option><option>Public Works</option><option>Other</option></select></div><div class="space-y-xs"><label class="text-label-caps text-on-surface-variant">Assigned Ward</label><select class="w-full px-md py-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-container focus:border-primary outline-none transition-all appearance-none bg-white"><option>Select Ward</option><option>Ward 1</option><option>Ward 2</option><option>Ward 3</option><option>Ward 4</option><option>Ward 5</option><option>Ward 6</option><option>Ward 7</option><option>Ward 8</option><option>Ward 9</option><option>Ward 10</option><option>Ward 11</option><option>Ward 12</option><option>Ward 13</option><option>Ward 14</option><option>Ward 15</option><option>Ward 16</option><option>Ward 17</option><option>Ward 18</option><option>Ward 19</option><option>Ward 20</option><option>Ward 21</option><option>Ward 22</option><option>Ward 23</option><option>Ward 24</option><option>Ward 25</option><option>Ward 26</option><option>Ward 27</option><option>Ward 28</option><option>Ward 29</option><option>Ward 30</option><option>Ward 31</option><option>Ward 32</option><option>Ward 33</option></select></div></div>
+<div class="p-lg bg-surface-container-low flex justify-end gap-md rounded-b-xl">
+<button class="px-lg py-sm font-button text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors">
+                    Cancel
+                </button>
+<button class="px-lg py-sm font-button bg-primary text-white rounded-lg hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
+                    Create Officer
+                </button>
+</div>
+</div>
+</div>
+</body></html>

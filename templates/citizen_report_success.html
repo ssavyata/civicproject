@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#f7faf6",
+                    "outline-variant": "#bec9c2",
+                    "surface-container-high": "#e6e9e5",
+                    "on-background": "#181c1a",
+                    "tertiary": "#652925",
+                    "background": "#f7faf6",
+                    "on-secondary-fixed": "#002113",
+                    "on-primary-container": "#8bd6b7",
+                    "surface-variant": "#e0e3df",
+                    "on-tertiary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "surface-container": "#ecefeb",
+                    "on-tertiary-fixed": "#3b0908",
+                    "secondary-container": "#6cf8bb",
+                    "primary-fixed": "#a6f2d1",
+                    "inverse-on-surface": "#eef2ed",
+                    "error": "#ba1a1a",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#ffdad6",
+                    "surface-container-low": "#f1f4f0",
+                    "surface-tint": "#1b6b51",
+                    "on-secondary-fixed-variant": "#005236",
+                    "surface-container-highest": "#e0e3df",
+                    "secondary-fixed-dim": "#4edea3",
+                    "tertiary-fixed-dim": "#ffb3ac",
+                    "on-primary": "#ffffff",
+                    "primary": "#004532",
+                    "primary-fixed-dim": "#8bd6b6",
+                    "on-primary-fixed": "#002116",
+                    "surface-bright": "#f7faf6",
+                    "on-primary-fixed-variant": "#00513b",
+                    "inverse-surface": "#2d312f",
+                    "outline": "#6f7973",
+                    "primary-container": "#065f46",
+                    "on-error": "#ffffff",
+                    "secondary": "#006c49",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-container": "#ffb4ad",
+                    "on-secondary-container": "#00714d",
+                    "inverse-primary": "#8bd6b6",
+                    "on-surface": "#181c1a",
+                    "surface-dim": "#d8dbd7",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#823f3a",
+                    "on-tertiary-fixed-variant": "#73332f",
+                    "on-surface-variant": "#3f4944",
+                    "secondary-fixed": "#6ffbbe"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "page-padding-x": "32px",
+                    "section-gap": "64px",
+                    "stack-md": "16px",
+                    "stack-lg": "32px",
+                    "stack-sm": "8px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Public Sans"],
+                    "label": ["Public Sans"],
+                    "title": ["Public Sans"],
+                    "display": ["Public Sans"],
+                    "headline": ["Public Sans"],
+                    "body-lg": ["Public Sans"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "label": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "title": ["18px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                    "display": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                    "headline": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #F0FDF4; /* Fallback to style guidance level 0 */
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-lg text-on-surface">
+<!-- SideNavBar Component -->
+<aside class="fixed left-0 top-0 h-screen w-64 z-40 bg-[#065F46] dark:bg-emerald-950 border-r border-emerald-700/50 flex flex-col h-full py-8 px-4 font-['Public_Sans'] text-sm antialiased">
+<div class="mb-10 px-4">
+<h1 class="text-xl font-bold tracking-tight text-white uppercase">CivicReport</h1>
+<p class="text-[10px] tracking-widest text-emerald-300 font-bold mt-1">POKHARA METROPOLITAN CITY</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="text-emerald-100/70 hover:text-white px-4 py-3 flex items-center gap-3 transition-colors hover:bg-emerald-700/20 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span>Dashboard</span>
+</a>
+<a class="text-emerald-100/70 hover:text-white px-4 py-3 flex items-center gap-3 transition-colors hover:bg-emerald-700/20 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+<span>My Issues</span>
+</a>
+<!-- Active Tab: Report Issue -->
+<a class="bg-emerald-700/40 text-white font-semibold rounded-lg px-4 py-3 flex items-center gap-3 opacity-90" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span>Report Issue</span>
+</a>
+</nav>
+<div class="pt-8 border-t border-emerald-700/30 space-y-2">
+<a class="text-emerald-100/70 hover:text-white px-4 py-3 flex items-center gap-3 transition-colors hover:bg-emerald-700/20 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Help</span>
+</a>
+<div class="mt-8 px-4 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-emerald-800 flex items-center justify-center border border-emerald-600/50"><span class="text-white font-bold">SS</span></div>
+<div class="overflow-hidden"><p class="text-white font-bold truncate">Savyata Shrestha</p><a class="text-emerald-300 text-xs hover:text-white transition-colors" href="#">Logout</a></div>
+</div>
+</div>
+</aside>
+<!-- TopAppBar Component -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-30 bg-[#F0FDF4] dark:bg-slate-900 border-b border-[#D1FAE5] dark:border-emerald-900 flex justify-between items-center h-16 px-8 ml-64">
+<div class="flex items-center gap-4">
+<span class="text-lg font-black text-[#065F46] dark:text-emerald-400 font-headline">Report Success</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-[#065F46]">
+<button class="p-2 hover:bg-emerald-100 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 hover:bg-emerald-100 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 min-h-screen bg-surface">
+<div class="max-w-4xl mx-auto px-page-padding-x py-12 flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
+<!-- Success Card -->
+<div class="w-full bg-surface-container-lowest border border-[#D1FAE5] rounded-xl p-12 text-center flex flex-col items-center">
+<!-- Large Checkmark Circle -->
+<div class="w-24 h-24 bg-primary-container text-white rounded-full flex items-center justify-center mb-8">
+<span class="material-symbols-outlined !text-5xl" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<!-- Messaging -->
+<h2 class="font-headline text-display text-on-surface mb-4">Issue Reported Successfully</h2>
+<p class="font-body-lg text-on-surface-variant max-w-lg mx-auto mb-8">
+                    Your issue has been submitted to the Pokhara Metropolitan City municipal services department. Our field teams will review the details and provide updates as progress begins.
+                </p>
+<!-- Issue ID Pill -->
+<div class="inline-flex items-center gap-2 bg-[#D1FAE5] px-4 py-2 rounded-full mb-12">
+<span class="text-label text-primary font-bold">ISSUE ID:</span>
+<span class="text-label text-primary-container font-black">CR-2024-0042</span>
+</div>
+<!-- Issue Tracking Visualization (Subtle Anchor) -->
+<div class="w-full max-w-md mb-12 px-4">
+<div class="relative flex items-center justify-between">
+<div class="absolute top-1/2 left-0 w-full h-0.5 bg-outline-variant -translate-y-1/2 z-0"></div>
+<div class="absolute top-1/2 left-0 w-1/4 h-0.5 bg-[#10B981] -translate-y-1/2 z-0"></div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-4 h-4 bg-[#10B981] rounded-full border-4 border-white"></div>
+<span class="text-[10px] font-bold mt-2 text-primary">REPORTED</span>
+</div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-4 h-4 bg-outline-variant rounded-full border-4 border-white"></div>
+<span class="text-[10px] font-bold mt-2 text-outline-variant">REVIEW</span>
+</div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-4 h-4 bg-outline-variant rounded-full border-4 border-white"></div>
+<span class="text-[10px] font-bold mt-2 text-outline-variant">PROGRESS</span>
+</div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-4 h-4 bg-outline-variant rounded-full border-4 border-white"></div>
+<span class="text-[10px] font-bold mt-2 text-outline-variant">RESOLVED</span>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+<a class="inline-flex items-center justify-center px-8 py-3 rounded-lg border border-[#10B981] text-[#10B981] font-medium transition-all hover:bg-emerald-50 active:scale-95" href="#">
+<span class="material-symbols-outlined mr-2 text-sm" data-icon="list_alt">list_alt</span>
+                        View My Issues
+                    </a>
+<a class="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-primary-container text-white font-medium transition-all hover:opacity-90 active:scale-95" href="#">
+<span class="material-symbols-outlined mr-2 text-sm" data-icon="add_circle">add_circle</span>
+                        Report Another Issue
+                    </a>
+</div>
+</div>
+<!-- Contextual Information -->
+<!-- Background Decoration (Institutional Minimalism) -->
+<div class="fixed bottom-0 right-0 opacity-5 -z-10 pointer-events-none p-8">
+<img alt="City Seal" class="w-64 grayscale" data-alt="clean minimal vector outline of a city seal featuring local geography and municipal symbols in emerald green" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7W6HL5UDtulxx4dtV_QCRtx0BWpvHXX2XUc4xrJayQZdWhmQpMd8_Ryopsmw67g6Yy7cw-Ml-ds-l2nHKHM_XAQif9tGT0qoi9gpw2ewv_XP6XH8fYTrQ-f4mYZL_SnWkLc_5w1uMbgE916BYXJogZqhLlXyiiy9kGhQCQDvjgMdxekzkzsZufouk1DQjTfpSezNN5VjyppJRSHlDTl_EcgHaE48p1UlwSc4Nd9t5YIoqUYhZY2p8QCHogeZ5YSpu96dD7A_90Hg"/>
+</div>
+</div>
+</main>
+</body></html>

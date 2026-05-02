@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>All Issues | CivicReport Pokhara</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#171d16",
+                        "surface-bright": "#f4fcf0",
+                        "tertiary": "#a72d51",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#ecf3e7",
+                        "secondary": "#006d30",
+                        "tertiary-fixed-dim": "#ffb2bf",
+                        "inverse-primary": "#62df7d",
+                        "secondary-fixed": "#95f8a7",
+                        "on-tertiary-fixed": "#3f0016",
+                        "on-surface": "#171d16",
+                        "on-secondary-container": "#007233",
+                        "tertiary-fixed": "#ffd9de",
+                        "background": "#f4fcf0",
+                        "on-primary-fixed": "#002109",
+                        "surface": "#f4fcf0",
+                        "on-secondary-fixed-variant": "#005323",
+                        "primary-fixed": "#7ffc97",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#fffbff",
+                        "surface-container-highest": "#dde5d9",
+                        "outline-variant": "#bdcaba",
+                        "surface-container-high": "#e3eadf",
+                        "surface-container-low": "#eff6ea",
+                        "primary-container": "#00873a",
+                        "on-tertiary-fixed-variant": "#8a143c",
+                        "inverse-surface": "#2b322b",
+                        "primary": "#006b2c",
+                        "on-primary-container": "#f7fff2",
+                        "on-error": "#ffffff",
+                        "surface-container": "#e9f0e5",
+                        "primary-fixed-dim": "#62df7d",
+                        "tertiary-container": "#c74668",
+                        "on-secondary-fixed": "#00210a",
+                        "surface-tint": "#006e2d",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#79db8d",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#3e4a3d",
+                        "surface-variant": "#dde5d9",
+                        "outline": "#6e7b6c",
+                        "surface-dim": "#d5dcd1",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#92f5a4",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#005320"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "xxl": "48px",
+                        "sm": "8px",
+                        "gutter": "24px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "container-max": "1280px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "h1": ["Public Sans"],
+                        "h3": ["Public Sans"],
+                        "button": ["Public Sans"],
+                        "h2": ["Public Sans"],
+                        "body-sm": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "h1": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "h3": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "button": ["16px", {"lineHeight": "1", "fontWeight": "500"}],
+                        "h2": ["36px", {"lineHeight": "1.25", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #f4fcf0;
+            margin: 0;
+            font-family: 'Public Sans', sans-serif;
+        }
+        /* Custom sidebar border for active state as per user request override */
+        .nav-active-custom {
+            border-left: 4px solid #6EE7B7;
+            background-color: rgba(6, 95, 70, 1);
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-64 z-40 bg-[#065F46] border-r border-emerald-800 flex flex-col justify-between py-6 px-4">
+<div>
+<div class="px-4 mb-10">
+<h1 class="text-xl font-bold tracking-tight text-white">CIVICREPORT</h1>
+<p class="text-[10px] tracking-widest text-emerald-200 font-semibold uppercase">Pokhara Metropolitan City</p>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 text-emerald-100 hover:bg-emerald-800 rounded-lg px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-medium text-sm">Dashboard</span>
+</a>
+<a class="nav-active-custom flex items-center gap-3 text-white font-semibold px-4 py-3 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="report_problem">report_problem</span>
+<span class="font-medium text-sm">All Issues</span>
+</a>
+<a class="flex items-center gap-3 text-emerald-100 hover:bg-emerald-800 rounded-lg px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-medium text-sm">Users</span>
+</a>
+<a class="flex items-center gap-3 text-emerald-100 hover:bg-emerald-800 rounded-lg px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="domain">domain</span>
+<span class="font-medium text-sm">Departments</span>
+</a>
+<a class="flex items-center gap-3 text-emerald-100 hover:bg-emerald-800 rounded-lg px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-medium text-sm">Wards</span>
+</a>
+<a class="flex items-center gap-3 text-emerald-100 hover:bg-emerald-800 rounded-lg px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-medium text-sm">Reports</span>
+</a>
+</nav>
+</div>
+<div class="pt-6 border-t border-emerald-800">
+<div class="flex items-center gap-3 px-4 py-4">
+<div class="w-10 h-10 rounded-full bg-[#6EE7B7] flex items-center justify-center text-emerald-900 font-bold text-sm">
+                    SS
+                </div>
+<div class="overflow-hidden">
+<p class="text-white font-semibold text-sm truncate">Savyata Shrestha</p>
+<p class="text-emerald-300 text-xs uppercase text-[10px] tracking-wider">ADMIN ACCOUNT</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="ml-64 min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="sticky top-0 right-0 w-full z-30 bg-white/80 backdrop-blur-md border-b border-slate-100 flex justify-between items-center h-16 px-8">
+<div class="flex flex-col">
+<h2 class="font-h3 text-h3 text-on-surface leading-tight">All Issues</h2>
+<span class="text-xs text-on-surface-variant font-medium">Managing citizen reports for Pokhara Metro</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:bg-emerald-50 rounded-full p-2 transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<main class="flex-grow p-xl max-w-container-max mx-auto w-full">
+<!-- Content Header -->
+<div class="mb-lg">
+<h1 class="font-h2 text-h2 text-on-background mb-xs">All Issues</h1>
+<p class="font-body-md text-on-surface-variant">View and manage all civic complaints across all wards and departments.</p>
+</div>
+<!-- Filter Bar -->
+<div class="flex gap-md mb-xl items-center bg-white p-md rounded-xl shadow-sm border border-slate-100">
+<div class="flex flex-col gap-1 flex-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant">STATUS</label>
+<select class="form-select w-full border-slate-200 rounded-lg text-body-sm focus:ring-primary focus:border-primary transition-all">
+<option>All Statuses</option>
+<option>Pending</option>
+<option>In Progress</option>
+<option>Resolved</option>
+</select>
+</div>
+<div class="flex flex-col gap-1 flex-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant">CATEGORY</label>
+<select class="form-select w-full border-slate-200 rounded-lg text-body-sm focus:ring-primary focus:border-primary transition-all">
+<option>All Categories</option>
+<option>Road damage</option>
+<option>Street lighting</option>
+<option>Water supply</option>
+<option>Public property</option>
+</select>
+</div>
+<div class="flex flex-col gap-1 flex-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant">WARD</label>
+<select class="form-select w-full border-slate-200 rounded-lg text-body-sm focus:ring-primary focus:border-primary transition-all">
+<option>All Wards</option>
+<option>Ward 3</option>
+<option>Ward 5</option>
+<option>Ward 7</option>
+<option>Ward 9</option>
+<option>Ward 12</option>
+</select>
+</div>
+</div>
+<!-- Issues Table Card -->
+<div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-bright border-b border-slate-100">
+<tr>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant">ISSUE ID</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant">TITLE</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant">CATEGORY</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant">WARD</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant">DATE</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant">STATUS</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant">ASSIGNED TO</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant text-right">ACTION</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<!-- Row 1 -->
+<tr class="hover:bg-emerald-50/30 transition-colors">
+<td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0055</td>
+<td class="px-lg py-lg text-body-sm font-medium">Pothole on Prithvi Highway</td>
+<td class="px-lg py-lg text-body-sm">Road damage</td>
+<td class="px-lg py-lg text-body-sm">Ward 7</td>
+<td class="px-lg py-lg text-body-sm">Dec 14 2024</td>
+<td class="px-lg py-lg">
+<span class="bg-[#FEE2E2] text-[#991B1B] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">PENDING</span>
+</td>
+<td class="px-lg py-lg text-body-sm text-slate-400 italic">Not Assigned</td>
+<td class="px-lg py-lg text-right">
+<button class="border border-primary text-primary px-4 py-1.5 rounded-lg text-body-sm font-semibold hover:bg-primary hover:text-white transition-all">Assign</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-emerald-50/30 transition-colors">
+<td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0054</td>
+<td class="px-lg py-lg text-body-sm font-medium">Street Light Out near Hospital</td>
+<td class="px-lg py-lg text-body-sm">Street lighting</td>
+<td class="px-lg py-lg text-body-sm">Ward 3</td>
+<td class="px-lg py-lg text-body-sm">Dec 13 2024</td>
+<td class="px-lg py-lg">
+<span class="bg-[#FEE2E2] text-[#991B1B] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">PENDING</span>
+</td>
+<td class="px-lg py-lg text-body-sm text-slate-400 italic">Not Assigned</td>
+<td class="px-lg py-lg text-right">
+<button class="border border-primary text-primary px-4 py-1.5 rounded-lg text-body-sm font-semibold hover:bg-primary hover:text-white transition-all">Assign</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-emerald-50/30 transition-colors">
+<td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0051</td>
+<td class="px-lg py-lg text-body-sm font-medium">Leaking Main Pipeline</td>
+<td class="px-lg py-lg text-body-sm">Water supply</td>
+<td class="px-lg py-lg text-body-sm">Ward 12</td>
+<td class="px-lg py-lg text-body-sm">Dec 10 2024</td>
+<td class="px-lg py-lg">
+<span class="bg-[#FEF3C7] text-[#92400E] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">IN PROGRESS</span>
+</td>
+<td class="px-lg py-lg text-body-sm font-medium text-on-surface">Savyata Shrestha</td>
+<td class="px-lg py-lg text-right">
+<a class="text-primary font-semibold text-body-sm hover:underline" href="#">View</a>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-emerald-50/30 transition-colors">
+<td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0049</td>
+<td class="px-lg py-lg text-body-sm font-medium">No Water Supply for 3 Days</td>
+<td class="px-lg py-lg text-body-sm">Water supply</td>
+<td class="px-lg py-lg text-body-sm">Ward 12</td>
+<td class="px-lg py-lg text-body-sm">Dec 09 2024</td>
+<td class="px-lg py-lg">
+<span class="bg-[#FEF3C7] text-[#92400E] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">IN PROGRESS</span>
+</td>
+<td class="px-lg py-lg text-body-sm font-medium text-on-surface">Savyata Shrestha</td>
+<td class="px-lg py-lg text-right">
+<a class="text-primary font-semibold text-body-sm hover:underline" href="#">View</a>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-emerald-50/30 transition-colors">
+<td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0047</td>
+<td class="px-lg py-lg text-body-sm font-medium">Burst Pipe near School</td>
+<td class="px-lg py-lg text-body-sm">Water supply</td>
+<td class="px-lg py-lg text-body-sm">Ward 12</td>
+<td class="px-lg py-lg text-body-sm">Dec 08 2024</td>
+<td class="px-lg py-lg">
+<span class="bg-[#FEF3C7] text-[#92400E] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">IN PROGRESS</span>
+</td>
+<td class="px-lg py-lg text-body-sm font-medium text-on-surface">Savyata Shrestha</td>
+<td class="px-lg py-lg text-right">
+<a class="text-primary font-semibold text-body-sm hover:underline" href="#">View</a>
+</td>
+</tr>
+<!-- Row 6 -->
+<tr class="hover:bg-emerald-50/30 transition-colors">
+<td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0044</td>
+<td class="px-lg py-lg text-body-sm font-medium">Broken Park Bench</td>
+<td class="px-lg py-lg text-body-sm">Public property</td>
+<td class="px-lg py-lg text-body-sm">Ward 5</td>
+<td class="px-lg py-lg text-body-sm">Dec 06 2024</td>
+<td class="px-lg py-lg">
+<span class="bg-[#FEE2E2] text-[#991B1B] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">PENDING</span>
+</td>
+<td class="px-lg py-lg text-body-sm text-slate-400 italic">Not Assigned</td>
+<td class="px-lg py-lg text-right">
+<button class="border border-primary text-primary px-4 py-1.5 rounded-lg text-body-sm font-semibold hover:bg-primary hover:text-white transition-all">Assign</button>
+</td>
+</tr>
+<!-- Row 7 -->
+<tr class="hover:bg-emerald-50/30 transition-colors">
+<td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0040</td>
+<td class="px-lg py-lg text-body-sm font-medium">Water Meter Damage</td>
+<td class="px-lg py-lg text-body-sm">Water supply</td>
+<td class="px-lg py-lg text-body-sm">Ward 12</td>
+<td class="px-lg py-lg text-body-sm">Dec 03 2024</td>
+<td class="px-lg py-lg">
+<span class="bg-[#065F46] text-white px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">RESOLVED</span>
+</td>
+<td class="px-lg py-lg text-body-sm font-medium text-on-surface">Savyata Shrestha</td>
+<td class="px-lg py-lg text-right">
+<a class="text-primary font-semibold text-body-sm hover:underline" href="#">View</a>
+</td>
+</tr>
+<!-- Row 8 -->
+<tr class="hover:bg-emerald-50/30 transition-colors">
+<td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0038</td>
+<td class="px-lg py-lg text-body-sm font-medium">Damaged Footpath</td>
+<td class="px-lg py-lg text-body-sm">Road damage</td>
+<td class="px-lg py-lg text-body-sm">Ward 9</td>
+<td class="px-lg py-lg text-body-sm">Dec 01 2024</td>
+<td class="px-lg py-lg">
+<span class="bg-[#FEE2E2] text-[#991B1B] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">PENDING</span>
+</td>
+<td class="px-lg py-lg text-body-sm text-slate-400 italic">Not Assigned</td>
+<td class="px-lg py-lg text-right">
+<button class="border border-primary text-primary px-4 py-1.5 rounded-lg text-body-sm font-semibold hover:bg-primary hover:text-white transition-all">Assign</button>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination -->
+<div class="px-lg py-md bg-surface-bright flex items-center justify-between border-t border-slate-100">
+<span class="text-body-sm text-on-surface-variant">Showing <span class="font-bold text-on-surface">8</span> of <span class="font-bold text-on-surface">156</span> results</span>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-lg border border-slate-200 text-slate-400 hover:bg-white transition-all cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-lg bg-primary text-white text-body-sm font-bold shadow-sm">1</button>
+<button class="px-3.5 py-1.5 rounded-lg text-on-surface-variant hover:bg-white text-body-sm font-medium transition-all">2</button>
+<button class="px-3.5 py-1.5 rounded-lg text-on-surface-variant hover:bg-white text-body-sm font-medium transition-all">3</button>
+<span class="px-2 text-slate-400">...</span>
+<button class="px-3.5 py-1.5 rounded-lg text-on-surface-variant hover:bg-white text-body-sm font-medium transition-all">20</button>
+<button class="p-2 rounded-lg border border-slate-200 text-on-surface-variant hover:bg-white hover:border-primary transition-all">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Minimal Footer -->
+<footer class="mt-auto px-xl py-lg text-center border-t border-slate-100 bg-white/40"><div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-body-sm text-on-surface-variant uppercase tracking-wider">© 2024 CIVICREPORT POKHARA. ALL RIGHTS RESERVED.</p>
+<div class="flex gap-md text-[11px] font-bold text-on-surface-variant/60 tracking-widest uppercase">
+<a class="hover:text-primary transition-colors" href="#">PRIVACY POLICY</a>
+<span>·</span>
+<a class="hover:text-primary transition-colors" href="#">TERMS OF SERVICE</a>
+<span>·</span>
+<a class="hover:text-primary transition-colors" href="#">CONTACT US</a>
+</div>
+</div></footer>
+</div>
+</body></html>

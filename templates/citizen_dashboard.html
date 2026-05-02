@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CivicReport Pokhara - Citizen Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#652925",
+                        "surface-container": "#ecefeb",
+                        "on-background": "#181c1a",
+                        "tertiary-fixed-dim": "#ffb3ac",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed-variant": "#73332f",
+                        "on-secondary-container": "#00714d",
+                        "background": "#f7faf6",
+                        "on-primary-fixed-variant": "#00513b",
+                        "tertiary-fixed": "#ffdad6",
+                        "surface": "#f7faf6",
+                        "primary-container": "#065f46",
+                        "on-secondary-fixed": "#002113",
+                        "surface-container-high": "#e6e9e5",
+                        "outline-variant": "#bec9c2",
+                        "outline": "#6f7973",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-tertiary-container": "#ffb4ad",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#6ffbbe",
+                        "primary-fixed-dim": "#8bd6b6",
+                        "on-surface": "#181c1a",
+                        "on-primary-fixed": "#002116",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#3b0908",
+                        "on-secondary-fixed-variant": "#005236",
+                        "inverse-surface": "#2d312f",
+                        "on-primary-container": "#8bd6b7",
+                        "primary-fixed": "#a6f2d1",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#6cf8bb",
+                        "primary": "#004532",
+                        "on-surface-variant": "#3f4944",
+                        "inverse-on-surface": "#eef2ed",
+                        "tertiary-container": "#823f3a",
+                        "on-tertiary": "#ffffff",
+                        "surface-tint": "#1b6b51",
+                        "surface-container-highest": "#e0e3df",
+                        "secondary": "#006c49",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#d8dbd7",
+                        "inverse-primary": "#8bd6b6",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f7faf6",
+                        "surface-variant": "#e0e3df",
+                        "surface-container-low": "#f1f4f0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "section-gap": "64px",
+                        "stack-md": "16px",
+                        "gutter": "24px",
+                        "stack-lg": "32px",
+                        "page-padding-x": "32px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Public Sans"],
+                        "title": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "label": ["Public Sans"],
+                        "display": ["Public Sans"],
+                        "headline": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "title": ["18px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "display": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                        "headline": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; background-color: #F0FDF4; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- Shared SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-64 flex flex-col bg-[#065F46] border-r border-emerald-800 z-40">
+<div class="px-6 py-8">
+<h1 class="text-xl font-bold text-white tracking-tight font-headline">CIVICREPORT</h1>
+<p class="text-[10px] text-emerald-300/80 font-label tracking-widest mt-1">POKHARA METROPOLITAN CITY</p>
+</div>
+<nav class="flex-grow mt-4">
+<a class="bg-emerald-700/50 text-white border-l-4 border-emerald-300 font-bold px-6 py-3 flex items-center gap-3 font-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="text-emerald-100/80 hover:bg-emerald-700/30 px-6 py-3 flex items-center gap-3 transition-colors font-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+                My Issues
+            </a>
+<a class="text-emerald-100/80 hover:bg-emerald-700/30 px-6 py-3 flex items-center gap-3 transition-colors font-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+                Report Issue
+            </a>
+</nav>
+<div class="p-6 mt-auto border-t border-emerald-800">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-8 h-8 rounded-full bg-emerald-200 flex items-center justify-center text-emerald-900 font-bold text-xs overflow-hidden">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="Close up portrait of a South Asian professional man in a clean office setting, soft professional lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUUtHDnP65JUjEKkt6DNdoHAb-a66qZf0KJt7hpDRxpHdkKXsyD7TXO7JPAK3S7p094wm0KdPTD1sGQWChxXz63uQNZRkfQxpeXbFFQJNikZz6PBHtPh4BFCDcCivwYMEoqTRX9g74rhMW4bAA3aR-2Wjj48KU8XODvhaeysEpBIFteKbUgTdO6m1k34Ihnsi4wRl2sTUfxgjWFCQ_L58wq4RV7ZdkzOOvfZjDZtmJolGSfydfcVjo_flA4kJvZmetMd41ESOqm4c"/>
+</div>
+<div>
+<p class="text-white font-semibold text-sm">Savyata Shrestha</p>
+<p class="text-emerald-300/60 text-[10px]">Citizen Account</p>
+</div>
+</div>
+<a class="text-emerald-100/80 hover:text-white flex items-center gap-2 text-xs transition-colors font-label" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
+                LOGOUT
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- TopAppBar -->
+<header class="h-16 flex items-center justify-between px-page-padding-x bg-white border-b border-emerald-100 sticky top-0 z-30">
+<div class="flex flex-col">
+<h2 class="text-primary font-semibold text-lg font-title">CivicReport Pokhara</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="h-8 w-px bg-emerald-100 mx-2"></div>
+<div class="flex items-center gap-2">
+<span class="text-sm font-medium text-primary">Profile</span>
+<span class="material-symbols-outlined text-primary" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Dashboard Body -->
+<div class="max-w-7xl mx-auto p-page-padding-x space-y-stack-lg py-stack-lg">
+<!-- Welcome Header -->
+<section class="flex justify-between items-end">
+<div>
+<h1 class="text-display font-display text-primary">Welcome back, Savyata Shrestha</h1>
+<p class="text-body-lg text-on-surface-variant mt-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+                        Ward 7 · Pokhara Metropolitan City
+                    </p>
+</div>
+<button class="bg-[#065F46] text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 hover:bg-opacity-90 transition-all text-body-sm">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+                    Report New Issue
+                </button>
+</section>
+<!-- Summary Cards Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<!-- Card 1: Total -->
+<div class="bg-white border border-emerald-100 p-stack-lg rounded-xl border-l-[3px] border-l-emerald-900 transition-colors">
+<p class="text-label text-on-surface-variant mb-2">TOTAL REPORTED</p>
+<div class="flex items-end justify-between">
+<span class="text-display font-bold text-primary">12</span>
+<span class="material-symbols-outlined text-primary/20 text-3xl" data-icon="analytics">analytics</span>
+</div>
+</div>
+<!-- Card 2: Pending -->
+<div class="bg-white border border-emerald-100 p-stack-lg rounded-xl border-l-[3px] border-l-[#EF4444]">
+<p class="text-label text-on-surface-variant mb-2">PENDING</p>
+<div class="flex items-end justify-between">
+<span class="text-display font-bold text-[#EF4444]">4</span>
+<span class="material-symbols-outlined text-[#EF4444]/20 text-3xl" data-icon="pending_actions">pending_actions</span>
+</div>
+</div>
+<!-- Card 3: In Progress -->
+<div class="bg-white border border-emerald-100 p-stack-lg rounded-xl border-l-[3px] border-l-[#F59E0B]">
+<p class="text-label text-on-surface-variant mb-2 text-uppercase">IN PROGRESS</p>
+<div class="flex items-end justify-between">
+<span class="text-display font-bold text-[#F59E0B]">5</span>
+<span class="material-symbols-outlined text-[#F59E0B]/20 text-3xl" data-icon="sync">sync</span>
+</div>
+</div>
+<!-- Card 4: Resolved -->
+<div class="bg-white border border-emerald-100 p-stack-lg rounded-xl border-l-[3px] border-l-[#10B981]">
+<p class="text-label text-on-surface-variant mb-2">RESOLVED</p>
+<div class="flex items-end justify-between">
+<span class="text-display font-bold text-[#10B981]">3</span>
+<span class="material-symbols-outlined text-[#10B981]/20 text-3xl" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+</section>
+<!-- Map Placeholder / Secondary Action -->
+<!-- Recent Issues Table Section -->
+<section class="bg-white border border-emerald-100 rounded-xl overflow-hidden">
+<div class="px-6 py-4 border-b border-emerald-100 flex items-center justify-between">
+<h3 class="text-headline text-primary font-headline">Recent Issues</h3>
+<div class="flex gap-2">
+<button class="text-body-sm font-medium text-secondary hover:underline">View All Issues</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-6 py-3 text-label text-on-surface-variant border-b border-emerald-100">ISSUE ID</th>
+<th class="px-6 py-3 text-label text-on-surface-variant border-b border-emerald-100">TITLE</th>
+<th class="px-6 py-3 text-label text-on-surface-variant border-b border-emerald-100">CATEGORY</th>
+<th class="px-6 py-3 text-label text-on-surface-variant border-b border-emerald-100">WARD</th>
+<th class="px-6 py-3 text-label text-on-surface-variant border-b border-emerald-100">DATE</th>
+<th class="px-6 py-3 text-label text-on-surface-variant border-b border-emerald-100">STATUS</th>
+<th class="px-6 py-3 text-label text-on-surface-variant border-b border-emerald-100">ACTION</th>
+</tr>
+</thead>
+<tbody class="text-body-sm text-on-surface divide-y divide-emerald-50">
+<!-- Row 1 -->
+<tr class="hover:bg-emerald-50/30 transition-colors">
+<td class="px-6 py-4 font-mono text-xs font-medium">CR-2024-0001</td>
+<td class="px-6 py-4 font-medium">Pothole on Main Street</td>
+<td class="px-6 py-4">Road damage</td>
+<td class="px-6 py-4 text-on-surface-variant">Ward 7</td>
+<td class="px-6 py-4 text-on-surface-variant">Oct 24, 2024</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#ffdad6] text-[#ba1a1a]">PENDING</span>
+</td>
+<td class="px-6 py-4">
+<button class="text-primary hover:text-secondary-fixed-dim font-medium">View Details</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-emerald-50/30 transition-colors">
+<td class="px-6 py-4 font-mono text-xs font-medium">CR-2024-0002</td>
+<td class="px-6 py-4 font-medium">Leaking Pipe near Park</td>
+<td class="px-6 py-4">Water supply</td>
+<td class="px-6 py-4 text-on-surface-variant">Ward 7</td>
+<td class="px-6 py-4 text-on-surface-variant">Oct 22, 2024</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#fef3c7] text-[#92400e]">IN PROGRESS</span>
+</td>
+<td class="px-6 py-4">
+<button class="text-primary hover:text-secondary-fixed-dim font-medium">View Details</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-emerald-50/30 transition-colors">
+<td class="px-6 py-4 font-mono text-xs font-medium">CR-2024-0003</td>
+<td class="px-6 py-4 font-medium">Broken Street Lamp</td>
+<td class="px-6 py-4">Street lighting</td>
+<td class="px-6 py-4 text-on-surface-variant">Ward 7</td>
+<td class="px-6 py-4 text-on-surface-variant">Oct 19, 2024</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#10B981] text-white">RESOLVED</span>
+</td>
+<td class="px-6 py-4">
+<button class="text-primary hover:text-secondary-fixed-dim font-medium">View Details</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-emerald-50/30 transition-colors">
+<td class="px-6 py-4 font-mono text-xs font-medium">CR-2024-0004</td>
+<td class="px-6 py-4 font-medium">Graffiti on Library Wall</td>
+<td class="px-6 py-4">Public property</td>
+<td class="px-6 py-4 text-on-surface-variant">Ward 7</td>
+<td class="px-6 py-4 text-on-surface-variant">Oct 15, 2024</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#fef3c7] text-[#92400e]">IN PROGRESS</span>
+</td>
+<td class="px-6 py-4">
+<button class="text-primary hover:text-secondary-fixed-dim font-medium">View Details</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-emerald-50/30 transition-colors">
+<td class="px-6 py-4 font-mono text-xs font-medium">CR-2024-0005</td>
+<td class="px-6 py-4 font-medium">Damaged Public Bench</td>
+<td class="px-6 py-4">Other</td>
+<td class="px-6 py-4 text-on-surface-variant">Ward 7</td>
+<td class="px-6 py-4 text-on-surface-variant">Oct 12, 2024</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#ffdad6] text-[#ba1a1a]">PENDING</span>
+</td>
+<td class="px-6 py-4">
+<button class="text-primary hover:text-secondary-fixed-dim font-medium">View Details</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Footer -->
+<footer class="pt-stack-lg border-t border-emerald-100 flex flex-col md:flex-row justify-between items-center text-label text-on-surface-variant gap-4">
+<p>© 2024 Pokhara Metropolitan City. All rights reserved.</p>
+<div class="flex gap-gutter">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Official Portal</a>
+</div>
+</footer>
+</div>
+</main>
+<!-- FAB Suppression: This screen represents a primary ecosystem dashboard, so a context-specific FAB could be relevant, but standard layout uses the primary header button instead. -->
+</body></html>

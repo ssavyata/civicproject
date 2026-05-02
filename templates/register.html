@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register - CivicReport Pokhara Metropolitan City</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-tint": "#1b6b51",
+                    "surface-container-low": "#f1f4f0",
+                    "surface": "#f7faf6",
+                    "surface-bright": "#f7faf6",
+                    "outline-variant": "#bec9c2",
+                    "on-tertiary-fixed": "#3b0908",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed-variant": "#00513b",
+                    "tertiary-fixed": "#ffdad6",
+                    "error": "#ba1a1a",
+                    "on-secondary": "#ffffff",
+                    "inverse-surface": "#2d312f",
+                    "secondary": "#006c49",
+                    "primary-container": "#065f46",
+                    "on-surface-variant": "#3f4944",
+                    "surface-container-highest": "#e0e3df",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#823f3a",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed": "#6ffbbe",
+                    "surface-container": "#ecefeb",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#8bd6b6",
+                    "tertiary": "#652925",
+                    "secondary-container": "#6cf8bb",
+                    "surface-variant": "#e0e3df",
+                    "surface-dim": "#d8dbd7",
+                    "surface-container-high": "#e6e9e5",
+                    "on-secondary-fixed": "#002113",
+                    "on-surface": "#181c1a",
+                    "on-secondary-fixed-variant": "#005236",
+                    "on-primary-container": "#8bd6b7",
+                    "primary-fixed": "#a6f2d1",
+                    "on-primary-fixed": "#002116",
+                    "on-secondary-container": "#00714d",
+                    "tertiary-fixed-dim": "#ffb3ac",
+                    "on-background": "#181c1a",
+                    "primary": "#004532",
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#eef2ed",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed-variant": "#73332f",
+                    "on-tertiary-container": "#ffb4ad",
+                    "background": "#f7faf6",
+                    "secondary-fixed-dim": "#4edea3",
+                    "inverse-primary": "#8bd6b6",
+                    "outline": "#6f7973"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-lg": "32px",
+                    "section-gap": "64px",
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "gutter": "24px",
+                    "page-padding-x": "32px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Public Sans"],
+                    "display": ["Public Sans"],
+                    "body-lg": ["Public Sans"],
+                    "title": ["Public Sans"],
+                    "headline": ["Public Sans"],
+                    "label": ["Public Sans"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "display": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "title": ["18px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                    "headline": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                    "label": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Public Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col">
+<!-- Top Navigation (Shell Suprresion Rule: Hidden for transactional page, but including brand anchor as requested) -->
+<header class="bg-[#F0FDF4] dark:bg-slate-950 border-b border-[#D1FAE5] dark:border-emerald-900/30">
+<div class="flex justify-between items-center w-full px-8 h-16 max-w-7xl mx-auto">
+<div class="text-lg font-bold tracking-tight text-[#065F46] dark:text-emerald-400 font-display">
+                Pokhara Metropolitan City
+            </div>
+<div class="hidden md:flex items-center gap-6">
+<span class="text-[#065F46] font-semibold border-b-2 border-[#065F46] font-title text-body-sm cursor-pointer">Register</span>
+<span class="text-slate-600 dark:text-slate-400 font-medium font-title text-body-sm hover:bg-[#D1FAE5] transition-colors cursor-pointer px-2 py-1 rounded">Support</span>
+</div>
+</div>
+</header>
+<main class="flex-grow flex items-center justify-center px-page-padding-x py-section-gap">
+<div class="w-full max-w-[480px]">
+<!-- Registration Card -->
+<div class="bg-surface-container-lowest border border-[#D1FAE5] rounded-xl p-stack-lg">
+<div class="mb-stack-lg text-center">
+<div class="flex justify-center mb-stack-md">
+<span class="material-symbols-outlined text-[#065F46] text-[48px]" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<h1 class="font-headline text-headline text-primary mb-2">Create Account</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Join CivicReport to help build a better Pokhara.</p>
+</div>
+<form class="space-y-stack-md">
+<!-- Full Name -->
+<div class="flex flex-col gap-2">
+<label class="font-label text-label text-on-surface-variant">FULL NAME</label>
+<input class="w-full h-12 px-4 rounded-lg border border-[#6EE7B7] bg-surface-container-lowest font-body-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Enter your full name" type="text"/>
+</div>
+<!-- Email Address -->
+<div class="flex flex-col gap-2">
+<label class="font-label text-label text-on-surface-variant">EMAIL ADDRESS</label>
+<input class="w-full h-12 px-4 rounded-lg border border-[#6EE7B7] bg-surface-container-lowest font-body-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="email@example.com" type="email"/>
+</div>
+<!-- Phone Number -->
+<div class="flex flex-col gap-2">
+<label class="font-label text-label text-on-surface-variant">PHONE NUMBER</label>
+<input class="w-full h-12 px-4 rounded-lg border border-[#6EE7B7] bg-surface-container-lowest font-body-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="+977-98XXXXXXXX" type="tel"/>
+</div>
+<!-- Ward Number -->
+<div class="flex flex-col gap-2">
+<label class="font-label text-label text-on-surface-variant">WARD NUMBER</label>
+<select class="w-full h-12 px-4 rounded-lg border border-[#6EE7B7] bg-surface-container-lowest font-body-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all appearance-none">
+<option disabled="" selected="" value="">Select your ward (1-33)</option>
+<!-- Generating ward options -->
+<option value="1">Ward 1</option>
+<option value="2">Ward 2</option>
+<option value="3">Ward 3</option>
+<option value="4">Ward 4</option>
+<option value="5">Ward 5</option>
+<option value="6">Ward 6</option>
+<option value="7">Ward 7</option>
+<option value="8">Ward 8</option>
+<option value="9">Ward 9</option>
+<option value="10">Ward 10</option>
+<option value="11">Ward 11</option>
+<option value="12">Ward 12</option>
+<option value="13">Ward 13</option>
+<option value="14">Ward 14</option>
+<option value="15">Ward 15</option>
+<option value="16">Ward 16</option>
+<option value="17">Ward 17</option>
+<option value="18">Ward 18</option>
+<option value="19">Ward 19</option>
+<option value="20">Ward 20</option>
+<option value="21">Ward 21</option>
+<option value="22">Ward 22</option>
+<option value="23">Ward 23</option>
+<option value="24">Ward 24</option>
+<option value="25">Ward 25</option>
+<option value="26">Ward 26</option>
+<option value="27">Ward 27</option>
+<option value="28">Ward 28</option>
+<option value="29">Ward 29</option>
+<option value="30">Ward 30</option>
+<option value="31">Ward 31</option>
+<option value="32">Ward 32</option>
+<option value="33">Ward 33</option>
+</select>
+</div>
+<!-- Password -->
+<div class="flex flex-col gap-2">
+<label class="font-label text-label text-on-surface-variant">PASSWORD</label>
+<input class="w-full h-12 px-4 rounded-lg border border-[#6EE7B7] bg-surface-container-lowest font-body-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="••••••••" type="password"/>
+</div>
+<!-- Confirm Password -->
+<div class="flex flex-col gap-2">
+<label class="font-label text-label text-on-surface-variant">CONFIRM PASSWORD</label>
+<input class="w-full h-12 px-4 rounded-lg border border-[#6EE7B7] bg-surface-container-lowest font-body-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="••••••••" type="password"/>
+</div>
+<!-- Terms Checkbox (Institutional UI Detail) -->
+<div class="flex items-start gap-3 mt-4">
+<input class="mt-1 h-4 w-4 rounded border-[#6EE7B7] text-primary focus:ring-primary" id="terms" type="checkbox"/>
+<label class="font-body-sm text-label text-on-surface-variant leading-tight" for="terms">
+                            I agree to the Pokhara Metropolitan City Terms of Service and Privacy Policy for digital data handling.
+                        </label>
+</div>
+<!-- Register Button -->
+<button class="w-full h-12 bg-primary-container text-on-primary font-title text-title rounded-lg hover:opacity-90 active:opacity-80 transition-opacity mt-4" type="submit">
+                        Register
+                    </button>
+</form>
+<div class="mt-stack-lg pt-stack-md border-t border-[#D1FAE5] text-center">
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                        Already have an account? 
+                        <a class="text-[#065F46] font-semibold hover:underline" href="#">Login</a>
+</p>
+</div>
+</div>
+<!-- Descriptive Image / Brand Message -->
+<div class="mt-8 relative h-48 rounded-xl overflow-hidden border border-[#D1FAE5]">
+<img alt="Pokhara city landscape" class="w-full h-full object-cover grayscale-[0.2]" data-alt="scenic aerial view of Pokhara city with the Himalayan mountains in the background under clear blue sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDniFrYrTX9eHavAzdmE3Cl4LNTjMPe8ABcGR6ccUjPv1LBbNyeerYozVKtpFzeIB2wERFaQmr894Q1R6LkOX2F_4nffWlUpL9qrGuMryZAzoKl40Jcq4hlLYqtHcMr62GM7zVJrg9IlDzIePmza_qrCnQAyztsrjuWM2rZXpY5mNzOWt-KGrI-F9Re50eOLMCQDl_GWmeV0OMAOJAwVGIbedapVARRNkFx2jlgaNRQ-8A7h0y6wa-IeupXsxw2a_a_ii7y1Zqgei0"/>
+<div class="absolute inset-0 bg-primary/20 flex items-end p-6">
+<p class="text-white font-title text-body-sm font-medium drop-shadow-md">Building a sustainable, smart city through citizen participation.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-[#F0FDF4] dark:bg-slate-950 border-t border-[#D1FAE5] dark:border-emerald-900/30">
+<div class="flex flex-col md:flex-row justify-between items-center py-8 px-8 max-w-7xl mx-auto gap-4">
+<div class="text-sm font-semibold text-[#065F46] font-body-sm">
+                Pokhara Metropolitan City
+            </div>
+<div class="flex flex-wrap justify-center gap-6 font-['Public_Sans'] text-xs uppercase tracking-wider text-slate-500">
+<a class="hover:text-[#065F46] transition-colors cursor-pointer" href="#">Privacy Policy</a>
+<a class="hover:text-[#065F46] transition-colors cursor-pointer" href="#">Terms of Service</a>
+<a class="hover:text-[#065F46] transition-colors cursor-pointer" href="#">Public Notices</a>
+<a class="hover:text-[#065F46] transition-colors cursor-pointer" href="#">Contact Support</a>
+</div>
+<div class="font-['Public_Sans'] text-xs uppercase tracking-wider text-slate-500">
+                © 2024 Pokhara Metropolitan City. Digital Governance Portal.
+            </div>
+</div>
+</footer>
+</body></html>

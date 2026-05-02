@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Issue Queue - CivicReport Pokhara</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error": "#ffffff",
+                    "surface-container-highest": "#dde5d9",
+                    "secondary-fixed-dim": "#79db8d",
+                    "secondary-fixed": "#95f8a7",
+                    "primary-fixed": "#7ffc97",
+                    "on-tertiary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed": "#3f0016",
+                    "outline-variant": "#bdcaba",
+                    "inverse-surface": "#2b322b",
+                    "on-primary-container": "#f7fff2",
+                    "surface": "#f4fcf0",
+                    "tertiary": "#a72d51",
+                    "on-secondary-container": "#007233",
+                    "primary-fixed-dim": "#62df7d",
+                    "on-secondary-fixed": "#00210a",
+                    "on-tertiary-fixed-variant": "#8a143c",
+                    "primary-container": "#00873a",
+                    "surface-bright": "#f4fcf0",
+                    "outline": "#6e7b6c",
+                    "error": "#ba1a1a",
+                    "inverse-primary": "#62df7d",
+                    "primary": "#006b2c",
+                    "on-primary-fixed": "#002109",
+                    "background": "#f4fcf0",
+                    "surface-variant": "#dde5d9",
+                    "surface-dim": "#d5dcd1",
+                    "on-background": "#171d16",
+                    "surface-container-high": "#e3eadf",
+                    "inverse-on-surface": "#ecf3e7",
+                    "error-container": "#ffdad6",
+                    "secondary-container": "#92f5a4",
+                    "on-primary-fixed-variant": "#005320",
+                    "tertiary-fixed": "#ffd9de",
+                    "on-tertiary-container": "#fffbff",
+                    "on-secondary-fixed-variant": "#005323",
+                    "tertiary-fixed-dim": "#ffb2bf",
+                    "tertiary-container": "#c74668",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-tint": "#006e2d",
+                    "on-error-container": "#93000a",
+                    "on-surface-variant": "#3e4a3d",
+                    "secondary": "#006d30",
+                    "on-surface": "#171d16",
+                    "surface-container": "#e9f0e5",
+                    "surface-container-low": "#eff6ea",
+                    "on-secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "32px",
+                    "sm": "8px",
+                    "xs": "4px",
+                    "gutter": "24px",
+                    "unit": "8px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "xxl": "48px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "h1": ["Public Sans"],
+                    "label-caps": ["Public Sans"],
+                    "button": ["Public Sans"],
+                    "body-sm": ["Public Sans"],
+                    "h2": ["Public Sans"],
+                    "h3": ["Public Sans"],
+                    "body-lg": ["Public Sans"],
+                    "body-md": ["Public Sans"]
+            },
+            "fontSize": {
+                    "h1": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "button": ["16px", {"lineHeight": "1", "fontWeight": "500"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "h2": ["36px", {"lineHeight": "1.25", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "h3": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f4fcf0;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface antialiased">
+<!-- SideNavBar (Shell) -->
+<aside class="fixed left-0 top-0 h-full w-64 border-r border-emerald-800 shadow-xl flex flex-col h-screen overflow-y-auto" style="background-color: #065F46;">
+<div class="p-lg">
+<h1 class="text-xl font-bold text-white font-h3 tracking-tight">CIVICREPORT</h1>
+<p class="text-[10px] font-label-caps text-emerald-300 opacity-80 uppercase tracking-widest mt-1" style="color: #6EE7B7;">Pokhara Metropolitan City</p>
+</div>
+<nav class="mt-xl flex-grow">
+<a class="text-white/70 hover:text-white px-lg py-3 flex items-center gap-3 transition-colors font-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<!-- Active State for Issue Queue -->
+<a class="bg-white/10 text-white font-semibold border-l-4 px-lg py-3 flex items-center gap-3 font-body-sm" href="#" style="border-color: #6EE7B7;">
+<span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+                Issue Queue
+            </a>
+<a class="text-white/70 hover:text-white px-lg py-3 flex items-center gap-3 transition-colors font-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+                Profile
+            </a>
+</nav>
+<div class="mt-auto p-lg border-t border-emerald-800 space-y-md">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm" style="background-color: #6EE7B7; color: #065F46;">
+                    SS
+                </div>
+<div><p class="text-sm font-bold text-white leading-none">Savyata Shrestha</p>
+<p class="text-[10px] font-label-caps mt-1 uppercase" style="color: #6EE7B7; opacity: 0.7;">OFFICER ACCOUNT</p></div>
+</div>
+<button class="w-full flex items-center gap-2 hover:text-white transition-colors font-body-sm" style="color: #6EE7B7;">
+<span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
+                Logout
+            </button>
+</div>
+</aside>
+<!-- TopAppBar (Shell) -->
+<header class="sticky top-0 z-40 w-full flex justify-between items-center h-16 px-8 ml-64 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
+<div class="flex flex-col">
+<h2 class="text-lg font-semibold text-emerald-900 font-h3 leading-tight">Issue Queue</h2>
+<p class="text-xs text-slate-500 font-body-sm">Water Supply Department · Ward 12</p>
+</div>
+<div class="relative flex items-center gap-4">
+<button class="relative hover:bg-slate-50 rounded-full p-2 group transition-all">
+<span class="material-symbols-outlined text-slate-600" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full border-2 border-white"></span>
+<!-- Unread Dropdown (Simulated visibility) -->
+<div class="absolute right-0 top-12 w-80 bg-white shadow-2xl rounded-xl border border-slate-100 py-2 hidden group-hover:block z-50">
+<div class="px-4 py-2 bg-emerald-50 mb-1">
+<p class="text-xs text-emerald-900 font-medium">CR-2024-0042 submitted in Ward 12</p>
+<p class="text-[10px] text-emerald-600">1 hr ago</p>
+</div>
+<div class="px-4 py-2 bg-emerald-50 mb-1">
+<p class="text-xs text-emerald-900 font-medium">CR-2024-0039 flagged urgent</p>
+<p class="text-[10px] text-emerald-600">3 hrs ago</p>
+</div>
+<div class="px-4 py-2">
+<p class="text-xs text-slate-600">CR-2024-0035 reminder</p>
+<p class="text-[10px] text-slate-400">1 day ago</p>
+</div>
+</div>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 p-xxl min-h-[calc(100vh-128px)]">
+<!-- Header Section -->
+<header class="mb-xl">
+<h1 class="text-h2 font-h2 text-emerald-900">Issue Queue</h1>
+<p class="text-body-lg text-slate-600 mt-sm">All issues assigned to you in Ward 12</p>
+</header>
+<!-- Filters Section -->
+<div class="flex gap-lg mb-xl">
+<div class="flex flex-col gap-xs">
+<label class="text-[10px] font-label-caps text-slate-500 uppercase ml-1">Status</label>
+<select class="min-w-[180px] bg-white border border-slate-200 rounded-lg px-md py-2 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
+<option>All Statuses</option>
+<option>Pending</option>
+<option>In Progress</option>
+<option>Resolved</option>
+</select>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="text-[10px] font-label-caps text-slate-500 uppercase ml-1">Category</label>
+<select class="min-w-[220px] bg-white border border-slate-200 rounded-lg px-md py-2 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
+<option>All Categories</option>
+<option>Road damage</option>
+<option>Water supply</option>
+<option>Street lighting</option>
+<option>Public property</option>
+<option>Other</option>
+</select>
+</div>
+</div>
+<!-- Table Section -->
+<section class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead class="bg-emerald-50/50">
+<tr>
+<th class="px-lg py-4 text-[11px] font-label-caps text-slate-500 uppercase tracking-wider">Issue ID</th>
+<th class="px-lg py-4 text-[11px] font-label-caps text-slate-500 uppercase tracking-wider">Title</th>
+<th class="px-lg py-4 text-[11px] font-label-caps text-slate-500 uppercase tracking-wider">Category</th>
+<th class="px-lg py-4 text-[11px] font-label-caps text-slate-500 uppercase tracking-wider">Ward</th>
+<th class="px-lg py-4 text-[11px] font-label-caps text-slate-500 uppercase tracking-wider">Date Submitted</th>
+<th class="px-lg py-4 text-[11px] font-label-caps text-slate-500 uppercase tracking-wider">Status</th>
+<th class="px-lg py-4 text-[11px] font-label-caps text-slate-500 uppercase tracking-wider text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<!-- Row 1 -->
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0051</td>
+<td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">Leaking Main Pipeline</td>
+<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
+<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
+<td class="px-lg py-5 text-sm text-slate-600">Dec 10, 2024</td>
+<td class="px-lg py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">PENDING</span>
+</td>
+<td class="px-lg py-5 text-right">
+<a class="text-emerald-500 font-medium text-sm hover:text-emerald-700" href="#">Manage</a>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0049</td>
+<td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">No Water Supply for 3 Days</td>
+<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
+<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
+<td class="px-lg py-5 text-sm text-slate-600">Dec 09, 2024</td>
+<td class="px-lg py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">IN PROGRESS</span>
+</td>
+<td class="px-lg py-5 text-right">
+<a class="text-emerald-500 font-medium text-sm hover:text-emerald-700" href="#">Manage</a>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0047</td>
+<td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">Burst Pipe near School</td>
+<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
+<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
+<td class="px-lg py-5 text-sm text-slate-600">Dec 08, 2024</td>
+<td class="px-lg py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">IN PROGRESS</span>
+</td>
+<td class="px-lg py-5 text-right">
+<a class="text-emerald-500 font-medium text-sm hover:text-emerald-700" href="#">Manage</a>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0044</td>
+<td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">Contaminated Water Report</td>
+<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
+<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
+<td class="px-lg py-5 text-sm text-slate-600">Dec 06, 2024</td>
+<td class="px-lg py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">PENDING</span>
+</td>
+<td class="px-lg py-5 text-right">
+<a class="text-emerald-500 font-medium text-sm hover:text-emerald-700" href="#">Manage</a>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0040</td>
+<td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">Water Meter Damage</td>
+<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
+<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
+<td class="px-lg py-5 text-sm text-slate-600">Dec 03, 2024</td>
+<td class="px-lg py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-900 text-white">RESOLVED</span>
+</td>
+<td class="px-lg py-5 text-right">
+<a class="text-emerald-500 font-medium text-sm hover:text-emerald-700" href="#">Manage</a>
+</td>
+</tr>
+<!-- Row 6 -->
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0038</td>
+<td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">Broken Water Tap at Park</td>
+<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
+<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
+<td class="px-lg py-5 text-sm text-slate-600">Dec 01, 2024</td>
+<td class="px-lg py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">PENDING</span>
+</td>
+<td class="px-lg py-5 text-right">
+<a class="text-emerald-500 font-medium text-sm hover:text-emerald-700" href="#">Manage</a>
+</td>
+</tr>
+<!-- Row 7 -->
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0035</td>
+<td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">Pipeline Blockage</td>
+<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
+<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
+<td class="px-lg py-5 text-sm text-slate-600">Nov 28, 2024</td>
+<td class="px-lg py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">PENDING</span>
+</td>
+<td class="px-lg py-5 text-right">
+<a class="text-emerald-500 font-medium text-sm hover:text-emerald-700" href="#">Manage</a>
+</td>
+</tr>
+<!-- Row 8 -->
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0031</td>
+<td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">Low Water Pressure</td>
+<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
+<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
+<td class="px-lg py-5 text-sm text-slate-600">Nov 25, 2024</td>
+<td class="px-lg py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-900 text-white">RESOLVED</span>
+</td>
+<td class="px-lg py-5 text-right">
+<a class="text-emerald-500 font-medium text-sm hover:text-emerald-700" href="#">Manage</a>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination Section -->
+<div class="px-lg py-4 flex items-center justify-between border-t border-slate-100 bg-slate-50/30">
+<p class="text-xs text-slate-500 font-body-sm">Showing 1–8 of 18 assigned issues</p>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1 text-sm text-slate-400 font-medium hover:text-emerald-600 transition-colors">Prev</button>
+<button class="h-8 w-8 rounded bg-emerald-900 text-white text-sm font-bold shadow-sm">1</button>
+<button class="h-8 w-8 rounded text-slate-600 text-sm font-medium hover:bg-slate-200 transition-colors">2</button>
+<button class="h-8 w-8 rounded text-slate-600 text-sm font-medium hover:bg-slate-200 transition-colors">3</button>
+<button class="px-3 py-1 text-sm text-emerald-600 font-medium hover:text-emerald-800 transition-colors">Next</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer (Shell) -->
+<footer class="ml-64 py-4 px-8 bg-white border-t border-slate-100 flex flex-row justify-between items-center">
+<p class="text-[10px] font-label-caps text-slate-400 tracking-wider uppercase">© 2024 CIVICREPORT POKHARA. ALL RIGHTS RESERVED.</p>
+<div class="flex gap-lg"><a class="text-[10px] font-label-caps text-slate-400 hover:text-emerald-500 underline underline-offset-4 transition-all uppercase tracking-wider" href="#">Privacy Policy</a>
+<a class="text-[10px] font-label-caps text-slate-400 hover:text-emerald-500 underline underline-offset-4 transition-all uppercase tracking-wider" href="#">Terms of Service</a>
+<a class="text-[10px] font-label-caps text-slate-400 hover:text-emerald-500 underline underline-offset-4 transition-all uppercase tracking-wider" href="#">Contact Us</a></div>
+</footer>
+</body></html>

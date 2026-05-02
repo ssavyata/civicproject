@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-background" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Issue Detail - CivicConnect Pokhara</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#1b6b51",
+                        "on-primary-container": "#8bd6b7",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-secondary-fixed": "#002113",
+                        "inverse-surface": "#2d312f",
+                        "primary-fixed": "#a6f2d1",
+                        "outline": "#6f7973",
+                        "secondary": "#006c49",
+                        "on-primary-fixed": "#002116",
+                        "background": "#f7faf6",
+                        "on-tertiary-fixed-variant": "#73332f",
+                        "tertiary": "#652925",
+                        "on-primary-fixed-variant": "#00513b",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#ecefeb",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#00714d",
+                        "secondary-container": "#6cf8bb",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#8bd6b6",
+                        "surface-bright": "#f7faf6",
+                        "primary": "#004532",
+                        "on-error": "#ffffff",
+                        "primary-fixed-dim": "#8bd6b6",
+                        "on-background": "#181c1a",
+                        "surface-variant": "#e0e3df",
+                        "surface-dim": "#d8dbd7",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb3ac",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#823f3a",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-surface": "#181c1a",
+                        "surface": "#f7faf6",
+                        "primary-container": "#065f46",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#bec9c2",
+                        "on-surface-variant": "#3f4944",
+                        "inverse-on-surface": "#eef2ed",
+                        "surface-container-highest": "#e0e3df",
+                        "surface-container-high": "#e6e9e5",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-tertiary-fixed": "#3b0908",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f1f4f0",
+                        "on-tertiary-container": "#ffb4ad"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap": "64px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "page-padding-x": "32px",
+                        "gutter": "24px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "label": ["Public Sans"],
+                        "headline": ["Public Sans"],
+                        "display": ["Public Sans"],
+                        "title": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "body-sm": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "label": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "title": ["18px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            font-family: 'Public Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+</head>
+<body class="h-full">
+<!-- Fixed SideNavBar (The Shell) -->
+<aside class="fixed left-0 top-0 h-screen w-64 flex flex-col py-6 border-r" style="background-color: #065F46;">
+<div class="px-6 mb-10"><h1 class="text-xl font-bold text-white tracking-tight leading-none">CIVICREPORT</h1>
+<p class="text-[10px] text-[#6EE7B7] opacity-80 mt-1 uppercase tracking-widest font-bold">POKHARA METROPOLITAN CITY</p></div>
+<nav class="flex-1 space-y-1"><!-- Dashboard -->
+<a class="flex items-center gap-3 px-6 py-3 text-emerald-100/70 hover:bg-emerald-900/50 mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label text-sm font-medium">Dashboard</span>
+</a>
+<!-- Report Issue -->
+<a class="flex items-center gap-3 px-6 py-3 text-emerald-100/70 hover:bg-emerald-900/50 mx-2 my-1 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-label text-sm font-medium">Report Issue</span>
+</a>
+<!-- My Issues (Active) -->
+<a class="flex items-center gap-3 px-6 py-3 bg-[#064e3b] text-white rounded-lg mx-2 my-1 border-l-4 border-[#6EE7B7] transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+<span class="font-label text-sm font-medium">My Issues</span>
+</a></nav>
+<div class="px-6 pt-6 border-t border-emerald-900 mt-auto"><div class="flex items-center gap-3 mb-4">
+<div class="w-8 h-8 rounded-full bg-emerald-800 flex items-center justify-center text-white font-bold text-xs">SS</div>
+<div>
+<p class="text-white text-sm font-medium leading-none">Savyata Shrestha</p>
+<button class="text-[#6EE7B7] text-xs mt-1 hover:underline">Logout</button>
+</div>
+</div></div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen bg-background">
+<!-- TopAppBar Contextual Header -->
+<header class="sticky top-0 z-40 w-full bg-white/50 backdrop-blur-md border-b border-outline-variant h-16 flex items-center justify-between px-8">
+<div class="flex items-center gap-4">
+<a class="text-secondary font-medium text-sm flex items-center gap-1 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+                    My Issues
+                </a>
+</div>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="help_outline">help_outline</span>
+</div>
+</header>
+<!-- Page Content -->
+<div class="px-page-padding-x py-stack-lg max-w-7xl mx-auto">
+<!-- Issue Header Section -->
+<div class="mb-10">
+<p class="font-label text-label text-on-surface-variant mb-2 uppercase">ISSUE ID: CR-2024-0042</p>
+<div class="flex items-center justify-between">
+<h2 class="font-headline text-display text-primary max-w-2xl leading-tight">Broken road near Mahendra Pul bridge</h2>
+<span class="px-4 py-1.5 rounded-full bg-[#FEF3C7] text-[#92400E] font-label text-xs font-bold tracking-wider">IN PROGRESS</span>
+</div>
+</div>
+<!-- Dashboard Grid (Bento Style) -->
+<div class="grid grid-cols-10 gap-gutter">
+<!-- Information Card (Left Column) -->
+<div class="col-span-10 lg:col-span-6 space-y-gutter">
+<div class="bg-white border border-[#D1FAE5] rounded-xl p-8">
+<h3 class="font-title text-title text-primary mb-6">Issue Details</h3>
+<div class="grid grid-cols-2 gap-y-8 gap-x-12 mb-8">
+<div>
+<p class="font-label text-label text-on-surface-variant uppercase mb-1">Category</p>
+<p class="font-body-lg text-on-surface font-medium">Road Damage</p>
+</div>
+<div>
+<p class="font-label text-label text-on-surface-variant uppercase mb-1">Ward Number</p>
+<p class="font-body-lg text-on-surface font-medium">Ward 7</p>
+</div>
+<div>
+<p class="font-label text-label text-on-surface-variant uppercase mb-1">Exact Location</p>
+<p class="font-body-lg text-on-surface font-medium">Near Mahendra Pul bridge, North Approach</p>
+</div>
+<div>
+<p class="font-label text-label text-on-surface-variant uppercase mb-1">Date Submitted</p>
+<p class="font-body-lg text-on-surface font-medium">Dec 12, 2024</p>
+</div>
+</div>
+<div class="mb-8">
+<p class="font-label text-label text-on-surface-variant uppercase mb-2">Description</p>
+<p class="font-body-lg text-on-surface leading-relaxed">
+                                The road surface has completely broken down following the recent heavy rains. There is a large pothole approximately 2 meters wide that is creating a significant hazard for motorcyclists and heavy traffic crossing the Mahendra Pul bridge. Drainage seems blocked in this specific section as well.
+                            </p>
+</div>
+<div>
+<p class="font-label text-label text-on-surface-variant uppercase mb-4">Evidence Photos</p>
+<div class="flex gap-4">
+<div class="w-32 h-32 bg-surface-container rounded-lg border border-outline-variant flex flex-col items-center justify-center text-on-surface-variant relative overflow-hidden group">
+<img alt="Damaged road surface" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="close up of cracked asphalt and large pothole on a city street with urban background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdxnr5h6GgqjqLkbFh7twbA1xWblHt2Cdwzjej8ww0QIbc0s-ZlxvZzQWq5Yg4eU7I7BHgcl7B8ktSXScMNziQx5dEWTE3n91GXJHCSpQQUdY0q-bKJyN9eHC5A1OCPBevz8Vmw1J-yD7oqeUygs8pCS5OVbFAZZfa9OB0-eGKPD7RZNew82LF2PeT3-20dxRFPJaWCG3eyv-9jwG8iY1dUEKe48J0FbB6P4MAhMOX_n__IaQU1SUadHAnYlltgb3QzYl88jfjEBk"/>
+<span class="material-symbols-outlined relative z-10" data-icon="image">image</span>
+</div>
+<div class="w-32 h-32 bg-surface-container rounded-lg border border-outline-variant flex flex-col items-center justify-center text-on-surface-variant relative overflow-hidden group">
+<img alt="Road near bridge" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="wide shot of a bridge approach road with traffic cones and visible road surface deterioration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAC2xC8ZpC-YD2Uw2L9qTstCDUF5La148vNHyNRG-6bKwL-KxFM8Mn0pJOa6GDwwjXCrYklBGWFAOZcXUd_c9RLpffIWJGOtkPDeZaSyyp22QghoCh_prD3CSQ99cqEkFFy50-zJgPiJas710EF1tBaEdC864VN4J1hL2Qdf4CDSTh2fp8lRaCGXRUNXV61P_yhH2EiK3Yv2DEP-PDVxEIIh8qP-A-hVbGmXLEcC2wcAWSeAQXY7rTu8_E7C2FMGBSQ_5qgiXtKX9o"/>
+<span class="material-symbols-outlined relative z-10" data-icon="image">image</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Card (Right Column) -->
+<div class="col-span-10 lg:col-span-4">
+<div class="bg-white border border-[#D1FAE5] rounded-xl p-8 h-full">
+<h3 class="font-title text-title text-primary mb-8">Issue Status</h3>
+<div class="relative space-y-10">
+<!-- Step 1: Submitted -->
+<div class="flex gap-4 relative">
+<div class="absolute left-3 top-6 bottom-[-40px] w-[2px] bg-primary-container"></div>
+<div class="z-10 w-6 h-6 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[14px] text-white" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div>
+<h4 class="font-body-lg font-bold text-primary leading-none">Issue Submitted</h4>
+<p class="text-xs text-on-surface-variant mt-1">Dec 12, 2024 • 10:45 AM</p>
+<p class="text-sm text-on-surface mt-2 italic">"Report received and logged into the central system."</p>
+</div>
+</div>
+<!-- Step 2: Assigned -->
+<div class="flex gap-4 relative">
+<div class="absolute left-3 top-6 bottom-[-40px] w-[2px] bg-primary-container"></div>
+<div class="z-10 w-6 h-6 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[14px] text-white" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div>
+<h4 class="font-body-lg font-bold text-primary leading-none">Assigned to Department</h4>
+<p class="text-xs text-on-surface-variant mt-1">Dec 13, 2024 • 02:15 PM</p>
+<p class="text-sm text-on-surface mt-2 italic">"Assigned to Pokhara Road Maintenance Wing (Team Beta)."</p>
+</div>
+</div>
+<!-- Step 3: In Progress -->
+<div class="flex gap-4 relative">
+<div class="absolute left-3 top-6 bottom-[-40px] w-[2px] border-l-2 border-dashed border-outline-variant"></div>
+<div class="z-10 w-6 h-6 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[14px] text-white" style="font-variation-settings: 'FILL' 1;">engineering</span>
+</div>
+<div>
+<h4 class="font-body-lg font-bold text-primary leading-none">In Progress</h4>
+<p class="text-xs text-on-surface-variant mt-1">Dec 14, 2024 • 09:00 AM</p>
+<p class="text-sm text-on-surface mt-2 italic">"Site inspection completed. Material requisition submitted for repair works."</p>
+</div>
+</div>
+<!-- Step 4: Resolved -->
+<div class="flex gap-4">
+<div class="z-10 w-6 h-6 rounded-full border-2 border-outline-variant bg-white flex items-center justify-center shrink-0">
+<div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+</div>
+<div class="opacity-50">
+<h4 class="font-body-lg font-bold text-on-surface-variant leading-none">Issue Resolved</h4>
+<p class="text-xs text-on-surface-variant mt-1">Pending Completion</p>
+<p class="text-sm text-on-surface mt-2 italic">"Final quality check and road reopening."</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="mt-section-gap pt-8 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-xs text-on-surface-variant">© 2024 Pokhara Metropolitan City. CivicConnect Infrastructure Portal.</p>
+<div class="flex gap-6">
+<a class="text-xs text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-xs text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-xs text-on-surface-variant hover:text-primary transition-colors" href="#">Emergency: 101</a>
+</div>
+</footer>
+</div>
+</main>
+</body></html>

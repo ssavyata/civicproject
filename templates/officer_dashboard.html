@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Officer Dashboard - CivicAdmin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#652925",
+                        "surface-container": "#ecefeb",
+                        "on-background": "#181c1a",
+                        "on-tertiary-fixed-variant": "#73332f",
+                        "tertiary-fixed-dim": "#ffb3ac",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#00714d",
+                        "background": "#f7faf6",
+                        "surface": "#f7faf6",
+                        "primary-container": "#065f46",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-primary-fixed-variant": "#00513b",
+                        "on-secondary-fixed": "#002113",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-tertiary-container": "#ffb4ad",
+                        "outline": "#6f7973",
+                        "surface-container-high": "#e6e9e5",
+                        "outline-variant": "#bec9c2",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#181c1a",
+                        "on-primary-fixed": "#002116",
+                        "primary-fixed-dim": "#8bd6b6",
+                        "secondary-fixed": "#6ffbbe",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#3b0908",
+                        "on-secondary-fixed-variant": "#005236",
+                        "inverse-surface": "#2d312f",
+                        "primary-fixed": "#a6f2d1",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#8bd6b7",
+                        "tertiary-container": "#823f3a",
+                        "on-surface-variant": "#3f4944",
+                        "inverse-on-surface": "#eef2ed",
+                        "secondary-container": "#6cf8bb",
+                        "primary": "#004532",
+                        "on-error-container": "#93000a",
+                        "secondary": "#006c49",
+                        "surface-tint": "#1b6b51",
+                        "surface-container-highest": "#e0e3df",
+                        "on-tertiary": "#ffffff",
+                        "surface-bright": "#f7faf6",
+                        "surface-dim": "#d8dbd7",
+                        "inverse-primary": "#8bd6b6",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f1f4f0",
+                        "surface-variant": "#e0e3df"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "stack-lg": "32px",
+                        "page-padding-x": "32px",
+                        "stack-sm": "8px",
+                        "section-gap": "64px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Public Sans"],
+                        "title": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "label": ["Public Sans"],
+                        "display": ["Public Sans"],
+                        "headline": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "title": ["18px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "display": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                        "headline": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #F0FDF4; /* Override base background to match specific requirement #F0FDF4 */
+        }
+    </style>
+</head>
+<body class="font-body-lg text-on-background antialiased">
+<!-- SideNavBar Component -->
+<aside class="h-screen w-72 fixed left-0 top-0 bg-[#064E3B] flex flex-col py-8 border-r border-[#065F46] z-50">
+<div class="px-8 mb-10">
+<h1 class="text-xl font-bold text-white uppercase tracking-wider">CIVICREPORT</h1>
+<p class="font-label text-[10px] text-secondary-fixed-dim tracking-widest mt-1">POKHARA METROPOLITAN CITY</p>
+</div>
+<nav class="flex-grow flex flex-col font-['Public_Sans'] text-sm font-medium tracking-wide">
+<!-- Active Tab: Dashboard -->
+<a class="bg-[#065F46] text-white border-l-4 border-[#10B981] flex items-center gap-3 px-6 py-4 active:bg-emerald-800 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="text-emerald-100/70 hover:bg-[#065F46]/50 hover:text-white flex items-center gap-3 px-6 py-4 active:bg-emerald-800 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="report_problem">report_problem</span>
+                Issue Queue
+            </a>
+<a class="text-emerald-100/70 hover:bg-[#065F46]/50 hover:text-white flex items-center gap-3 px-6 py-4 active:bg-emerald-800 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+                Profile
+            </a>
+</nav>
+<!-- Bottom Section -->
+<div class="px-6 mt-auto border-t border-[#065F46] pt-8">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed-dim flex items-center justify-center text-[#064E3B] font-bold">
+                    SS
+                </div>
+<div class="overflow-hidden">
+<p class="text-white font-semibold truncate">Savyata Shrestha</p>
+<p class="font-label text-[10px] text-emerald-100/50">OFFICER ACCOUNT</p>
+</div>
+</div>
+<a class="text-emerald-100/70 hover:text-white flex items-center gap-2 text-sm" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
+                Logout
+            </a>
+</div>
+</aside>
+<!-- TopAppBar Component -->
+<header class="fixed top-0 right-0 w-[calc(100%-18rem)] h-16 bg-white/95 flex items-center justify-between px-page-padding-x border-b border-[#D1FAE5] z-40">
+<div class="flex flex-col">
+<h2 class="font-headline text-lg font-bold text-[#065F46]">Dashboard</h2>
+<p class="font-label text-[10px] text-on-surface-variant">Water Supply Department · Ward 12</p>
+</div>
+<div class="flex items-center gap-6"><div class="relative group">
+<button class="relative p-2 text-on-surface-variant hover:bg-emerald-50 rounded-full transition-all">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2.5 h-2.5 bg-[#10B981] border-2 border-white rounded-full"></span>
+</button>
+<!-- Notification Dropdown -->
+<div class="absolute right-0 mt-2 w-80 bg-white border border-outline-variant rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+<div class="p-3 border-b border-outline-variant flex justify-between items-center">
+<span class="font-title text-sm font-bold">Notifications</span>
+<span class="font-label text-[10px] text-primary">Mark all as read</span>
+</div>
+<div class="max-h-64 overflow-y-auto">
+<div class="p-4 bg-[#D1FAE5] hover:bg-emerald-100 border-b border-outline-variant/30">
+<p class="text-body-sm font-medium">New pipe leak reported - Ward 12</p>
+<p class="text-[10px] text-on-surface-variant mt-1">2 mins ago</p>
+</div>
+<div class="p-4 bg-[#D1FAE5] hover:bg-emerald-100 border-b border-outline-variant/30">
+<p class="text-body-sm font-medium">Urgent: Main line maintenance required</p>
+<p class="text-[10px] text-on-surface-variant mt-1">1 hour ago</p>
+</div>
+<div class="p-4 hover:bg-surface-container-low border-b border-outline-variant/30">
+<p class="text-body-sm font-medium">Issue #WS-451 was resolved</p>
+<p class="text-[10px] text-on-surface-variant mt-1">4 hours ago</p>
+</div>
+</div>
+</div>
+</div></div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-72 pt-16 min-h-screen">
+<div class="max-w-7xl mx-auto px-page-padding-x py-10">
+<!-- Welcome Header -->
+<header class="mb-stack-lg">
+<h1 class="font-display text-[#064E3B] font-bold">Welcome, Savyata Shrestha</h1>
+<p class="font-body-lg text-on-surface-variant mt-1">Water Supply Department · Ward 12 · Pokhara Metropolitan City</p>
+</header>
+<!-- Summary Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-section-gap">
+<!-- Total Assigned -->
+<div class="bg-white rounded-lg border border-[#D1FAE5] p-6 border-l-4 border-l-primary flex flex-col">
+<span class="font-label text-on-surface-variant mb-2">TOTAL ASSIGNED</span>
+<span class="font-display font-extrabold text-[#064E3B]">18</span>
+</div>
+<!-- Pending -->
+<div class="bg-white rounded-lg border border-[#D1FAE5] p-6 border-l-4 border-l-error flex flex-col">
+<span class="font-label text-on-surface-variant mb-2">PENDING</span>
+<span class="font-display font-extrabold text-error">6</span>
+</div>
+<!-- In Progress -->
+<div class="bg-white rounded-lg border border-[#D1FAE5] p-6 border-l-4 border-l-[#F59E0B] flex flex-col">
+<span class="font-label text-on-surface-variant mb-2 text-[#F59E0B]">IN PROGRESS</span>
+<span class="font-display font-extrabold text-[#F59E0B]">8</span>
+</div>
+<!-- Resolved -->
+<div class="bg-white rounded-lg border border-[#D1FAE5] p-6 border-l-4 border-l-secondary flex flex-col">
+<span class="font-label text-on-surface-variant mb-2 text-secondary">RESOLVED</span>
+<span class="font-display font-extrabold text-secondary">4</span>
+</div>
+</div>
+<!-- Assigned Issues Table -->
+<section class="bg-white rounded-xl border border-[#D1FAE5] overflow-hidden">
+<div class="p-8 flex justify-between items-center">
+<h3 class="font-bold text-[#064E3B] tracking-wider text-sm uppercase">ASSIGNED ISSUES</h3>
+<a class="text-[#10B981] font-bold text-sm hover:underline" href="#">View All →</a>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-y border-[#D1FAE5]">
+<th class="px-8 py-4 font-label text-on-surface-variant uppercase text-[10px] tracking-widest">ISSUE ID</th>
+<th class="px-8 py-4 font-label text-on-surface-variant uppercase text-[10px] tracking-widest">TITLE</th>
+<th class="px-8 py-4 font-label text-on-surface-variant uppercase text-[10px] tracking-widest">CATEGORY</th>
+<th class="px-8 py-4 font-label text-on-surface-variant uppercase text-[10px] tracking-widest">WARD</th>
+<th class="px-8 py-4 font-label text-on-surface-variant uppercase text-[10px] tracking-widest">DATE</th>
+<th class="px-8 py-4 font-label text-on-surface-variant uppercase text-[10px] tracking-widest">STATUS</th>
+<th class="px-8 py-4 font-label text-on-surface-variant uppercase text-[10px] tracking-widest">ACTION</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#D1FAE5]">
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-8 py-5 font-mono text-on-surface-variant text-xs">CR-2024-0051</td>
+<td class="px-8 py-5 font-medium"><a class="text-[#10B981] hover:underline" href="#">Leaking Main Pipeline</a></td>
+<td class="px-8 py-5 text-sm">Water supply</td>
+<td class="px-8 py-5 text-sm">Ward 12</td>
+<td class="px-8 py-5 text-sm text-on-surface-variant">Dec 10, 2024</td>
+<td class="px-8 py-5">
+<span class="px-3 py-1 rounded bg-[#FEE2E2] text-[#991B1B] font-bold uppercase text-[10px] tracking-wider">PENDING</span>
+</td>
+<td class="px-8 py-5"><a class="text-[#10B981] font-bold text-sm hover:underline" href="#">Manage</a></td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-8 py-5 font-mono text-on-surface-variant text-xs">CR-2024-0049</td>
+<td class="px-8 py-5 font-medium"><a class="text-[#10B981] hover:underline" href="#">No Water Supply for 3 Days</a></td>
+<td class="px-8 py-5 text-sm">Water supply</td>
+<td class="px-8 py-5 text-sm">Ward 12</td>
+<td class="px-8 py-5 text-sm text-on-surface-variant">Dec 09, 2024</td>
+<td class="px-8 py-5">
+<span class="px-3 py-1 rounded bg-[#FEF3C7] text-[#92400E] font-bold uppercase text-[10px] tracking-wider">IN PROGRESS</span>
+</td>
+<td class="px-8 py-5"><a class="text-[#10B981] font-bold text-sm hover:underline" href="#">Manage</a></td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-8 py-5 font-mono text-on-surface-variant text-xs">CR-2024-0047</td>
+<td class="px-8 py-5 font-medium"><a class="text-[#10B981] hover:underline" href="#">Burst Pipe near School</a></td>
+<td class="px-8 py-5 text-sm">Water supply</td>
+<td class="px-8 py-5 text-sm">Ward 12</td>
+<td class="px-8 py-5 text-sm text-on-surface-variant">Dec 08, 2024</td>
+<td class="px-8 py-5">
+<span class="px-3 py-1 rounded bg-[#FEF3C7] text-[#92400E] font-bold uppercase text-[10px] tracking-wider">IN PROGRESS</span>
+</td>
+<td class="px-8 py-5"><a class="text-[#10B981] font-bold text-sm hover:underline" href="#">Manage</a></td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-8 py-5 font-mono text-on-surface-variant text-xs">CR-2024-0044</td>
+<td class="px-8 py-5 font-medium"><a class="text-[#10B981] hover:underline" href="#">Contaminated Water Report</a></td>
+<td class="px-8 py-5 text-sm">Water supply</td>
+<td class="px-8 py-5 text-sm">Ward 12</td>
+<td class="px-8 py-5 text-sm text-on-surface-variant">Dec 06, 2024</td>
+<td class="px-8 py-5">
+<span class="px-3 py-1 rounded bg-[#FEE2E2] text-[#991B1B] font-bold uppercase text-[10px] tracking-wider">PENDING</span>
+</td>
+<td class="px-8 py-5"><a class="text-[#10B981] font-bold text-sm hover:underline" href="#">Manage</a></td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-8 py-5 font-mono text-on-surface-variant text-xs">CR-2024-0040</td>
+<td class="px-8 py-5 font-medium"><a class="text-[#10B981] hover:underline" href="#">Water Meter Damage</a></td>
+<td class="px-8 py-5 text-sm">Water supply</td>
+<td class="px-8 py-5 text-sm">Ward 12</td>
+<td class="px-8 py-5 text-sm text-on-surface-variant">Dec 03, 2024</td>
+<td class="px-8 py-5">
+<span class="px-3 py-1 rounded bg-[#065F46] text-white font-bold uppercase text-[10px] tracking-wider">RESOLVED</span>
+</td>
+<td class="px-8 py-5"><a class="text-[#10B981] font-bold text-sm hover:underline" href="#">Manage</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<!-- Minimal Footer -->
+<footer class="mt-auto border-t border-[#D1FAE5] bg-white py-6">
+<div class="max-w-7xl mx-auto px-page-padding-x flex justify-between items-center text-on-surface-variant font-label text-[10px]"><p>© 2024 CIVICREPORT POKHARA. ALL RIGHTS RESERVED.</p>
+<div class="flex gap-4">
+<a class="hover:text-primary" href="#">PRIVACY POLICY</a>
+<a class="hover:text-primary" href="#">TERMS OF SERVICE</a>
+<a class="hover:text-primary" href="#">CONTACT US</a>
+</div></div>
+</footer>
+</main>
+</body></html>

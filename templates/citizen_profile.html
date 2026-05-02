@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Profile - CivicReport Pokhara</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#e0e3df",
+                      "surface-tint": "#1b6b51",
+                      "on-primary-fixed": "#002116",
+                      "on-primary-container": "#8bd6b7",
+                      "secondary-fixed-dim": "#4edea3",
+                      "on-tertiary-fixed": "#3b0908",
+                      "error-container": "#ffdad6",
+                      "on-primary-fixed-variant": "#00513b",
+                      "surface-container-low": "#f1f4f0",
+                      "on-error": "#ffffff",
+                      "on-tertiary-container": "#ffb4ad",
+                      "surface-container-highest": "#e0e3df",
+                      "outline": "#6f7973",
+                      "surface-container": "#ecefeb",
+                      "error": "#ba1a1a",
+                      "inverse-on-surface": "#eef2ed",
+                      "tertiary-container": "#823f3a",
+                      "tertiary-fixed": "#ffdad6",
+                      "secondary": "#006c49",
+                      "primary-fixed-dim": "#8bd6b6",
+                      "primary-fixed": "#a6f2d1",
+                      "on-secondary-container": "#00714d",
+                      "on-error-container": "#93000a",
+                      "background": "#f7faf6",
+                      "tertiary-fixed-dim": "#ffb3ac",
+                      "on-primary": "#ffffff",
+                      "on-surface": "#181c1a",
+                      "on-secondary": "#ffffff",
+                      "on-background": "#181c1a",
+                      "surface-container-high": "#e6e9e5",
+                      "on-surface-variant": "#3f4944",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-fixed": "#002113",
+                      "secondary-fixed": "#6ffbbe",
+                      "tertiary": "#652925",
+                      "surface-bright": "#f7faf6",
+                      "primary-container": "#065f46",
+                      "surface": "#f7faf6",
+                      "on-tertiary-fixed-variant": "#73332f",
+                      "on-secondary-fixed-variant": "#005236",
+                      "primary": "#004532",
+                      "secondary-container": "#6cf8bb",
+                      "inverse-surface": "#2d312f",
+                      "surface-dim": "#d8dbd7",
+                      "inverse-primary": "#8bd6b6",
+                      "outline-variant": "#bec9c2",
+                      "on-tertiary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "page-padding-x": "32px",
+                      "stack-sm": "8px",
+                      "section-gap": "64px",
+                      "stack-lg": "32px",
+                      "gutter": "24px",
+                      "stack-md": "16px"
+              },
+              "fontFamily": {
+                      "display": ["Public Sans"],
+                      "body-lg": ["Public Sans"],
+                      "label": ["Public Sans"],
+                      "title": ["Public Sans"],
+                      "body-sm": ["Public Sans"],
+                      "headline": ["Public Sans"]
+              },
+              "fontSize": {
+                      "display": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                      "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "label": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "title": ["18px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                      "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "headline": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            font-family: 'Public Sans', sans-serif;
+            background-color: #F0FDF4;
+        }
+        .sidebar-bg { background-color: #065F46; }
+        .border-brand { border-color: #D1FAE5; }
+        .text-brand-muted { color: #6EE7B7; }
+        .text-brand-dark { color: #064E3B; }
+        .text-brand-accent { color: #10B981; }
+    </style>
+</head>
+<body class="text-on-background">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-screen w-64 sidebar-bg flex flex-col justify-between p-6 border-r border-emerald-800/30 z-50">
+<div class="flex flex-col gap-8">
+<!-- Branding -->
+<div class="flex flex-col gap-1">
+<h1 class="text-xl font-bold tracking-tight text-white">CivicReport</h1>
+<p class="text-xs text-emerald-100/70">Pokhara Metropolitan City</p>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-2">
+<a class="text-emerald-100/70 hover:bg-white/5 rounded-lg px-4 py-3 transition-colors flex items-center gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-['Public_Sans'] text-sm antialiased">Dashboard</span>
+</a>
+<a class="text-emerald-100/70 hover:bg-white/5 rounded-lg px-4 py-3 transition-colors flex items-center gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="font-['Public_Sans'] text-sm antialiased">My Issues</span>
+</a>
+<a class="text-emerald-100/70 hover:bg-white/5 rounded-lg px-4 py-3 transition-colors flex items-center gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-['Public_Sans'] text-sm antialiased">Report Issue</span>
+</a>
+</nav>
+</div>
+<!-- Footer User Section -->
+<div class="flex flex-col gap-4 pt-6 border-t border-emerald-700/30">
+<div class="bg-white/10 text-white font-semibold rounded-lg px-4 py-3 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-[#6EE7B7] text-[#065F46] flex items-center justify-center text-xs font-bold shrink-0">
+                    SS
+                </div>
+<div class="flex flex-col min-w-0">
+<span class="text-sm truncate">Savyata Shrestha</span>
+</div>
+</div>
+<a class="text-[#6EE7B7] hover:text-white transition-colors flex items-center gap-3 px-4 py-2 text-sm uppercase tracking-widest font-semibold" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
+                Logout
+            </a>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 h-16 bg-white flex items-center justify-end px-8 ml-64 w-[calc(100%-16rem)] border-b border-[#D1FAE5] z-40">
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-emerald-50 rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-emerald-50 rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-800">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 min-h-screen">
+<div class="max-w-4xl mx-auto px-8 py-12">
+<!-- Header -->
+<div class="mb-12">
+<h2 class="text-display font-display text-brand-dark font-bold mb-2">My Profile</h2>
+<p class="text-body-lg text-on-surface-variant/70">Manage your personal information and account settings</p>
+</div>
+<!-- Card 1: Personal Information -->
+<section class="bg-white border border-brand rounded-xl p-8 mb-8">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-title font-title text-brand-accent uppercase tracking-wider font-bold">Personal Information</h3>
+</div>
+<div class="h-[1px] w-full bg-[#D1FAE5] mb-8"></div>
+<div class="flex flex-col md:flex-row gap-12">
+<!-- Initials Circle -->
+<div class="flex-shrink-0">
+<div class="w-24 h-24 rounded-full bg-[#065F46] flex items-center justify-center text-white text-display font-bold">
+                            SS
+                        </div>
+</div>
+<!-- Fields -->
+<div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-label text-on-surface-variant/60 uppercase">Full Name</label>
+<input class="w-full bg-white border border-[#6EE7B7] rounded-lg px-4 py-2.5 text-body-sm focus:ring-1 focus:ring-emerald-500 focus:outline-none" type="text" value="Savyata Shrestha"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-label text-on-surface-variant/60 uppercase">Phone Number</label>
+<input class="w-full bg-white border border-[#6EE7B7] rounded-lg px-4 py-2.5 text-body-sm focus:ring-1 focus:ring-emerald-500 focus:outline-none" type="tel" value="9800000000"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-label text-on-surface-variant/60 uppercase">Ward</label>
+<select class="w-full bg-white border border-[#6EE7B7] rounded-lg px-4 py-2.5 text-body-sm focus:ring-1 focus:ring-emerald-500 focus:outline-none appearance-none">
+<option>Ward 1</option>
+<option>Ward 2</option>
+<option>Ward 3</option>
+<option>Ward 4</option>
+<option>Ward 5</option>
+<option>Ward 6</option>
+<option selected="">Ward 7</option>
+<option>Ward 8</option>
+<option>Ward 9</option>
+</select>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-label text-on-surface-variant/60 uppercase">Email Address</label>
+<div class="flex flex-col">
+<span class="px-4 py-2.5 text-body-sm text-on-surface-variant/80 bg-surface-container-lowest border border-[#D1FAE5] rounded-lg">savyata@gmail.com</span>
+<span class="text-[10px] text-on-surface-variant/50 mt-1 italic">cannot be changed</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-10 flex justify-end">
+<button class="bg-[#065F46] text-white px-8 py-3 rounded-lg font-medium text-body-sm hover:opacity-90 transition-opacity active:scale-[0.98]">
+                        Save Changes
+                    </button>
+</div>
+</section>
+<!-- Card 2: Change Password -->
+<section class="bg-white border border-brand rounded-xl p-8 mb-12">
+<div class="mb-6">
+<h3 class="text-title font-title text-brand-accent uppercase tracking-wider font-bold">Change Password</h3>
+</div>
+<div class="h-[1px] w-full bg-[#D1FAE5] mb-8"></div>
+<div class="max-w-md flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-label text-on-surface-variant/60 uppercase">Current Password</label>
+<div class="relative">
+<input class="w-full bg-white border border-[#6EE7B7] rounded-lg pl-4 pr-12 py-2.5 text-body-sm focus:ring-1 focus:ring-emerald-500 focus:outline-none" placeholder="••••••••" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 hover:text-brand-accent">
+<span class="material-symbols-outlined text-xl" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-label text-on-surface-variant/60 uppercase">New Password</label>
+<div class="relative">
+<input class="w-full bg-white border border-[#6EE7B7] rounded-lg pl-4 pr-12 py-2.5 text-body-sm focus:ring-1 focus:ring-emerald-500 focus:outline-none" placeholder="••••••••" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 hover:text-brand-accent">
+<span class="material-symbols-outlined text-xl" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-label text-on-surface-variant/60 uppercase">Confirm New Password</label>
+<div class="relative">
+<input class="w-full bg-white border border-[#6EE7B7] rounded-lg pl-4 pr-12 py-2.5 text-body-sm focus:ring-1 focus:ring-emerald-500 focus:outline-none" placeholder="••••••••" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 hover:text-brand-accent">
+<span class="material-symbols-outlined text-xl" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<div class="mt-4">
+<button class="bg-[#065F46] text-white px-8 py-3 rounded-lg font-medium text-body-sm hover:opacity-90 transition-opacity active:scale-[0.98]">
+                            Update Password
+                        </button>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer Shell -->
+<footer class="w-full py-8 border-t border-[#D1FAE5] ml-0 px-8 flex justify-between items-center bg-[#F0FDF4]">
+<span class="text-xs font-['Public_Sans'] uppercase tracking-wider text-emerald-600/60">
+                © 2024 Pokhara Metropolitan City. All rights reserved.
+            </span>
+<div class="flex gap-6">
+<a class="text-xs font-['Public_Sans'] uppercase tracking-wider text-emerald-600/60 hover:text-emerald-900 transition-colors" href="#">Privacy Policy</a>
+<a class="text-xs font-['Public_Sans'] uppercase tracking-wider text-emerald-600/60 hover:text-emerald-900 transition-colors" href="#">Terms of Service</a>
+<a class="text-xs font-['Public_Sans'] uppercase tracking-wider text-emerald-600/60 hover:text-emerald-900 transition-colors" href="#">Contact Us</a>
+</div>
+</footer>
+</main>
+</body></html>

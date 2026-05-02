@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CivicReport Pokhara - Issue Action Panel</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#a72d51",
+                    "on-primary-fixed-variant": "#005320",
+                    "surface": "#f4fcf0",
+                    "secondary": "#006d30",
+                    "inverse-on-surface": "#ecf3e7",
+                    "surface-container-high": "#e3eadf",
+                    "background": "#f4fcf0",
+                    "surface-dim": "#d5dcd1",
+                    "on-secondary-fixed-variant": "#005323",
+                    "surface-tint": "#006e2d",
+                    "on-error-container": "#93000a",
+                    "surface-container": "#e9f0e5",
+                    "on-secondary-container": "#007233",
+                    "primary-container": "#00873a",
+                    "tertiary-fixed-dim": "#ffb2bf",
+                    "on-tertiary-fixed-variant": "#8a143c",
+                    "inverse-surface": "#2b322b",
+                    "inverse-primary": "#62df7d",
+                    "tertiary-container": "#c74668",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "surface-bright": "#f4fcf0",
+                    "outline": "#6e7b6c",
+                    "on-primary-container": "#f7fff2",
+                    "outline-variant": "#bdcaba",
+                    "on-tertiary-fixed": "#3f0016",
+                    "secondary-fixed": "#95f8a7",
+                    "on-primary-fixed": "#002109",
+                    "surface-container-highest": "#dde5d9",
+                    "primary-fixed-dim": "#62df7d",
+                    "on-secondary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed": "#ffd9de",
+                    "surface-variant": "#dde5d9",
+                    "primary-fixed": "#7ffc97",
+                    "on-secondary-fixed": "#00210a",
+                    "primary": "#006b2c",
+                    "on-background": "#171d16",
+                    "surface-container-low": "#eff6ea",
+                    "secondary-fixed-dim": "#79db8d",
+                    "on-surface": "#171d16",
+                    "error-container": "#ffdad6",
+                    "on-error": "#ffffff",
+                    "secondary-container": "#92f5a4",
+                    "on-tertiary-container": "#fffbff",
+                    "on-surface-variant": "#3e4a3d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "12px",
+                    "lg": "12px",
+                    "xl": "12px",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "md": "16px",
+                    "xl": "32px",
+                    "unit": "8px",
+                    "container-max": "1280px",
+                    "sm": "8px",
+                    "gutter": "24px",
+                    "xxl": "48px",
+                    "xs": "4px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "label-caps": ["Public Sans"],
+                    "h3": ["Public Sans"],
+                    "h2": ["Public Sans"],
+                    "body-lg": ["Public Sans"],
+                    "body-md": ["Public Sans"],
+                    "body-sm": ["Public Sans"],
+                    "button": ["Public Sans"],
+                    "h1": ["Public Sans"]
+            },
+            "fontSize": {
+                    "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "h3": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "h2": ["36px", {"lineHeight": "1.25", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "button": ["16px", {"lineHeight": "1", "fontWeight": "500"}],
+                    "h1": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f4fcf0;
+        }
+        .flat-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface antialiased">
+<!-- Fixed SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-64 bg-[#065F46] text-white flex flex-col py-6 shadow-xl z-50">
+<div class="px-6 mb-10"><h1 class="text-xl font-bold tracking-tight leading-tight uppercase text-white">CIVICREPORT</h1>
+<p class="text-[10px] tracking-widest text-[#6EE7B7] font-bold uppercase">POKHARA METROPOLITAN CITY</p></div>
+<div class="flex-grow flex flex-col gap-1">
+<a class="flex items-center gap-3 text-white hover:bg-[#064E3B] rounded-lg px-4 py-3 mx-2 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-button text-body-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 bg-[#0A7A5A] text-white rounded-r-lg border-l-[3px] border-[#6EE7B7] px-4 py-3 mr-2" href="#">
+<span class="material-symbols-outlined" data-icon="assignment_late">assignment_late</span>
+<span class="font-button text-body-sm">Issue Queue</span>
+</a>
+<a class="flex items-center gap-3 text-white hover:bg-[#064E3B] rounded-lg px-4 py-3 mx-2 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-button text-body-sm">Profile</span>
+</a>
+</div>
+<div class="mt-auto px-4 border-t border-emerald-800/50 pt-6"><div class="flex items-center gap-3 mb-6 px-2">
+<div class="w-10 h-10 rounded-full bg-[#6EE7B7] text-[#065F46] flex items-center justify-center font-bold text-sm">SS</div>
+<div class="overflow-hidden"><p class="text-body-sm font-bold truncate text-white">Savyata Shrestha</p>
+<p class="text-[10px] text-[#6EE7B7] font-semibold uppercase tracking-wider">OFFICER ACCOUNT</p></div>
+</div>
+<button class="flex items-center gap-3 w-full text-[#6EE7B7] hover:text-white px-2 transition-colors font-button text-body-sm">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</button></div>
+</nav>
+<!-- Content Shell -->
+<main class="ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-slate-200 h-16 flex items-center justify-between px-8">
+<div class="flex items-center gap-4">
+<a class="flex items-center text-[#10B981] font-bold hover:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined mr-1" data-icon="arrow_back">arrow_back</span>
+<span class="font-button text-body-sm">Issue Queue</span>
+</a>
+<div class="h-4 w-px bg-slate-200 mx-2"></div>
+<span class="font-label-caps text-slate-500 uppercase tracking-widest text-[10px]">ISSUE ID: CR-2024-0051</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative cursor-pointer hover:bg-emerald-50 p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined text-slate-600" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2.5 w-2 h-2 bg-[#10B981] rounded-full border-2 border-white"></span>
+</div>
+</div>
+</header>
+<!-- Main Body -->
+<div class="p-xl max-w-[1280px] w-full mx-auto flex-grow">
+<!-- Page Header -->
+<div class="mb-xl flex justify-between items-start">
+<div>
+<p class="font-label-caps text-slate-500 uppercase tracking-widest mb-1">ISSUE ID: CR-2024-0051</p>
+<h2 class="font-h1 text-[#064E3B] leading-tight">Leaking Main Pipeline</h2>
+</div>
+<span class="px-4 py-1.5 rounded-full bg-[#FEE2E2] text-[#991B1B] font-bold text-xs tracking-wider">PENDING</span>
+</div>
+<!-- Dashboard Grid -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Left Column: Issue Details (58%) -->
+<div class="col-span-12 lg:col-span-7 flex flex-col gap-gutter">
+<section class="flat-card p-xl h-full">
+<div class="flex items-center justify-between mb-lg border-b border-slate-100 pb-4">
+<h3 class="font-h3 text-on-surface">Issue Details</h3>
+<span class="material-symbols-outlined text-slate-400" data-icon="info">info</span>
+</div>
+<div class="grid grid-cols-2 gap-y-xl gap-x-lg mb-xl">
+<div>
+<p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">CATEGORY</p>
+<p class="text-body-md font-semibold text-secondary flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="water_drop">water_drop</span>
+                                    Water supply
+                                </p>
+</div><div class="col-span-2 border-t border-slate-100 pt-4 mt-2"></div>
+<div>
+<p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">WARD</p>
+<p class="text-body-md font-semibold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="door_front">door_front</span>
+                                    Ward 12
+                                </p>
+</div>
+<div class="col-span-2 border-t border-slate-100 pt-4 mt-2"></div>
+<div>
+<p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">LOCATION</p>
+<p class="text-body-md font-semibold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="location_on">location_on</span>
+                                    Ward 12, Near Ward 12 Community Tap
+                                </p>
+</div>
+<div>
+<p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">SUBMITTED DATE</p>
+<p class="text-body-md font-semibold text-on-surface">Dec 10, 2024</p>
+</div>
+<div>
+<p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">REPORTED BY</p>
+<p class="text-body-md font-semibold text-on-surface">Savyata Shrestha (Citizen)</p>
+</div>
+</div>
+<div class="mb-xl">
+<p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">DESCRIPTION</p>
+<p class="text-body-md text-on-surface-variant leading-relaxed">
+                                The main pipeline supplying water to the Ward 12 community tap has developed a significant crack. Water has been leaking for over 4 hours, causing flooding on the nearby pedestrian path. Immediate repair is required to prevent water wastage and damage to the road surface.
+                            </p>
+</div>
+<div>
+<p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-4">EVIDENCE PHOTOS</p>
+<div class="grid grid-cols-2 gap-md"><div class="w-[140px] h-[100px] bg-[#F3F4F6] rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-300" data-icon="image">image</span>
+</div>
+<div class="w-[140px] h-[100px] bg-[#F3F4F6] rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-300" data-icon="image">image</span>
+</div></div>
+</div>
+</section>
+</div>
+<!-- Right Column (42%) -->
+<div class="col-span-12 lg:col-span-5 flex flex-col gap-gutter">
+<!-- Update Status Card -->
+<section class="flat-card p-xl">
+<h3 class="font-h3 text-on-surface mb-lg">Update Status</h3>
+<form class="space-y-lg">
+<div>
+<label class="block text-body-sm font-bold text-slate-600 mb-2">NEW STATUS</label>
+<div class="relative">
+<select class="w-full h-12 bg-slate-50 border border-slate-200 rounded-lg px-4 appearance-none focus:ring-2 focus:ring-primary focus:outline-none text-body-md font-medium">
+<option>Acknowledge</option>
+<option>In Progress</option>
+<option>Resolved</option>
+<option>Rejected</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-3 text-slate-400 pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<div>
+<label class="block text-body-sm font-bold text-slate-600 mb-2">REMARKS / INTERNAL NOTES</label>
+<textarea class="w-full bg-slate-50 border border-slate-200 rounded-lg p-4 focus:ring-2 focus:ring-primary focus:outline-none text-body-md" placeholder="Provide details about the action taken..." rows="4"></textarea>
+</div>
+<button class="w-full bg-[#065F46] text-white font-bold py-4 rounded-lg hover:bg-[#054E39] active:scale-[0.98] transition-all" type="submit">
+                                Submit Update
+                            </button>
+</form>
+</section>
+<!-- Status History Card -->
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="mt-auto px-8 py-8 border-t border-slate-200 bg-white">
+<div class="max-w-[1280px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-[12px] font-bold text-slate-400 tracking-tight">© 2024 CIVICREPORT POKHARA. ALL RIGHTS RESERVED.</p>
+<div class="flex gap-6 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+<a class="hover:text-primary transition-colors" href="#">PRIVACY POLICY</a>
+<a class="hover:text-primary transition-colors" href="#">TERMS OF SERVICE</a>
+<a class="hover:text-primary transition-colors" href="#">CONTACT US</a>
+</div>
+</div>
+</footer>
+</main>
+</body></html>

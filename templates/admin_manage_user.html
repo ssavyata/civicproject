@@ -3,10 +3,9 @@
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>User Management | CivicReport Pokhara</title>
+<title>User Management - CivicReport </title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
       tailwind.config = {
@@ -60,7 +59,8 @@
                     "error": "#ba1a1a",
                     "surface-container-lowest": "#ffffff",
                     "on-background": "#171d16",
-                    "inverse-on-surface": "#ecf3e7"
+                    "inverse-on-surface": "#ecf3e7",
+                    "sidebar-green": "#065F46"
             },
             "borderRadius": {
                     "DEFAULT": "0.25rem",
@@ -118,48 +118,39 @@
 </head>
 <body class="font-body-md">
 <!-- Fixed SideNavBar -->
-<aside class="fixed h-full w-64 left-0 top-0 bg-emerald-950 flex flex-col py-8 px-4 border-r border-emerald-900/50 shadow-2xl shadow-emerald-950/50 font-['Public_Sans'] font-medium antialiased z-40">
+<aside class="fixed h-full w-64 left-0 top-0 bg-sidebar-green flex flex-col py-8 px-4 border-r border-[#044735] shadow-2xl shadow-sidebar-green/50 font-['Public_Sans'] font-medium antialiased z-40">
 <div class="mb-10 px-4">
 <h1 class="text-2xl font-black text-white tracking-tight uppercase">CivicReport</h1>
-<p class="text-[10px] font-bold text-secondary-fixed tracking-widest uppercase opacity-80 mt-1">Pokhara Metropolitan City</p>
 </div>
 <nav class="flex-grow space-y-2">
-<a class="text-emerald-300/80 hover:text-white hover:bg-emerald-900 rounded-lg px-4 py-2.5 flex items-center gap-3 transition-all" href="#">
+<a class="text-white/70 hover:text-white hover:bg-[#044735] rounded-lg px-4 py-2.5 flex items-center gap-3 transition-all" href="#">
 <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
                 Dashboard
             </a>
-<a class="text-emerald-300/80 hover:text-white hover:bg-emerald-900 rounded-lg px-4 py-2.5 flex items-center gap-3 transition-all" href="#">
+<a class="text-white/70 hover:text-white hover:bg-[#044735] rounded-lg px-4 py-2.5 flex items-center gap-3 transition-all" href="#">
 <span class="material-symbols-outlined" data-icon="report_problem">report_problem</span>
                 All Issues
             </a>
-<a class="bg-green-600 text-white rounded-lg px-4 py-2.5 flex items-center gap-3 transition-colors shadow-lg shadow-green-900/20" href="#">
+<a class="bg-primary text-white rounded-lg px-4 py-2.5 flex items-center gap-3 transition-colors shadow-lg shadow-sidebar-green/20" href="#">
 <span class="material-symbols-outlined" data-icon="group" style="font-variation-settings: 'FILL' 1;">group</span>
                 Users
             </a>
-<a class="text-emerald-300/80 hover:text-white hover:bg-emerald-900 rounded-lg px-4 py-2.5 flex items-center gap-3 transition-all" href="#">
+<a class="text-white/70 hover:text-white hover:bg-[#044735] rounded-lg px-4 py-2.5 flex items-center gap-3 transition-all" href="#">
 <span class="material-symbols-outlined" data-icon="domain">domain</span>
                 Departments
             </a>
-<a class="text-emerald-300/80 hover:text-white hover:bg-emerald-900 rounded-lg px-4 py-2.5 flex items-center gap-3 transition-all" href="#">
-<span class="material-symbols-outlined" data-icon="location_city">location_city</span>
-                Wards
-            </a>
-<a class="text-emerald-300/80 hover:text-white hover:bg-emerald-900 rounded-lg px-4 py-2.5 flex items-center gap-3 transition-all" href="#">
-<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
-                Reports
-            </a>
 </nav>
-<div class="mt-auto pt-6 border-t border-emerald-900 px-2">
+<div class="mt-auto pt-6 border-t border-[#044735] px-2">
 <div class="flex items-center gap-3 px-2 mb-4">
-<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-emerald-950 font-bold">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-sidebar-green font-bold">
                     SS
                 </div>
 <div>
 <p class="text-sm font-bold text-white leading-tight">Savyata Shrestha</p>
-<p class="text-[10px] font-medium text-emerald-300/70 uppercase">Admin Account</p>
+<p class="text-[10px] font-medium text-white/60 uppercase">Admin Account</p>
 </div>
 </div>
-<a class="text-emerald-300/80 hover:text-white hover:bg-emerald-900 rounded-lg px-4 py-2 flex items-center gap-3 transition-all text-sm" href="#">
+<a class="text-white/70 hover:text-white hover:bg-[#044735] rounded-lg px-4 py-2 flex items-center gap-3 transition-all text-sm" href="#">
 <span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
                 Logout
             </a>
@@ -170,29 +161,29 @@
 <!-- TopAppBar -->
 <header class="fixed top-0 right-0 left-64 h-16 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 border-b border-slate-200 z-30">
 <div class="flex items-center gap-4">
-<h2 class="text-xl font-bold text-slate-900 font-['Public_Sans']">User Management</h2>
+<h2 class="text-xl font-bold text-on-surface font-['Public_Sans']">User Management</h2>
 </div>
-<div class="flex items-center gap-4"><button class="p-2 text-slate-500 hover:text-green-600 transition-colors relative"><span class="material-symbols-outlined" data-icon="notifications">notifications</span><span class="absolute top-2 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-white"></span></button></div>
+<div class="flex items-center gap-4"><button class="p-2 text-on-surface-variant hover:text-primary transition-colors relative"><span class="material-symbols-outlined" data-icon="notifications">notifications</span><span class="absolute top-2 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-white"></span></button></div>
 </header>
 <!-- Content Canvas -->
 <div class="mt-16 p-xl max-w-container-max mx-auto">
 <div class="mb-lg">
-<p class="text-on-surface-variant font-body-md">Manage citizens and department officers across the Pokhara Metropolitan network.</p>
+<p class="text-on-surface-variant font-body-md">Manage citizens and department officers across the Ward.</p>
 </div>
 <!-- Custom Tabs -->
-<div class="flex border-b border-slate-200 mb-xl">
+<div class="flex border-b border-surface-variant mb-xl">
 <button class="px-lg py-md text-on-surface-variant font-semibold hover:text-primary transition-colors">
                     Citizens
                 </button>
-<button class="px-lg py-md text-primary font-semibold border-b-4 border-primary-container relative">
+<button class="px-lg py-md text-primary font-semibold border-b-4 border-primary relative">
                     Officers
                 </button>
 </div>
 <!-- Officers Section -->
-<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(22,163,74,0.08)] border border-slate-100 overflow-hidden">
-<div class="p-lg flex justify-between items-center bg-surface-container-low/50 border-b border-slate-100">
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(22,163,74,0.08)] border border-surface-variant/50 overflow-hidden">
+<div class="p-lg flex justify-between items-center bg-surface-container-low/50 border-b border-surface-variant/30">
 <h3 class="font-h3 text-on-surface">Department Officers</h3>
-<button class="bg-primary text-white font-button px-lg py-sm rounded-lg flex items-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all">
+<button class="bg-primary text-white font-button px-lg py-sm rounded-lg flex items-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-sm">
 <span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
                         Add Officer
                     </button>
@@ -200,24 +191,22 @@
 <!-- Officers Table -->
 <div class="overflow-x-auto">
 <table class="w-full text-left border-collapse">
-<thead class="bg-surface-container-low/30">
+<thead class="bg-surface-container-low/50">
 <tr>
 <th class="px-lg py-md text-label-caps text-on-surface-variant">Name</th>
 <th class="px-lg py-md text-label-caps text-on-surface-variant">Email</th>
 <th class="px-lg py-md text-label-caps text-on-surface-variant">Department</th>
-<th class="px-lg py-md text-label-caps text-on-surface-variant">Assigned Ward</th>
 <th class="px-lg py-md text-label-caps text-on-surface-variant">Status</th>
 <th class="px-lg py-md text-label-caps text-on-surface-variant text-right">Action</th>
 </tr>
 </thead>
-<tbody class="divide-y divide-slate-100">
+<tbody class="divide-y divide-surface-variant/30">
 <tr class="hover:bg-background transition-colors">
 <td class="px-lg py-md font-semibold text-on-surface">Savyata Shrestha</td>
 <td class="px-lg py-md text-on-surface-variant">savyata.s@pokhara.gov</td>
 <td class="px-lg py-md text-on-surface">Water Supply</td>
-<td class="px-lg py-md text-on-surface">Ward 12</td>
 <td class="px-lg py-md">
-<span class="px-3 py-1 rounded-full text-xs font-bold bg-[#D1FAE5] text-[#065F46] uppercase tracking-wide">Active</span>
+<span class="px-3 py-1 rounded-full text-[10px] font-black bg-secondary-container text-on-secondary-container uppercase tracking-widest">Active</span>
 </td>
 <td class="px-lg py-md text-right">
 <button class="text-tertiary font-semibold hover:underline text-sm">Deactivate</button>
@@ -227,33 +216,30 @@
 <td class="px-lg py-md font-semibold text-on-surface">Ramesh Karki</td>
 <td class="px-lg py-md text-on-surface-variant">ramesh.k@pokhara.gov</td>
 <td class="px-lg py-md text-on-surface">Road Division</td>
-<td class="px-lg py-md text-on-surface">Ward 7</td>
 <td class="px-lg py-md">
-<span class="px-3 py-1 rounded-full text-xs font-bold bg-[#D1FAE5] text-[#065F46] uppercase tracking-wide">Active</span>
+<span class="px-3 py-1 rounded-full text-[10px] font-black bg-secondary-container text-on-secondary-container uppercase tracking-widest">Active</span>
 </td>
 <td class="px-lg py-md text-right">
 <button class="text-tertiary font-semibold hover:underline text-sm">Deactivate</button>
 </td>
 </tr>
 <tr class="hover:bg-background transition-colors">
-<td class="px-lg py-md font-semibold text-on-surface">Anita Thapa</td>
-<td class="px-lg py-md text-on-surface-variant">anita.t@pokhara.gov</td>
+<td class="px-lg py-md font-semibold text-on-surface">Barsha Thapa</td>
+<td class="px-lg py-md text-on-surface-variant">barsha.t@pokhara.gov</td>
 <td class="px-lg py-md text-on-surface">Street Lighting</td>
-<td class="px-lg py-md text-on-surface">Ward 3</td>
 <td class="px-lg py-md">
-<span class="px-3 py-1 rounded-full text-xs font-bold bg-[#D1FAE5] text-[#065F46] uppercase tracking-wide">Active</span>
+<span class="px-3 py-1 rounded-full text-[10px] font-black bg-secondary-container text-on-secondary-container uppercase tracking-widest">Active</span>
 </td>
 <td class="px-lg py-md text-right">
 <button class="text-tertiary font-semibold hover:underline text-sm">Deactivate</button>
 </td>
 </tr>
 <tr class="hover:bg-background transition-colors">
-<td class="px-lg py-md font-semibold text-on-surface">Bikram Gurung</td>
-<td class="px-lg py-md text-on-surface-variant">bikram.g@pokhara.gov</td>
+<td class="px-lg py-md font-semibold text-on-surface">Indu Gurung</td>
+<td class="px-lg py-md text-on-surface-variant">indu.g@pokhara.gov</td>
 <td class="px-lg py-md text-on-surface">Public Works</td>
-<td class="px-lg py-md text-on-surface">Ward 5</td>
 <td class="px-lg py-md">
-<span class="px-3 py-1 rounded-full text-xs font-bold bg-[#F3F4F6] text-[#6B7280] uppercase tracking-wide">Inactive</span>
+<span class="px-3 py-1 rounded-full text-[10px] font-black bg-surface-variant text-on-surface-variant uppercase tracking-widest">Inactive</span>
 </td>
 <td class="px-lg py-md text-right">
 <button class="text-primary font-semibold hover:underline text-sm">Activate</button>
@@ -263,9 +249,8 @@
 <td class="px-lg py-md font-semibold text-on-surface">Sita Poudel</td>
 <td class="px-lg py-md text-on-surface-variant">sita.p@pokhara.gov</td>
 <td class="px-lg py-md text-on-surface">Road Division</td>
-<td class="px-lg py-md text-on-surface">Ward 9</td>
 <td class="px-lg py-md">
-<span class="px-3 py-1 rounded-full text-xs font-bold bg-[#D1FAE5] text-[#065F46] uppercase tracking-wide">Active</span>
+<span class="px-3 py-1 rounded-full text-[10px] font-black bg-secondary-container text-on-secondary-container uppercase tracking-widest">Active</span>
 </td>
 <td class="px-lg py-md text-right">
 <button class="text-tertiary font-semibold hover:underline text-sm">Deactivate</button>
@@ -276,9 +261,9 @@
 </div>
 </div>
 <!-- Footer -->
-<footer class="mt-xxl py-xl border-t border-slate-200">
+<footer class="mt-xxl py-xl border-t border-surface-variant/30">
 <div class="flex flex-col md:flex-row justify-between items-center gap-md">
-<p class="text-body-sm text-on-surface-variant">© 2024 CivicReport Pokhara Metropolitan City. All rights reserved.</p>
+<p class="text-body-sm text-on-surface-variant">© 2026 Pokhara Ward 12. All rights reserved.</p>
 <div class="flex gap-lg">
 <a class="text-body-sm text-primary hover:underline" href="#">Privacy Policy</a>
 <a class="text-body-sm text-primary hover:underline" href="#">Terms of Service</a>
@@ -288,5 +273,4 @@
 </footer>
 </div>
 </main>
-<!-- Modal Overlay (Open) -->
 </body></html>

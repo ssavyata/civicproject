@@ -3,7 +3,7 @@
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Department Management | CivicConnect Pokhara</title>
+<title>Department Management - CivicReport</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -13,89 +13,98 @@
         theme: {
           extend: {
             "colors": {
-                    "tertiary-fixed-dim": "#ffb2bf",
                     "on-primary": "#ffffff",
-                    "surface-dim": "#d5dcd1",
+                    "tertiary-fixed": "#80f9c8",
+                    "tertiary-fixed-dim": "#62dcad",
+                    "primary-fixed": "#a6f2d1",
+                    "surface": "#f0fdf4",
+                    "secondary-container": "#6cf8bb",
+                    "outline-variant": "#bec9c2",
                     "on-secondary": "#ffffff",
-                    "tertiary-container": "#c74668",
-                    "surface-variant": "#dde5d9",
-                    "on-background": "#171d16",
-                    "primary": "#006b2c",
-                    "primary-fixed-dim": "#62df7d",
-                    "on-error": "#ffffff",
-                    "surface-bright": "#f4fcf0",
-                    "secondary-fixed-dim": "#79db8d",
-                    "surface-container-high": "#e3eadf",
-                    "surface-container-low": "#eff6ea",
-                    "on-tertiary-container": "#fffbff",
-                    "on-tertiary-fixed": "#3f0016",
-                    "error": "#ba1a1a",
+                    "surface-dim": "#d0ddd5",
                     "surface-container-lowest": "#ffffff",
-                    "outline-variant": "#bdcaba",
-                    "on-surface-variant": "#3e4a3d",
-                    "surface-container-highest": "#dde5d9",
-                    "inverse-on-surface": "#ecf3e7",
-                    "primary-container": "#00873a",
-                    "on-surface": "#171d16",
-                    "tertiary-fixed": "#ffd9de",
-                    "surface": "#f4fcf0",
-                    "on-secondary-fixed-variant": "#005323",
-                    "inverse-surface": "#2b322b",
-                    "on-secondary-fixed": "#00210a",
-                    "secondary-fixed": "#95f8a7",
-                    "surface-tint": "#006e2d",
-                    "on-primary-container": "#f7fff2",
-                    "secondary-container": "#92f5a4",
-                    "on-error-container": "#93000a",
-                    "inverse-primary": "#62df7d",
-                    "on-primary-fixed-variant": "#005320",
-                    "error-container": "#ffdad6",
-                    "tertiary": "#a72d51",
-                    "on-secondary-container": "#007233",
-                    "surface-container": "#e9f0e5",
+                    "secondary": "#10B981",
+                    "inverse-primary": "#8bd6b6",
+                    "error": "#ba1a1a",
+                    "secondary-fixed-dim": "#4edea3",
+                    "surface-container": "#e4f1e8",
+                    "tertiary": "#004530",
+                    "primary-container": "#065f46",
+                    "on-secondary-container": "#00714d",
+                    "surface-container-low": "#eaf7ee",
+                    "outline": "#6f7973",
                     "on-tertiary": "#ffffff",
-                    "on-tertiary-fixed-variant": "#8a143c",
-                    "secondary": "#006d30",
-                    "on-primary-fixed": "#002109",
-                    "primary-fixed": "#7ffc97",
-                    "outline": "#6e7b6c",
-                    "background": "#f4fcf0"
+                    "on-tertiary-fixed": "#002115",
+                    "background": "#f0fdf4",
+                    "on-surface": "#064E3B",
+                    "on-tertiary-container": "#63dcad",
+                    "primary-fixed-dim": "#8bd6b6",
+                    "on-background": "#064E3B",
+                    "surface-container-high": "#deebe3",
+                    "inverse-surface": "#27332d",
+                    "inverse-on-surface": "#e7f4eb",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#002116",
+                    "on-surface-variant": "#3f4944",
+                    "surface-variant": "#d9e6dd",
+                    "on-tertiary-fixed-variant": "#00513a",
+                    "on-error-container": "#93000a",
+                    "surface-bright": "#f0fdf4",
+                    "surface-container-highest": "#d9e6dd",
+                    "secondary-fixed": "#6ffbbe",
+                    "on-primary-container": "#8bd6b7",
+                    "surface-tint": "#1b6b51",
+                    "on-secondary-fixed-variant": "#005236",
+                    "on-error": "#ffffff",
+                    "primary": "#065F46",
+                    "on-primary-fixed-variant": "#00513b",
+                    "on-secondary-fixed": "#002113",
+                    "tertiary-container": "#005f44"
             },
             "borderRadius": {
-                    "DEFAULT": "0.25rem",
-                    "lg": "0.5rem",
-                    "xl": "0.75rem",
-                    "full": "9999px"
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
             },
             "spacing": {
                     "lg": "24px",
-                    "gutter": "24px",
                     "container-max": "1280px",
-                    "xxl": "48px",
-                    "sm": "8px",
+                    "xl": "48px",
                     "md": "16px",
                     "xs": "4px",
-                    "unit": "8px",
-                    "xl": "32px"
+                    "gutter": "24px",
+                    "base": "4px",
+                    "sm": "8px"
             },
             "fontFamily": {
-                    "h3": ["Public Sans"],
-                    "h1": ["Public Sans"],
-                    "body-sm": ["Public Sans"],
-                    "h2": ["Public Sans"],
-                    "button": ["Public Sans"],
+                    "headline-md": ["Public Sans"],
+                    "label-lg": ["Public Sans"],
                     "body-md": ["Public Sans"],
                     "body-lg": ["Public Sans"],
+                    "label-md": ["Public Sans"],
+                    "headline-lg": ["Public Sans"],
+                    "body-sm": ["Public Sans"],
+                    "headline-xl": ["Public Sans"],
+                    "h3": ["Public Sans"],
+                    "h1": ["Public Sans"],
+                    "h2": ["Public Sans"],
+                    "button": ["Public Sans"],
                     "label-caps": ["Public Sans"]
             },
             "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-lg": ["14px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
                     "h3": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
                     "h1": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
-                    "h2": ["36px", {"lineHeight": "1.25", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "h2": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
                     "button": ["16px", {"lineHeight": "1", "fontWeight": "500"}],
-                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
                     "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}]
             }
           },
@@ -110,64 +119,55 @@
         .active-nav-border { border-left: 4px solid #6EE7B7; }
     </style>
 </head>
-<body class="bg-surface">
+<body class="bg-background text-on-surface">
 <!-- Sidebar Wrapper -->
-<aside class="fixed left-0 top-0 h-full w-64 bg-emerald-950 flex flex-col p-4 shadow-2xl z-40 border-r border-emerald-900">
+<aside class="fixed left-0 top-0 h-full w-64 bg-primary flex flex-col p-4 shadow-2xl z-40 border-r border-[#004d38]">
 <div class="mb-10 px-4">
-<h1 class="text-xl font-bold text-white tracking-tight">CIVICREPORT</h1>
-<p class="text-[10px] font-bold text-emerald-300 tracking-widest uppercase mt-1">POKHARA METROPOLITAN CITY</p>
+<h1 class="text-xl font-bold text-white tracking-tight">CivicReport</h1>
 </div>
 <nav class="flex-1 space-y-1">
-<a class="flex items-center text-emerald-200/70 hover:text-white px-4 py-3 mb-1 hover:bg-white/5 transition-colors rounded-lg" href="#">
-<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+<a class="flex items-center text-white/70 hover:text-white px-4 py-3 mb-1 hover:bg-[#10B981]/10 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-[#10B981]" data-icon="dashboard">dashboard</span>
 <span class="font-medium">Dashboard</span>
 </a>
-<a class="flex items-center text-emerald-200/70 hover:text-white px-4 py-3 mb-1 hover:bg-white/5 transition-colors rounded-lg" href="#">
-<span class="material-symbols-outlined mr-3" data-icon="report_problem">report_problem</span>
+<a class="flex items-center text-white/70 hover:text-white px-4 py-3 mb-1 hover:bg-[#10B981]/10 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-[#10B981]" data-icon="report_problem">report_problem</span>
 <span class="font-medium">All Issues</span>
 </a>
-<a class="flex items-center text-emerald-200/70 hover:text-white px-4 py-3 mb-1 hover:bg-white/5 transition-colors rounded-lg" href="#">
-<span class="material-symbols-outlined mr-3" data-icon="group">group</span>
+<a class="flex items-center text-white/70 hover:text-white px-4 py-3 mb-1 hover:bg-[#10B981]/10 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-[#10B981]" data-icon="group">group</span>
 <span class="font-medium">Users</span>
 </a>
 <!-- Active Link: Departments -->
-<a class="flex items-center bg-emerald-900/60 text-white font-semibold rounded-lg px-4 py-3 mb-1 active-nav-border" href="#">
-<span class="material-symbols-outlined mr-3" data-icon="business" style="font-variation-settings: 'FILL' 1;">business</span>
+<a class="flex items-center bg-white/10 text-white font-semibold rounded-lg px-4 py-3 mb-1 active-nav-border" href="#">
+<span class="material-symbols-outlined mr-3 text-[#6EE7B7]" data-icon="business" style="font-variation-settings: 'FILL' 1;">business</span>
 <span class="font-medium">Departments</span>
 </a>
-<a class="flex items-center text-emerald-200/70 hover:text-white px-4 py-3 mb-1 hover:bg-white/5 transition-colors rounded-lg" href="#">
-<span class="material-symbols-outlined mr-3" data-icon="map">map</span>
-<span class="font-medium">Wards</span>
-</a>
-<a class="flex items-center text-emerald-200/70 hover:text-white px-4 py-3 mb-1 hover:bg-white/5 transition-colors rounded-lg" href="#">
-<span class="material-symbols-outlined mr-3" data-icon="assessment">assessment</span>
-<span class="font-medium">Reports</span>
-</a>
 </nav>
-<div class="mt-auto border-t border-emerald-900 pt-6 px-4">
+<div class="mt-auto border-t border-white/10 pt-6 px-4">
 <div class="flex items-center space-x-3 mb-6">
-<div class="w-10 h-10 rounded-full bg-emerald-300 flex items-center justify-center text-emerald-950 font-bold text-sm">SS</div>
+<div class="w-10 h-10 rounded-full bg-[#6EE7B7] flex items-center justify-center text-primary font-bold text-sm">SS</div>
 <div>
 <p class="text-white text-sm font-semibold leading-tight">Savyata Shrestha</p>
-<p class="text-emerald-400 text-[10px] font-bold tracking-wider">ADMIN ACCOUNT</p>
+<p class="text-[#10B981] text-[10px] font-bold tracking-wider">ADMIN ACCOUNT</p>
 </div>
 </div>
-<button class="flex items-center text-emerald-200/70 hover:text-white text-sm font-medium transition-colors">
+<button class="flex items-center text-white/70 hover:text-white text-sm font-medium transition-colors">
 <span class="material-symbols-outlined mr-2 text-lg" data-icon="logout">logout</span>
                 Logout
             </button>
 </div>
 </aside>
 <!-- Top AppBar -->
-<header class="fixed top-0 right-0 left-64 bg-white border-b border-gray-100 flex justify-between items-center px-8 py-4 z-30 shadow-sm">
+<header class="fixed top-0 right-0 left-64 bg-white border-b border-[#6EE7B7]/20 flex justify-between items-center px-8 py-4 z-30 shadow-sm">
 <div>
-<h2 class="text-lg font-bold text-emerald-950 font-h3 leading-none">Departments</h2>
-<p class="text-xs text-gray-500 mt-1 uppercase tracking-tight">System Administration · Pokhara Metropolitan City</p>
+<h2 class="text-lg font-bold text-primary font-h3 leading-none">Departments</h2>
+<p class="text-xs text-on-surface-variant mt-1 uppercase tracking-tight">System Administration · Pokhara Ward 12</p>
 </div>
 <div class="flex items-center">
-<button class="hover:bg-gray-50 rounded-full p-2 transition-all relative">
-<span class="material-symbols-outlined text-gray-600" data-icon="notifications">notifications</span>
-<span class="absolute top-2 right-2 w-2 h-2 bg-emerald-500 rounded-full border border-white"></span>
+<button class="hover:bg-[#F0FDF4] rounded-full p-2 transition-all relative">
+<span class="material-symbols-outlined text-[#10B981]" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full border border-white"></span>
 </button>
 </div>
 </header>
@@ -177,18 +177,18 @@
 <!-- Page Header -->
 <div class="flex justify-between items-end mb-8">
 <div>
-<h1 class="font-h2 text-h2 text-on-surface">Department Management</h1>
-<p class="text-on-surface-variant font-body-md mt-1">Configure and manage metropolitan service departments and their jurisdictions.</p>
+<h1 class="font-h2 text-h2 text-primary">Department Management</h1>
+<p class="text-on-surface-variant font-body-md mt-1">Configure and manage ward service departments and their jurisdictions.</p>
 </div>
-<button class="bg-primary hover:bg-primary-container text-white px-6 py-3 rounded-lg font-button flex items-center shadow-md transition-all active:scale-95">
+<button class="bg-primary hover:bg-[#004d38] text-white px-6 py-3 rounded-lg font-button flex items-center shadow-md transition-all active:scale-95">
 <span class="material-symbols-outlined mr-2" data-icon="add">add</span>
                     Add Department
                 </button>
 </div>
 <!-- Department Grid/Table -->
-<div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(22,163,74,0.08)] border border-gray-100 overflow-hidden">
+<div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(6,95,70,0.08)] border border-[#6EE7B7]/20 overflow-hidden">
 <table class="w-full text-left">
-<thead class="bg-surface-bright border-b border-gray-100">
+<thead class="bg-surface-bright border-b border-[#6EE7B7]/10">
 <tr>
 <th class="px-6 py-4 font-label-caps text-on-surface-variant">DEPARTMENT NAME</th>
 <th class="px-6 py-4 font-label-caps text-on-surface-variant">ASSIGNED ISSUES</th>
@@ -197,17 +197,17 @@
 <th class="px-6 py-4 font-label-caps text-on-surface-variant text-right">ACTION</th>
 </tr>
 </thead>
-<tbody class="divide-y divide-gray-50">
+<tbody class="divide-y divide-[#6EE7B7]/10">
 <!-- Row 1 -->
 <tr class="hover:bg-surface transition-colors">
 <td class="px-6 py-5"><div class="flex items-center"><span class="font-bold text-on-surface">Road Division</span></div></td>
 <td class="px-6 py-5 text-on-surface-variant font-body-md">45 Open</td>
 <td class="px-6 py-5 text-on-surface-variant font-body-md">2 Personnel</td>
 <td class="px-6 py-5 text-center">
-<span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider">ACTIVE</span>
+<span class="px-3 py-1 rounded-full bg-[#6EE7B7]/20 text-[#006c49] text-xs font-bold uppercase tracking-wider">ACTIVE</span>
 </td>
 <td class="px-6 py-5 text-right">
-<a class="text-primary font-semibold hover:underline text-sm" href="#">Edit</a>
+<a class="text-secondary font-semibold hover:underline text-sm" href="#">Edit</a>
 </td>
 </tr>
 <!-- Row 2 -->
@@ -216,10 +216,10 @@
 <td class="px-6 py-5 text-on-surface-variant font-body-md">38 Open</td>
 <td class="px-6 py-5 text-on-surface-variant font-body-md">1 Personnel</td>
 <td class="px-6 py-5 text-center">
-<span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider">ACTIVE</span>
+<span class="px-3 py-1 rounded-full bg-[#6EE7B7]/20 text-[#006c49] text-xs font-bold uppercase tracking-wider">ACTIVE</span>
 </td>
 <td class="px-6 py-5 text-right">
-<a class="text-primary font-semibold hover:underline text-sm" href="#">Edit</a>
+<a class="text-secondary font-semibold hover:underline text-sm" href="#">Edit</a>
 </td>
 </tr>
 <!-- Row 3 -->
@@ -228,10 +228,10 @@
 <td class="px-6 py-5 text-on-surface-variant font-body-md">29 Open</td>
 <td class="px-6 py-5 text-on-surface-variant font-body-md">1 Personnel</td>
 <td class="px-6 py-5 text-center">
-<span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider">ACTIVE</span>
+<span class="px-3 py-1 rounded-full bg-[#6EE7B7]/20 text-[#006c49] text-xs font-bold uppercase tracking-wider">ACTIVE</span>
 </td>
 <td class="px-6 py-5 text-right">
-<a class="text-primary font-semibold hover:underline text-sm" href="#">Edit</a>
+<a class="text-secondary font-semibold hover:underline text-sm" href="#">Edit</a>
 </td>
 </tr>
 <!-- Row 4 -->
@@ -240,10 +240,10 @@
 <td class="px-6 py-5 text-on-surface-variant font-body-md">24 Open</td>
 <td class="px-6 py-5 text-on-surface-variant font-body-md">1 Personnel</td>
 <td class="px-6 py-5 text-center">
-<span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider">ACTIVE</span>
+<span class="px-3 py-1 rounded-full bg-[#6EE7B7]/20 text-[#006c49] text-xs font-bold uppercase tracking-wider">ACTIVE</span>
 </td>
 <td class="px-6 py-5 text-right">
-<a class="text-primary font-semibold hover:underline text-sm" href="#">Edit</a>
+<a class="text-secondary font-semibold hover:underline text-sm" href="#">Edit</a>
 </td>
 </tr>
 <!-- Row 5 -->
@@ -252,10 +252,10 @@
 <td class="px-6 py-5 text-on-surface-variant font-body-md">20 Open</td>
 <td class="px-6 py-5 text-on-surface-variant font-body-md">1 Personnel</td>
 <td class="px-6 py-5 text-center">
-<span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider">ACTIVE</span>
+<span class="px-3 py-1 rounded-full bg-[#6EE7B7]/20 text-[#006c49] text-xs font-bold uppercase tracking-wider">ACTIVE</span>
 </td>
 <td class="px-6 py-5 text-right">
-<a class="text-primary font-semibold hover:underline text-sm" href="#">Edit</a>
+<a class="text-secondary font-semibold hover:underline text-sm" href="#">Edit</a>
 </td>
 </tr>
 </tbody>
@@ -263,7 +263,7 @@
 </div>
 <!-- Footer -->
 <footer class="mt-16 flex flex-col md:flex-row justify-between items-center text-on-surface-variant text-xs font-medium uppercase tracking-widest opacity-60">
-<p>© 2024 CIVICREPORT POKHARA. ALL RIGHTS RESERVED.</p>
+<p>© 2026 Pokhara Ward 12. ALL RIGHTS RESERVED.</p>
 <div class="flex space-x-6 mt-4 md:mt-0">
 <a class="hover:text-primary transition-colors" href="#">PRIVACY POLICY</a>
 <a class="hover:text-primary transition-colors" href="#">TERMS OF SERVICE</a>

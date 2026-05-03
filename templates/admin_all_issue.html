@@ -3,7 +3,7 @@
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>All Issues | CivicReport Pokhara</title>
+<title>All Issues - CivicReport</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -125,8 +125,7 @@
 <aside class="fixed left-0 top-0 h-screen w-64 z-40 bg-[#065F46] border-r border-emerald-800 flex flex-col justify-between py-6 px-4">
 <div>
 <div class="px-4 mb-10">
-<h1 class="text-xl font-bold tracking-tight text-white">CIVICREPORT</h1>
-<p class="text-[10px] tracking-widest text-emerald-200 font-semibold uppercase">Pokhara Metropolitan City</p>
+<h1 class="text-xl font-bold tracking-tight text-white">CivicReport</h1>
 </div>
 <nav class="space-y-1">
 <a class="flex items-center gap-3 text-emerald-100 hover:bg-emerald-800 rounded-lg px-4 py-3 transition-all" href="#">
@@ -144,14 +143,6 @@
 <a class="flex items-center gap-3 text-emerald-100 hover:bg-emerald-800 rounded-lg px-4 py-3 transition-all" href="#">
 <span class="material-symbols-outlined" data-icon="domain">domain</span>
 <span class="font-medium text-sm">Departments</span>
-</a>
-<a class="flex items-center gap-3 text-emerald-100 hover:bg-emerald-800 rounded-lg px-4 py-3 transition-all" href="#">
-<span class="material-symbols-outlined" data-icon="map">map</span>
-<span class="font-medium text-sm">Wards</span>
-</a>
-<a class="flex items-center gap-3 text-emerald-100 hover:bg-emerald-800 rounded-lg px-4 py-3 transition-all" href="#">
-<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
-<span class="font-medium text-sm">Reports</span>
 </a>
 </nav>
 </div>
@@ -173,7 +164,7 @@
 <header class="sticky top-0 right-0 w-full z-30 bg-white/80 backdrop-blur-md border-b border-slate-100 flex justify-between items-center h-16 px-8">
 <div class="flex flex-col">
 <h2 class="font-h3 text-h3 text-on-surface leading-tight">All Issues</h2>
-<span class="text-xs text-on-surface-variant font-medium">Managing citizen reports for Pokhara Metro</span>
+<span class="text-xs text-on-surface-variant font-medium">Managing citizen reports for Pokhara Ward 12</span>
 </div>
 <div class="flex items-center gap-4">
 <button class="hover:bg-emerald-50 rounded-full p-2 transition-colors text-on-surface-variant">
@@ -185,7 +176,7 @@
 <!-- Content Header -->
 <div class="mb-lg">
 <h1 class="font-h2 text-h2 text-on-background mb-xs">All Issues</h1>
-<p class="font-body-md text-on-surface-variant">View and manage all civic complaints across all wards and departments.</p>
+<p class="font-body-md text-on-surface-variant">View and manage all civic complaints departments.</p>
 </div>
 <!-- Filter Bar -->
 <div class="flex gap-md mb-xl items-center bg-white p-md rounded-xl shadow-sm border border-slate-100">
@@ -208,17 +199,6 @@
 <option>Public property</option>
 </select>
 </div>
-<div class="flex flex-col gap-1 flex-1">
-<label class="font-label-caps text-label-caps text-on-surface-variant">WARD</label>
-<select class="form-select w-full border-slate-200 rounded-lg text-body-sm focus:ring-primary focus:border-primary transition-all">
-<option>All Wards</option>
-<option>Ward 3</option>
-<option>Ward 5</option>
-<option>Ward 7</option>
-<option>Ward 9</option>
-<option>Ward 12</option>
-</select>
-</div>
 </div>
 <!-- Issues Table Card -->
 <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
@@ -228,7 +208,6 @@
 <th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant">ISSUE ID</th>
 <th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant">TITLE</th>
 <th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant">CATEGORY</th>
-<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant">WARD</th>
 <th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant">DATE</th>
 <th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant">STATUS</th>
 <th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant">ASSIGNED TO</th>
@@ -241,7 +220,6 @@
 <td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0055</td>
 <td class="px-lg py-lg text-body-sm font-medium">Pothole on Prithvi Highway</td>
 <td class="px-lg py-lg text-body-sm">Road damage</td>
-<td class="px-lg py-lg text-body-sm">Ward 7</td>
 <td class="px-lg py-lg text-body-sm">Dec 14 2024</td>
 <td class="px-lg py-lg">
 <span class="bg-[#FEE2E2] text-[#991B1B] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">PENDING</span>
@@ -256,7 +234,6 @@
 <td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0054</td>
 <td class="px-lg py-lg text-body-sm font-medium">Street Light Out near Hospital</td>
 <td class="px-lg py-lg text-body-sm">Street lighting</td>
-<td class="px-lg py-lg text-body-sm">Ward 3</td>
 <td class="px-lg py-lg text-body-sm">Dec 13 2024</td>
 <td class="px-lg py-lg">
 <span class="bg-[#FEE2E2] text-[#991B1B] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">PENDING</span>
@@ -271,7 +248,6 @@
 <td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0051</td>
 <td class="px-lg py-lg text-body-sm font-medium">Leaking Main Pipeline</td>
 <td class="px-lg py-lg text-body-sm">Water supply</td>
-<td class="px-lg py-lg text-body-sm">Ward 12</td>
 <td class="px-lg py-lg text-body-sm">Dec 10 2024</td>
 <td class="px-lg py-lg">
 <span class="bg-[#FEF3C7] text-[#92400E] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">IN PROGRESS</span>
@@ -286,7 +262,6 @@
 <td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0049</td>
 <td class="px-lg py-lg text-body-sm font-medium">No Water Supply for 3 Days</td>
 <td class="px-lg py-lg text-body-sm">Water supply</td>
-<td class="px-lg py-lg text-body-sm">Ward 12</td>
 <td class="px-lg py-lg text-body-sm">Dec 09 2024</td>
 <td class="px-lg py-lg">
 <span class="bg-[#FEF3C7] text-[#92400E] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">IN PROGRESS</span>
@@ -301,7 +276,6 @@
 <td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0047</td>
 <td class="px-lg py-lg text-body-sm font-medium">Burst Pipe near School</td>
 <td class="px-lg py-lg text-body-sm">Water supply</td>
-<td class="px-lg py-lg text-body-sm">Ward 12</td>
 <td class="px-lg py-lg text-body-sm">Dec 08 2024</td>
 <td class="px-lg py-lg">
 <span class="bg-[#FEF3C7] text-[#92400E] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">IN PROGRESS</span>
@@ -316,7 +290,6 @@
 <td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0044</td>
 <td class="px-lg py-lg text-body-sm font-medium">Broken Park Bench</td>
 <td class="px-lg py-lg text-body-sm">Public property</td>
-<td class="px-lg py-lg text-body-sm">Ward 5</td>
 <td class="px-lg py-lg text-body-sm">Dec 06 2024</td>
 <td class="px-lg py-lg">
 <span class="bg-[#FEE2E2] text-[#991B1B] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">PENDING</span>
@@ -331,7 +304,6 @@
 <td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0040</td>
 <td class="px-lg py-lg text-body-sm font-medium">Water Meter Damage</td>
 <td class="px-lg py-lg text-body-sm">Water supply</td>
-<td class="px-lg py-lg text-body-sm">Ward 12</td>
 <td class="px-lg py-lg text-body-sm">Dec 03 2024</td>
 <td class="px-lg py-lg">
 <span class="bg-[#065F46] text-white px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">RESOLVED</span>
@@ -346,7 +318,6 @@
 <td class="px-lg py-lg text-body-sm font-semibold text-emerald-900">CR-2024-0038</td>
 <td class="px-lg py-lg text-body-sm font-medium">Damaged Footpath</td>
 <td class="px-lg py-lg text-body-sm">Road damage</td>
-<td class="px-lg py-lg text-body-sm">Ward 9</td>
 <td class="px-lg py-lg text-body-sm">Dec 01 2024</td>
 <td class="px-lg py-lg">
 <span class="bg-[#FEE2E2] text-[#991B1B] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase">PENDING</span>
@@ -379,7 +350,7 @@
 </main>
 <!-- Minimal Footer -->
 <footer class="mt-auto px-xl py-lg text-center border-t border-slate-100 bg-white/40"><div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-<p class="text-body-sm text-on-surface-variant uppercase tracking-wider">© 2024 CIVICREPORT POKHARA. ALL RIGHTS RESERVED.</p>
+<p class="text-body-sm text-on-surface-variant uppercase tracking-wider">© 2026 Pokhara Ward 12. ALL RIGHTS RESERVED.</p>
 <div class="flex gap-md text-[11px] font-bold text-on-surface-variant/60 tracking-widest uppercase">
 <a class="hover:text-primary transition-colors" href="#">PRIVACY POLICY</a>
 <span>·</span>

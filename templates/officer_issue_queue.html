@@ -113,35 +113,35 @@
 </head>
 <body class="font-body-md text-on-surface antialiased">
 <!-- SideNavBar (Shell) -->
-<aside class="fixed left-0 top-0 h-full w-64 border-r border-emerald-800 shadow-xl flex flex-col h-screen overflow-y-auto" style="background-color: #065F46;">
+<aside class="fixed left-0 top-0 h-full w-64 border-r border-emerald-800 bg-emerald-900 shadow-xl flex flex-col h-screen overflow-y-auto">
 <div class="p-lg">
 <h1 class="text-xl font-bold text-white font-h3 tracking-tight">CIVICREPORT</h1>
-<p class="text-[10px] font-label-caps text-emerald-300 opacity-80 uppercase tracking-widest mt-1" style="color: #6EE7B7;">Pokhara Metropolitan City</p>
 </div>
 <nav class="mt-xl flex-grow">
-<a class="text-white/70 hover:text-white px-lg py-3 flex items-center gap-3 transition-colors font-body-sm" href="#">
+<a class="text-emerald-100/70 hover:text-white px-lg py-3 flex items-center gap-3 transition-colors font-body-sm" href="#">
 <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
                 Dashboard
             </a>
 <!-- Active State for Issue Queue -->
-<a class="bg-white/10 text-white font-semibold border-l-4 px-lg py-3 flex items-center gap-3 font-body-sm" href="#" style="border-color: #6EE7B7;">
+<a class="bg-emerald-800/50 text-white font-semibold border-l-4 border-emerald-400 px-lg py-3 flex items-center gap-3 font-body-sm" href="#">
 <span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
                 Issue Queue
             </a>
-<a class="text-white/70 hover:text-white px-lg py-3 flex items-center gap-3 transition-colors font-body-sm" href="#">
+<a class="text-emerald-100/70 hover:text-white px-lg py-3 flex items-center gap-3 transition-colors font-body-sm" href="#">
 <span class="material-symbols-outlined" data-icon="person">person</span>
                 Profile
             </a>
 </nav>
 <div class="mt-auto p-lg border-t border-emerald-800 space-y-md">
 <div class="flex items-center gap-3">
-<div class="h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm" style="background-color: #6EE7B7; color: #065F46;">
+<div class="h-10 w-10 rounded-full bg-emerald-300 flex items-center justify-center text-emerald-900 font-bold text-sm">
                     SS
                 </div>
-<div><p class="text-sm font-bold text-white leading-none">Savyata Shrestha</p>
-<p class="text-[10px] font-label-caps mt-1 uppercase" style="color: #6EE7B7; opacity: 0.7;">OFFICER ACCOUNT</p></div>
+<div>
+<p class="text-sm font-bold text-white leading-none">Savyata Shrestha</p>
 </div>
-<button class="w-full flex items-center gap-2 hover:text-white transition-colors font-body-sm" style="color: #6EE7B7;">
+</div>
+<button class="w-full flex items-center gap-2 text-emerald-200 hover:text-white transition-colors font-body-sm">
 <span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
                 Logout
             </button>
@@ -212,8 +212,6 @@
 <tr>
 <th class="px-lg py-4 text-[11px] font-label-caps text-slate-500 uppercase tracking-wider">Issue ID</th>
 <th class="px-lg py-4 text-[11px] font-label-caps text-slate-500 uppercase tracking-wider">Title</th>
-<th class="px-lg py-4 text-[11px] font-label-caps text-slate-500 uppercase tracking-wider">Category</th>
-<th class="px-lg py-4 text-[11px] font-label-caps text-slate-500 uppercase tracking-wider">Ward</th>
 <th class="px-lg py-4 text-[11px] font-label-caps text-slate-500 uppercase tracking-wider">Date Submitted</th>
 <th class="px-lg py-4 text-[11px] font-label-caps text-slate-500 uppercase tracking-wider">Status</th>
 <th class="px-lg py-4 text-[11px] font-label-caps text-slate-500 uppercase tracking-wider text-right">Action</th>
@@ -224,8 +222,6 @@
 <tr class="hover:bg-slate-50/50 transition-colors">
 <td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0051</td>
 <td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">Leaking Main Pipeline</td>
-<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
-<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
 <td class="px-lg py-5 text-sm text-slate-600">Dec 10, 2024</td>
 <td class="px-lg py-5">
 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">PENDING</span>
@@ -238,8 +234,6 @@
 <tr class="hover:bg-slate-50/50 transition-colors">
 <td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0049</td>
 <td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">No Water Supply for 3 Days</td>
-<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
-<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
 <td class="px-lg py-5 text-sm text-slate-600">Dec 09, 2024</td>
 <td class="px-lg py-5">
 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">IN PROGRESS</span>
@@ -252,8 +246,6 @@
 <tr class="hover:bg-slate-50/50 transition-colors">
 <td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0047</td>
 <td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">Burst Pipe near School</td>
-<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
-<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
 <td class="px-lg py-5 text-sm text-slate-600">Dec 08, 2024</td>
 <td class="px-lg py-5">
 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">IN PROGRESS</span>
@@ -266,8 +258,6 @@
 <tr class="hover:bg-slate-50/50 transition-colors">
 <td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0044</td>
 <td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">Contaminated Water Report</td>
-<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
-<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
 <td class="px-lg py-5 text-sm text-slate-600">Dec 06, 2024</td>
 <td class="px-lg py-5">
 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">PENDING</span>
@@ -280,8 +270,6 @@
 <tr class="hover:bg-slate-50/50 transition-colors">
 <td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0040</td>
 <td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">Water Meter Damage</td>
-<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
-<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
 <td class="px-lg py-5 text-sm text-slate-600">Dec 03, 2024</td>
 <td class="px-lg py-5">
 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-900 text-white">RESOLVED</span>
@@ -294,8 +282,6 @@
 <tr class="hover:bg-slate-50/50 transition-colors">
 <td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0038</td>
 <td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">Broken Water Tap at Park</td>
-<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
-<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
 <td class="px-lg py-5 text-sm text-slate-600">Dec 01, 2024</td>
 <td class="px-lg py-5">
 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">PENDING</span>
@@ -308,8 +294,6 @@
 <tr class="hover:bg-slate-50/50 transition-colors">
 <td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0035</td>
 <td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">Pipeline Blockage</td>
-<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
-<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
 <td class="px-lg py-5 text-sm text-slate-600">Nov 28, 2024</td>
 <td class="px-lg py-5">
 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">PENDING</span>
@@ -322,8 +306,6 @@
 <tr class="hover:bg-slate-50/50 transition-colors">
 <td class="px-lg py-5 font-mono text-xs text-slate-400">CR-2024-0031</td>
 <td class="px-lg py-5 font-medium text-emerald-600 hover:underline cursor-pointer">Low Water Pressure</td>
-<td class="px-lg py-5 text-sm text-slate-600">Water supply</td>
-<td class="px-lg py-5 text-sm text-slate-600">Ward 12</td>
 <td class="px-lg py-5 text-sm text-slate-600">Nov 25, 2024</td>
 <td class="px-lg py-5">
 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-900 text-white">RESOLVED</span>
@@ -349,9 +331,11 @@
 </main>
 <!-- Footer (Shell) -->
 <footer class="ml-64 py-4 px-8 bg-white border-t border-slate-100 flex flex-row justify-between items-center">
-<p class="text-[10px] font-label-caps text-slate-400 tracking-wider uppercase">© 2024 CIVICREPORT POKHARA. ALL RIGHTS RESERVED.</p>
-<div class="flex gap-lg"><a class="text-[10px] font-label-caps text-slate-400 hover:text-emerald-500 underline underline-offset-4 transition-all uppercase tracking-wider" href="#">Privacy Policy</a>
-<a class="text-[10px] font-label-caps text-slate-400 hover:text-emerald-500 underline underline-offset-4 transition-all uppercase tracking-wider" href="#">Terms of Service</a>
-<a class="text-[10px] font-label-caps text-slate-400 hover:text-emerald-500 underline underline-offset-4 transition-all uppercase tracking-wider" href="#">Contact Us</a></div>
+<p class="text-[10px] font-label-caps text-slate-400 tracking-wider uppercase">© 2024 Pokhara Ward 12. CivicReport Portal.</p>
+<div class="flex gap-lg">
+<a class="text-[10px] font-label-caps text-slate-400 hover:text-emerald-500 underline underline-offset-4 transition-all uppercase tracking-wider" href="#">Support</a>
+<a class="text-[10px] font-label-caps text-slate-400 hover:text-emerald-500 underline underline-offset-4 transition-all uppercase tracking-wider" href="#">Privacy Policy</a>
+<a class="text-[10px] font-label-caps text-slate-400 hover:text-emerald-500 underline underline-offset-4 transition-all uppercase tracking-wider" href="#">Contact Admin</a>
+</div>
 </footer>
 </body></html>

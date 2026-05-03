@@ -3,9 +3,10 @@
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Department Management | CivicConnect Pokhara</title>
+<title>Department Management - CivicReport</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
       tailwind.config = {
@@ -108,14 +109,14 @@
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
         .active-nav-border { border-left: 4px solid #6EE7B7; }
+        .modal-overlay { background-color: rgba(23, 29, 22, 0.6); backdrop-filter: blur(4px); }
     </style>
 </head>
 <body class="bg-surface">
-<!-- Sidebar Wrapper -->
+<!-- Sidebar Wrapper (Semantic Shell) -->
 <aside class="fixed left-0 top-0 h-full w-64 bg-emerald-950 flex flex-col p-4 shadow-2xl z-40 border-r border-emerald-900">
 <div class="mb-10 px-4">
-<h1 class="text-xl font-bold text-white tracking-tight">CIVICREPORT</h1>
-<p class="text-[10px] font-bold text-emerald-300 tracking-widest uppercase mt-1">POKHARA METROPOLITAN CITY</p>
+<h1 class="text-xl font-bold text-white tracking-tight">CivicReport</h1>
 </div>
 <nav class="flex-1 space-y-1">
 <a class="flex items-center text-emerald-200/70 hover:text-white px-4 py-3 mb-1 hover:bg-white/5 transition-colors rounded-lg" href="#">
@@ -134,14 +135,6 @@
 <a class="flex items-center bg-emerald-900/60 text-white font-semibold rounded-lg px-4 py-3 mb-1 active-nav-border" href="#">
 <span class="material-symbols-outlined mr-3" data-icon="business" style="font-variation-settings: 'FILL' 1;">business</span>
 <span class="font-medium">Departments</span>
-</a>
-<a class="flex items-center text-emerald-200/70 hover:text-white px-4 py-3 mb-1 hover:bg-white/5 transition-colors rounded-lg" href="#">
-<span class="material-symbols-outlined mr-3" data-icon="map">map</span>
-<span class="font-medium">Wards</span>
-</a>
-<a class="flex items-center text-emerald-200/70 hover:text-white px-4 py-3 mb-1 hover:bg-white/5 transition-colors rounded-lg" href="#">
-<span class="material-symbols-outlined mr-3" data-icon="assessment">assessment</span>
-<span class="font-medium">Reports</span>
 </a>
 </nav>
 <div class="mt-auto border-t border-emerald-900 pt-6 px-4">
@@ -162,13 +155,15 @@
 <header class="fixed top-0 right-0 left-64 bg-white border-b border-gray-100 flex justify-between items-center px-8 py-4 z-30 shadow-sm">
 <div>
 <h2 class="text-lg font-bold text-emerald-950 font-h3 leading-none">Departments</h2>
-<p class="text-xs text-gray-500 mt-1 uppercase tracking-tight">System Administration · Pokhara Metropolitan City</p>
+<p class="text-xs text-gray-500 mt-1 uppercase tracking-tight">System Administration · Pokhara Ward 12</p>
 </div>
-<div class="flex items-center">
-<button class="hover:bg-gray-50 rounded-full p-2 transition-all relative">
+<div class="flex items-center space-x-4">
+<button class="hover:bg-gray-50 rounded-full p-2 transition-all">
 <span class="material-symbols-outlined text-gray-600" data-icon="notifications">notifications</span>
-<span class="absolute top-2 right-2 w-2 h-2 bg-emerald-500 rounded-full border border-white"></span>
 </button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-gray-200">
+<img alt="Admin Profile" class="w-full h-full object-cover" data-alt="professional portrait of a confident nepali woman with dark hair and a neutral background soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_feLHVh9X2-hkC8Vps_09gB3KfI56uFiI2MJ4KJIKTkrX-fK2i2EI4iI2LD3OdKxSxh5CBNPnn_KfZoTXsuXO9j8ks3w6Gj2LtOl1XHE8AUWT4FqZPoYqJ-ydekvSdFr8puT2LttjyL2KpljHqEBVRFcVTGRecf9OxFwDQbsUPPxiSRw7zQr6QpDyXua1Regv1ImRTGyUa21LBnE0l2714dPrqNQXjyE4R6Yr1jL-rvAwWI9KRKpu7xYP8C8z-Jkl1iMrZ2aDs0w"/>
+</div>
 </div>
 </header>
 <!-- Main Content Canvas -->
@@ -178,7 +173,7 @@
 <div class="flex justify-between items-end mb-8">
 <div>
 <h1 class="font-h2 text-h2 text-on-surface">Department Management</h1>
-<p class="text-on-surface-variant font-body-md mt-1">Configure and manage metropolitan service departments and their jurisdictions.</p>
+<p class="text-on-surface-variant font-body-md mt-1">Configure and manage ward service departments and their jurisdictions.</p>
 </div>
 <button class="bg-primary hover:bg-primary-container text-white px-6 py-3 rounded-lg font-button flex items-center shadow-md transition-all active:scale-95">
 <span class="material-symbols-outlined mr-2" data-icon="add">add</span>
@@ -200,9 +195,16 @@
 <tbody class="divide-y divide-gray-50">
 <!-- Row 1 -->
 <tr class="hover:bg-surface transition-colors">
-<td class="px-6 py-5"><div class="flex items-center"><span class="font-bold text-on-surface">Road Division</span></div></td>
-<td class="px-6 py-5 text-on-surface-variant font-body-md">45 Open</td>
-<td class="px-6 py-5 text-on-surface-variant font-body-md">2 Personnel</td>
+<td class="px-6 py-5">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center mr-3">
+<span class="material-symbols-outlined text-emerald-700 text-sm" data-icon="construction">construction</span>
+</div>
+<span class="font-bold text-on-surface">Road Division</span>
+</div>
+</td>
+<td class="px-6 py-5 text-on-surface-variant font-body-md">142 Open</td>
+<td class="px-6 py-5 text-on-surface-variant font-body-md">24 Personnel</td>
 <td class="px-6 py-5 text-center">
 <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider">ACTIVE</span>
 </td>
@@ -212,9 +214,16 @@
 </tr>
 <!-- Row 2 -->
 <tr class="hover:bg-surface transition-colors">
-<td class="px-6 py-5"><div class="flex items-center"><span class="font-bold text-on-surface">Water Supply</span></div></td>
-<td class="px-6 py-5 text-on-surface-variant font-body-md">38 Open</td>
-<td class="px-6 py-5 text-on-surface-variant font-body-md">1 Personnel</td>
+<td class="px-6 py-5">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center mr-3">
+<span class="material-symbols-outlined text-emerald-700 text-sm" data-icon="water_drop">water_drop</span>
+</div>
+<span class="font-bold text-on-surface">Water Supply</span>
+</div>
+</td>
+<td class="px-6 py-5 text-on-surface-variant font-body-md">86 Open</td>
+<td class="px-6 py-5 text-on-surface-variant font-body-md">12 Personnel</td>
 <td class="px-6 py-5 text-center">
 <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider">ACTIVE</span>
 </td>
@@ -224,9 +233,16 @@
 </tr>
 <!-- Row 3 -->
 <tr class="hover:bg-surface transition-colors">
-<td class="px-6 py-5"><div class="flex items-center"><span class="font-bold text-on-surface">Street Lighting</span></div></td>
-<td class="px-6 py-5 text-on-surface-variant font-body-md">29 Open</td>
-<td class="px-6 py-5 text-on-surface-variant font-body-md">1 Personnel</td>
+<td class="px-6 py-5">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center mr-3">
+<span class="material-symbols-outlined text-emerald-700 text-sm" data-icon="lightbulb">lightbulb</span>
+</div>
+<span class="font-bold text-on-surface">Street Lighting</span>
+</div>
+</td>
+<td class="px-6 py-5 text-on-surface-variant font-body-md">34 Open</td>
+<td class="px-6 py-5 text-on-surface-variant font-body-md">8 Personnel</td>
 <td class="px-6 py-5 text-center">
 <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider">ACTIVE</span>
 </td>
@@ -236,9 +252,16 @@
 </tr>
 <!-- Row 4 -->
 <tr class="hover:bg-surface transition-colors">
-<td class="px-6 py-5"><div class="flex items-center"><span class="font-bold text-on-surface">Public Works</span></div></td>
-<td class="px-6 py-5 text-on-surface-variant font-body-md">24 Open</td>
-<td class="px-6 py-5 text-on-surface-variant font-body-md">1 Personnel</td>
+<td class="px-6 py-5">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center mr-3">
+<span class="material-symbols-outlined text-emerald-700 text-sm" data-icon="foundation">foundation</span>
+</div>
+<span class="font-bold text-on-surface">Public Works</span>
+</div>
+</td>
+<td class="px-6 py-5 text-on-surface-variant font-body-md">215 Open</td>
+<td class="px-6 py-5 text-on-surface-variant font-body-md">45 Personnel</td>
 <td class="px-6 py-5 text-center">
 <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider">ACTIVE</span>
 </td>
@@ -248,9 +271,16 @@
 </tr>
 <!-- Row 5 -->
 <tr class="hover:bg-surface transition-colors">
-<td class="px-6 py-5"><div class="flex items-center"><span class="font-bold text-on-surface">Other</span></div></td>
-<td class="px-6 py-5 text-on-surface-variant font-body-md">20 Open</td>
-<td class="px-6 py-5 text-on-surface-variant font-body-md">1 Personnel</td>
+<td class="px-6 py-5">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center mr-3">
+<span class="material-symbols-outlined text-emerald-700 text-sm" data-icon="category">category</span>
+</div>
+<span class="font-bold text-on-surface">Other</span>
+</div>
+</td>
+<td class="px-6 py-5 text-on-surface-variant font-body-md">12 Open</td>
+<td class="px-6 py-5 text-on-surface-variant font-body-md">5 Personnel</td>
 <td class="px-6 py-5 text-center">
 <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider">ACTIVE</span>
 </td>
@@ -263,41 +293,52 @@
 </div>
 <!-- Footer -->
 <footer class="mt-16 flex flex-col md:flex-row justify-between items-center text-on-surface-variant text-xs font-medium uppercase tracking-widest opacity-60">
-<p>© 2024 CIVICREPORT POKHARA. ALL RIGHTS RESERVED.</p>
+<p>© 2026 Pokhara Ward 12. ALL RIGHTS RESERVED.</p>
 <div class="flex space-x-6 mt-4 md:mt-0">
-<a class="hover:text-primary transition-colors" href="#">PRIVACY POLICY</a>
-<a class="hover:text-primary transition-colors" href="#">TERMS OF SERVICE</a>
-<a class="hover:text-primary transition-colors" href="#">CONTACT US</a>
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Contact Support</a>
 </div>
 </footer>
 </div>
 </main>
-<!-- Modal Overlay -->
-<div class="fixed inset-0 bg-emerald-950/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-<!-- Modal Container -->
-<div class="bg-white w-full max-w-[380px] rounded-[12px] p-6 shadow-2xl relative">
-<!-- Close Button -->
-<button class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
-<span class="material-symbols-outlined">close</span>
+<!-- Modal (Open State) -->
+<div class="fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+<div class="bg-white rounded-xl w-full max-w-[380px] shadow-2xl overflow-hidden">
+<div class="p-6">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-h3 text-xl text-on-surface">Add Department</h3>
+<button class="text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined" data-icon="close">close</span>
 </button>
-<!-- Header -->
-<div class="mb-6">
-<h2 class="text-[20px] font-bold text-[#064E3B] mb-1">Add Department</h2>
-<p class="text-sm text-gray-500">Add a new department to the system</p>
 </div>
-<!-- Form Field -->
-<div class="mb-8">
-<label class="block text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-2">DEPARTMENT NAME</label>
-<input class="w-full px-4 py-3 border border-gray-200 rounded-[8px] focus:outline-none focus:ring-2 focus:ring-[#6EE7B7] focus:border-transparent transition-all placeholder:text-gray-300" placeholder="Enter department name" type="text"/>
+<form class="space-y-6">
+<div>
+<label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">DEPARTMENT NAME</label>
+<input class="w-full border-gray-300 rounded-lg focus:ring-primary focus:border-primary px-4 py-3 font-body-md placeholder:text-gray-400" placeholder="e.g. Waste Management" type="text"/>
 </div>
-<!-- Action Buttons -->
-<div class="flex gap-3">
-<button class="flex-1 py-2.5 px-4 border border-[#065F46] text-[#065F46] font-semibold rounded-lg hover:bg-emerald-50 transition-colors text-sm">
-                Cancel
-            </button>
-<button class="flex-1 py-2.5 px-4 bg-[#065F46] text-white font-semibold rounded-lg hover:bg-[#064E3B] transition-colors text-sm">
-                Add Department
-            </button>
+<div>
+<label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">HEAD OF DEPARTMENT</label>
+<select class="w-full border-gray-300 rounded-lg focus:ring-primary focus:border-primary px-4 py-3 font-body-md bg-white">
+<option>Assign Officer...</option>
+<option>Arun Thapa</option>
+<option>Sita Gurung</option>
+</select>
+</div>
+<div class="flex space-x-3 pt-4">
+<button class="flex-1 px-4 py-3 border border-gray-200 text-on-surface-variant font-button rounded-lg hover:bg-gray-50 transition-colors" type="button">
+                            Cancel
+                        </button>
+<button class="flex-1 px-4 py-3 bg-primary text-white font-button rounded-lg hover:bg-primary-container transition-all shadow-md active:scale-95" type="submit">
+                            Add Department
+                        </button>
+</div>
+</form>
+</div>
+<div class="bg-surface-bright px-6 py-4 border-t border-gray-100 flex items-center">
+<span class="material-symbols-outlined text-primary mr-2 text-sm" data-icon="info" style="font-variation-settings: 'FILL' 1;">info</span>
+<p class="text-[11px] text-on-surface-variant font-medium uppercase tracking-tight">New departments are active by default.</p>
 </div>
 </div>
-</div></body></html>
+</div>
+</body></html>

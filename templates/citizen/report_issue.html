@@ -1,0 +1,529 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Report New Issue - CivicReport</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "secondary-container": "#6cf8bb", "on-background": "#181c1a",
+            "primary": "#004532", "surface-container": "#ecefeb",
+            "on-surface-variant": "#3f4944", "surface-container-lowest": "#ffffff",
+            "surface": "#f7faf6", "error-container": "#ffdad6",
+            "on-primary": "#ffffff", "primary-container": "#065f46",
+            "secondary-fixed-dim": "#4edea3", "secondary": "#006c49",
+            "outline-variant": "#bec9c2", "on-secondary": "#ffffff",
+            "outline": "#6f7973", "surface-container-low": "#f1f4f0",
+            "on-surface": "#181c1a", "error": "#ba1a1a",
+            "surface-variant": "#e0e3df", "on-primary-container": "#8bd6b7",
+            "background": "#f7faf6",
+          },
+          borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+          spacing: { "stack-lg": "32px", "gutter": "24px", "stack-sm": "8px", "page-padding-x": "32px", "stack-md": "16px", "section-gap": "64px" },
+          fontFamily: { "label": ["Public Sans"], "headline": ["Public Sans"], "display": ["Public Sans"], "body-sm": ["Public Sans"], "body-lg": ["Public Sans"], "title": ["Public Sans"] },
+          fontSize: {
+            "label": ["12px", { lineHeight: "1", letterSpacing: "0.05em", fontWeight: "500" }],
+            "headline": ["24px", { lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "500" }],
+            "display": ["32px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "500" }],
+            "body-sm": ["14px", { lineHeight: "1.5", fontWeight: "400" }],
+            "body-lg": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+            "title": ["18px", { lineHeight: "1.4", fontWeight: "500" }],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Public Sans', sans-serif; background-color: #F0FDF4; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: #10B981 !important; box-shadow: 0 0 0 1px #10B981; }
+
+    /* Map container */
+    #location-map {
+      height: 280px;
+      width: 100%;
+      border-radius: 0.75rem;
+      border: 2px solid #4edea3;
+      z-index: 0;
+    }
+
+    /* Custom pin marker */
+    .custom-pin {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Leaflet popup tweak */
+    .leaflet-popup-content-wrapper {
+      border-radius: 8px;
+      font-family: 'Public Sans', sans-serif;
+      font-size: 12px;
+    }
+
+    /* Location address display */
+    #location-display {
+      transition: all 0.3s ease;
+    }
+
+    /* Pulse animation for pin */
+    @keyframes pin-drop {
+      0% { transform: translateY(-20px) scale(0.8); opacity: 0; }
+      60% { transform: translateY(4px) scale(1.1); }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    .pin-dropped {
+      animation: pin-drop 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* Map instruction overlay */
+    #map-instruction {
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+  </style>
+</head>
+<body class="flex min-h-screen text-on-background">
+
+<!-- Sidebar -->
+<aside class="h-screen w-[220px] fixed left-0 bg-primary-container flex flex-col justify-between py-8 px-6 text-white z-50">
+  <div>
+    <div class="mb-10">
+      <h1 class="text-lg font-bold tracking-tighter uppercase">CIVICREPORT</h1>
+    </div>
+    <nav class="space-y-4">
+      <a href="{% url 'citizen_dashboard' %}"
+         class="flex items-center gap-3 py-2 transition-colors
+           {% if request.resolver_match.url_name == 'citizen_dashboard' %}text-white font-bold border-l-2 border-secondary-fixed-dim -ml-6 pl-[22px]
+           {% else %}text-emerald-400/60 hover:text-white{% endif %}">
+        <span class="material-symbols-outlined">grid_view</span>
+        <span class="font-label text-label">Dashboard</span>
+      </a>
+      <a href="{% url 'my_issues' %}"
+         class="flex items-center gap-3 py-2 transition-colors
+           {% if request.resolver_match.url_name == 'my_issues' %}text-white font-bold border-l-2 border-secondary-fixed-dim -ml-6 pl-[22px]
+           {% else %}text-emerald-400/60 hover:text-white{% endif %}">
+        <span class="material-symbols-outlined">list_alt</span>
+        <span class="font-label text-label">My Issues</span>
+      </a>
+      <a href="{% url 'report_issue' %}"
+         class="flex items-center gap-3 py-2 transition-colors
+           {% if request.resolver_match.url_name == 'report_issue' %}text-white font-bold border-l-2 border-secondary-fixed-dim -ml-6 pl-[22px]
+           {% else %}text-emerald-400/60 hover:text-white{% endif %}">
+        <span class="material-symbols-outlined">add_alert</span>
+        <span class="font-label text-label">Report Issue</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- User + logout -->
+  <div class="border-t border-emerald-800 pt-6">
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full overflow-hidden border border-emerald-700 bg-emerald-900 flex items-center justify-center">
+          {% if request.user.profile_picture %}
+            <img src="{{ request.user.profile_picture.url }}" alt="{{ request.user.get_full_name }}" class="w-full h-full object-cover"/>
+          {% else %}
+            <span class="text-xs font-bold text-emerald-200">
+              {{ request.user.get_full_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
+            </span>
+          {% endif %}
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xs font-semibold">{{ request.user.get_full_name|default:request.user.username }}</span>
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="text-[10px] text-emerald-400/60 hover:text-white flex items-center gap-1 transition-colors">
+              <span class="material-symbols-outlined text-[12px]">logout</span>
+              Logout
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Main content -->
+<main class="ml-[220px] flex-1 flex flex-col min-h-screen">
+
+  <!-- Top bar -->
+  <header class="w-full h-16 sticky top-0 z-40 bg-white/80 backdrop-blur-md flex items-center justify-between px-8">
+    <span class="font-headline text-headline text-primary-container">Report New Issue</span>
+    <div class="flex items-center gap-4 text-primary-container">
+      <span class="material-symbols-outlined cursor-pointer">notifications</span>
+      <span class="material-symbols-outlined cursor-pointer">help_outline</span>
+    </div>
+  </header>
+
+  <section class="flex-1 px-page-padding-x py-stack-lg max-w-5xl mx-auto w-full">
+    <div class="mb-stack-lg">
+      <h2 class="font-display text-display text-primary-container mb-2">Create Citizen Report</h2>
+      <p class="font-body-lg text-body-lg text-outline">Submit an infrastructure or service issue directly to the administrative team.</p>
+    </div>
+
+    <!-- Form card -->
+    <div class="bg-white border border-emerald-100 rounded-xl p-8 max-w-[640px] mx-auto">
+
+      <!-- Non-field errors -->
+      {% if form.non_field_errors %}
+        <div class="mb-6 bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-body-sm">
+          {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Django messages -->
+      {% if messages %}
+        {% for message in messages %}
+          <div class="mb-4 rounded-lg px-4 py-3 text-body-sm
+            {% if message.tags == 'error' %}bg-red-50 border border-red-200 text-red-700
+            {% elif message.tags == 'success' %}bg-green-50 border border-green-200 text-green-700
+            {% else %}bg-blue-50 border border-blue-200 text-blue-700{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post" enctype="multipart/form-data" class="space-y-6" novalidate>
+        {% csrf_token %}
+
+        <!-- Issue Title -->
+        <div class="space-y-2">
+          <label class="block font-label text-label text-outline uppercase" for="{{ form.title.id_for_label }}">
+            Issue Title
+          </label>
+          <input
+            id="{{ form.title.id_for_label }}"
+            name="{{ form.title.html_name }}"
+            type="text"
+            value="{{ form.title.value|default_if_none:'' }}"
+            placeholder="Briefly describe the problem"
+            class="w-full bg-white border rounded-lg px-4 py-3 text-on-background font-body-lg focus:border-secondary transition-all
+              {% if form.title.errors %}border-error{% else %}border-secondary-fixed-dim{% endif %}"
+          />
+          {% if form.title.errors %}
+            <p class="text-error font-body-sm text-xs mt-1">{{ form.title.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Category -->
+        <div class="space-y-2">
+          <label class="block font-label text-label text-outline uppercase" for="{{ form.category.id_for_label }}">
+            Issue Category
+          </label>
+          <select
+            id="{{ form.category.id_for_label }}"
+            name="{{ form.category.html_name }}"
+            class="w-full bg-white border rounded-lg px-4 py-3 text-on-background font-body-lg appearance-none cursor-pointer
+              {% if form.category.errors %}border-error{% else %}border-secondary-fixed-dim{% endif %}"
+          >
+            {% for value, label in form.category.field.choices %}
+              <option value="{{ value }}" {% if form.category.value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {% if form.category.errors %}
+            <p class="text-error font-body-sm text-xs mt-1">{{ form.category.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- ───── LOCATION MAP PIN ───── -->
+        <div class="space-y-2">
+          <label class="block font-label text-label text-outline uppercase">
+            Pin Location
+          </label>
+
+          <!-- Map wrapper with instruction overlay -->
+          <div class="relative rounded-xl overflow-hidden shadow-sm">
+            <div id="location-map"></div>
+
+            <!-- "Tap to pin" instruction shown before first pin -->
+            <div id="map-instruction"
+                 class="absolute inset-0 flex flex-col items-center justify-center bg-emerald-900/30 backdrop-blur-[1px] pointer-events-none z-10 rounded-xl">
+              <div class="bg-white/90 rounded-xl px-5 py-3 flex items-center gap-2 shadow-md">
+                <span class="material-symbols-outlined text-secondary text-xl">touch_app</span>
+                <span class="text-sm font-medium text-primary-container">Click map to drop a pin</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Locate Me button -->
+          <button type="button" id="locate-me-btn"
+                  class="flex items-center gap-2 px-4 py-2 rounded-lg border border-secondary text-secondary text-sm font-medium hover:bg-emerald-50 transition-colors">
+            <span class="material-symbols-outlined text-base">my_location</span>
+            Use my current location
+          </button>
+
+          <!-- Address display after pin placed -->
+          <div id="location-display" class="hidden items-center gap-3 bg-emerald-50 border border-secondary-fixed-dim rounded-lg px-4 py-3">
+            <span class="material-symbols-outlined text-secondary shrink-0">location_on</span>
+            <div class="flex-1 min-w-0">
+              <p id="location-address" class="text-sm font-medium text-on-background truncate">—</p>
+              <p id="location-coords" class="text-xs text-outline mt-0.5">—</p>
+            </div>
+            <button type="button" id="clear-pin-btn"
+                    class="shrink-0 text-outline hover:text-error transition-colors">
+              <span class="material-symbols-outlined text-base">close</span>
+            </button>
+          </div>
+
+          <!-- Hidden inputs submitted with form -->
+          <input type="hidden" id="location-lat"  name="latitude"  value="{{ form.latitude.value|default_if_none:'' }}"/>
+          <input type="hidden" id="location-lng"  name="longitude" value="{{ form.longitude.value|default_if_none:'' }}"/>
+          <input type="hidden" id="location-text" name="{{ form.location.html_name }}" value="{{ form.location.value|default_if_none:'' }}"/>
+
+          {% if form.location.errors %}
+            <p class="text-error font-body-sm text-xs mt-1">{{ form.location.errors.0 }}</p>
+          {% endif %}
+        </div>
+        <!-- ───────────────────────────── -->
+
+        <!-- Description -->
+        <div class="space-y-2">
+          <label class="block font-label text-label text-outline uppercase" for="{{ form.description.id_for_label }}">
+            Detailed Description
+          </label>
+          <textarea
+            id="{{ form.description.id_for_label }}"
+            name="{{ form.description.html_name }}"
+            rows="4"
+            placeholder="Provide as much detail as possible to help our crews locate and fix the issue."
+            class="w-full bg-white border rounded-lg px-4 py-3 text-on-background font-body-lg resize-none
+              {% if form.description.errors %}border-error{% else %}border-secondary-fixed-dim{% endif %}"
+          >{{ form.description.value|default_if_none:'' }}</textarea>
+          {% if form.description.errors %}
+            <p class="text-error font-body-sm text-xs mt-1">{{ form.description.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Photo upload -->
+        <div class="space-y-4">
+          <label class="block font-label text-label text-outline uppercase">Evidence Photos</label>
+          <label for="id_photo"
+       class="border-2 border-dashed border-secondary-fixed-dim rounded-xl p-8 text-center bg-surface cursor-pointer hover:bg-emerald-50 transition-colors block">
+    <span class="material-symbols-outlined text-4xl text-secondary mb-2 block">add_a_photo</span>
+    <p class="font-body-sm text-on-surface-variant">Click to upload or drag and drop images of the issue</p>
+    <p class="text-[10px] text-outline mt-1 uppercase">MAX SIZE 5MB (JPG, PNG)</p>
+    <input
+        id="id_photo"
+        name="photo"
+        type="file"
+        accept="image/jpeg,image/png"
+        class="hidden"
+        onchange="previewImages(event)"
+    />
+</label>
+{% if form.photo.errors %}
+    <p class="text-error font-body-sm text-xs">{{ form.photo.errors.0 }}</p>
+{% endif %}
+
+          <!-- Preview thumbnails -->
+          <div id="image-preview" class="flex gap-4 flex-wrap"></div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end gap-4 pt-6 border-t border-emerald-50">
+          <a href="{% url 'citizen_dashboard' %}"
+             class="px-6 py-2.5 rounded-lg border border-secondary text-secondary font-medium hover:bg-emerald-50 transition-colors">
+            Cancel
+          </a>
+          <button type="submit"
+                  class="px-6 py-2.5 rounded-lg bg-primary-container text-white font-medium hover:bg-primary transition-colors shadow-sm">
+            Submit Report
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+  <footer class="w-full py-8 text-center text-outline font-body-sm text-xs mt-auto">
+    © 2026 Ward 12 • Digital Services Department • Privacy Policy • Accessibility
+  </footer>
+</main>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  /* ─── Image preview ─────────────────────────────────────────── */
+  function previewImages(event) {
+    const container = document.getElementById('image-preview');
+    container.innerHTML = '';
+    const files = Array.from(event.target.files).slice(0, 3);
+    files.forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const div = document.createElement('div');
+        div.className = 'w-20 h-20 rounded-lg border border-emerald-100 overflow-hidden relative';
+        div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover"/>`;
+        container.appendChild(div);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /* ─── Map setup ─────────────────────────────────────────────── */
+  // Default center: Kathmandu, Nepal
+  const DEFAULT_LAT = 27.7172;
+  const DEFAULT_LNG = 85.3240;
+  const DEFAULT_ZOOM = 14;
+
+  const map = L.map('location-map', {
+    center: [DEFAULT_LAT, DEFAULT_LNG],
+    zoom: DEFAULT_ZOOM,
+    zoomControl: true,
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19,
+  }).addTo(map);
+
+  /* Custom pin icon */
+  const pinIcon = L.divIcon({
+    className: '',
+    html: `
+      <div style="
+        width:36px; height:44px;
+        display:flex; flex-direction:column; align-items:center;
+      ">
+        <svg viewBox="0 0 36 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:36px;height:44px;">
+          <path d="M18 0C8.059 0 0 8.059 0 18c0 13.5 18 26 18 26S36 31.5 36 18C36 8.059 27.941 0 18 0z"
+                fill="#065f46" stroke="#4edea3" stroke-width="2"/>
+          <circle cx="18" cy="18" r="7" fill="#4edea3"/>
+        </svg>
+      </div>`,
+    iconSize: [36, 44],
+    iconAnchor: [18, 44],
+    popupAnchor: [0, -44],
+  });
+
+  let marker = null;
+  const instruction = document.getElementById('map-instruction');
+  const locationDisplay = document.getElementById('location-display');
+  const locationAddress = document.getElementById('location-address');
+  const locationCoords  = document.getElementById('location-coords');
+  const latInput  = document.getElementById('location-lat');
+  const lngInput  = document.getElementById('location-lng');
+  const textInput = document.getElementById('location-text');
+
+  /* Restore existing pin if form had a value (e.g. on validation error) */
+  const existingLat = parseFloat(latInput.value);
+  const existingLng = parseFloat(lngInput.value);
+  if (existingLat && existingLng) {
+    placePin(existingLat, existingLng, textInput.value || `${existingLat.toFixed(5)}, ${existingLng.toFixed(5)}`);
+  }
+
+  /* Click map → drop pin */
+  map.on('click', function(e) {
+    placePin(e.latlng.lat, e.latlng.lng);
+  });
+
+  function placePin(lat, lng, addressOverride) {
+    if (marker) map.removeLayer(marker);
+
+    marker = L.marker([lat, lng], { icon: pinIcon, draggable: true }).addTo(map);
+
+    // Animate icon element
+    const iconEl = marker.getElement();
+    if (iconEl) iconEl.classList.add('pin-dropped');
+
+    // Hide instruction overlay
+    instruction.style.opacity = '0';
+    setTimeout(() => { instruction.style.display = 'none'; }, 400);
+
+    // Update hidden inputs
+    latInput.value  = lat.toFixed(6);
+    lngInput.value  = lng.toFixed(6);
+
+    // Show display bar
+    locationDisplay.classList.remove('hidden');
+    locationDisplay.classList.add('flex');
+    locationCoords.textContent = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+    if (addressOverride) {
+      locationAddress.textContent = addressOverride;
+      textInput.value = addressOverride;
+    } else {
+      locationAddress.textContent = 'Fetching address…';
+      reverseGeocode(lat, lng);
+    }
+
+    // Allow dragging to fine-tune
+    marker.on('dragend', function(ev) {
+      const pos = ev.target.getLatLng();
+      latInput.value = pos.lat.toFixed(6);
+      lngInput.value = pos.lng.toFixed(6);
+      locationCoords.textContent = `${pos.lat.toFixed(5)}, ${pos.lng.toFixed(5)}`;
+      locationAddress.textContent = 'Fetching address…';
+      reverseGeocode(pos.lat, pos.lng);
+    });
+  }
+
+  /* Nominatim reverse geocoding */
+  function reverseGeocode(lat, lng) {
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+      .then(r => r.json())
+      .then(data => {
+        const addr = data.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        locationAddress.textContent = addr;
+        textInput.value = addr;
+      })
+      .catch(() => {
+        const fallback = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        locationAddress.textContent = fallback;
+        textInput.value = fallback;
+      });
+  }
+
+  /* "Use my location" button */
+  document.getElementById('locate-me-btn').addEventListener('click', function() {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser.');
+      return;
+    }
+    this.disabled = true;
+    this.innerHTML = `<span class="material-symbols-outlined text-base animate-spin">progress_activity</span> Locating…`;
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const { latitude, longitude } = pos.coords;
+        map.setView([latitude, longitude], 17, { animate: true });
+        placePin(latitude, longitude);
+        this.disabled = false;
+        this.innerHTML = `<span class="material-symbols-outlined text-base">my_location</span> Use my current location`;
+      },
+      () => {
+        alert('Unable to retrieve your location. Please pin it manually.');
+        this.disabled = false;
+        this.innerHTML = `<span class="material-symbols-outlined text-base">my_location</span> Use my current location`;
+      }
+    );
+  });
+
+  /* Clear pin button */
+  document.getElementById('clear-pin-btn').addEventListener('click', function() {
+    if (marker) { map.removeLayer(marker); marker = null; }
+    latInput.value  = '';
+    lngInput.value  = '';
+    textInput.value = '';
+    locationDisplay.classList.add('hidden');
+    locationDisplay.classList.remove('flex');
+    instruction.style.display = 'flex';
+    instruction.style.opacity = '1';
+  });
+</script>
+</body>
+</html>

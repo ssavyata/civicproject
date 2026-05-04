@@ -1,5 +1,7 @@
 from django import forms
 from .models import Issue, Feedback
+from django.contrib.auth.forms import PasswordChangeForm
+from accounts.models import User
 
 class IssueReportForm(forms.ModelForm):
     class Meta:
@@ -26,3 +28,24 @@ class FeedbackForm(forms.ModelForm):
         widgets = {
             'comment': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Share your experience and any suggestions for improvement'}),
         }
+ 
+ 
+class ProfileUpdateForm(forms.ModelForm):
+    """Updates first_name, last_name, and an optional phone field."""
+ 
+    # If your User model has a phone field, include it.
+    # If not, remove 'phone' from fields and the phone field below.
+    phone = forms.CharField(
+        max_length=20,
+        required=False,
+        widget=forms.TextInput(attrs={"type": "tel"}),
+    )
+ 
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "phone"]
+ 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["first_name"].required = True
+        self.fields["last_name"].required = True

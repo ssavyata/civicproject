@@ -1,0 +1,191 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}All Issues — CivicReport Admin{% endblock %}
+{% block page_title %}All Issues{% endblock %}
+
+{% block content %}
+<div class="max-w-[1280px] mx-auto space-y-6">
+
+    <!-- Filter Bar -->
+    <form method="GET" class="bg-white p-6 rounded-xl border border-emerald-100 shadow-sm">
+        <div class="flex flex-wrap gap-6 items-end">
+            <div class="flex-1 min-w-[150px]">
+                <label class="block text-xs font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Status</label>
+                <select name="status" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary">
+                    <option value="">All</option>
+                    <option value="submitted" {% if status_filter == 'submitted' %}selected{% endif %}>Pending</option>
+                    <option value="assigned" {% if status_filter == 'assigned' %}selected{% endif %}>Assigned</option>
+                    <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>In Progress</option>
+                    <option value="resolved" {% if status_filter == 'resolved' %}selected{% endif %}>Resolved</option>
+                    <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+            </div>
+            <div class="flex-1 min-w-[150px]">
+                <label class="block text-xs font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Category</label>
+                <select name="category" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary">
+                    <option value="">All</option>
+                    <option value="pothole" {% if category_filter == 'pothole' %}selected{% endif %}>Pothole</option>
+                    <option value="streetlight" {% if category_filter == 'streetlight' %}selected{% endif %}>Street Lighting</option>
+                    <option value="water" {% if category_filter == 'water' %}selected{% endif %}>Water Supply</option>
+                    <option value="waste" {% if category_filter == 'waste' %}selected{% endif %}>Waste</option>
+                    <option value="drainage" {% if category_filter == 'drainage' %}selected{% endif %}>Drainage</option>
+                    <option value="other" {% if category_filter == 'other' %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+            <button type="submit" class="px-6 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors">
+                Filter
+            </button>
+            <a href="{% url 'admin_all_issues' %}" class="px-6 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors">
+                Clear
+            </a>
+        </div>
+    </form>
+
+    <!-- Issues Table -->
+    <div class="bg-white rounded-xl border border-emerald-100 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-surface-container-low border-b border-emerald-100">
+                        <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Issue ID</th>
+                        <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Title</th>
+                        <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Category</th>
+                        <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Assigned To</th>
+                        <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for issue in issues %}
+                    <tr class="hover:bg-emerald-50/30 transition-colors">
+                        <td class="px-6 py-5 font-bold text-primary text-sm">
+                            CR-{{ issue.submitted_at|date:"Y" }}-{{ issue.id|stringformat:"04d" }}
+                        </td>
+                        <td class="px-6 py-5">
+                            <p class="text-sm font-semibold text-on-surface">{{ issue.title }}</p>
+                            <p class="text-xs text-slate-400">{{ issue.citizen.get_full_name|default:issue.citizen.username }}</p>
+                        </td>
+                        <td class="px-6 py-5 text-sm">{{ issue.get_category_display }}</td>
+                        <td class="px-6 py-5 text-sm text-slate-500">{{ issue.submitted_at|date:"M d, Y" }}</td>
+                        <td class="px-6 py-5">
+                            {% if issue.status == 'submitted' %}
+                                <span class="px-3 py-1 bg-red-50 text-error text-[10px] font-black rounded-full uppercase border border-red-100">Pending</span>
+                            {% elif issue.status == 'assigned' %}
+                                <span class="px-3 py-1 bg-blue-50 text-blue-700 text-[10px] font-black rounded-full uppercase border border-blue-100">Assigned</span>
+                            {% elif issue.status == 'in_progress' %}
+                                <span class="px-3 py-1 bg-amber-50 text-amber-600 text-[10px] font-black rounded-full uppercase border border-amber-100">In Progress</span>
+                            {% elif issue.status == 'resolved' %}
+                                <span class="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black rounded-full uppercase border border-green-100">Resolved</span>
+                            {% elif issue.status == 'rejected' %}
+                                <span class="px-3 py-1 bg-gray-100 text-gray-600 text-[10px] font-black rounded-full uppercase">Rejected</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-5 text-sm">
+                            {% if issue.assigned_officer %}
+                                {{ issue.assigned_officer.get_full_name|default:issue.assigned_officer.username }}
+                            {% else %}
+                                <span class="text-slate-400 italic">Not Assigned</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-5">
+                            {% if issue.status == 'submitted' %}
+                                <button onclick="openAssignModal({{ issue.id }}, '{{ issue.title|escapejs }}')"
+                                        class="text-primary font-bold text-xs hover:underline flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">person_add</span>Assign
+                                </button>
+                            {% else %}
+                                <a href="#" class="text-on-surface-variant font-bold text-xs hover:underline flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">visibility</span>View
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="px-6 py-12 text-center text-slate-400">
+                            No issues found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="px-6 py-4 bg-surface-container-low border-t border-emerald-100 flex items-center justify-between">
+            <p class="text-xs text-slate-500 font-medium">Total: {{ issues|length }} issues</p>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Issue Modal -->
+<div id="assign-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-8 modal-overlay">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+        <div class="p-6 bg-emerald-950 text-white flex justify-between items-center">
+            <div>
+                <h3 class="text-lg font-bold">Assign Issue</h3>
+                <p id="modal-issue-id" class="text-[10px] text-emerald-300 font-bold tracking-widest uppercase"></p>
+            </div>
+            <button onclick="closeAssignModal()" class="text-emerald-300 hover:text-white transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <form method="POST" action="" id="assign-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="assign">
+            <div class="p-8 space-y-6">
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider">Select Officer</label>
+                    <select name="officer" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary">
+                        <option value="">-- Choose an available officer --</option>
+                        {% for officer in officers %}
+                            <option value="{{ officer.id }}">
+                                {{ officer.get_full_name|default:officer.username }}
+                                {% if officer.department %}({{ officer.department.name }}){% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider">Remarks (optional)</label>
+                    <textarea name="remarks"
+                              class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm h-24 focus:ring-2 focus:ring-primary"
+                              placeholder="Add specific instructions for the officer..."></textarea>
+                </div>
+                <div class="flex gap-4 pt-2">
+                    <button type="button" onclick="closeAssignModal()"
+                            class="flex-1 px-8 py-3 border border-slate-200 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-50 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="flex-1 px-8 py-3 bg-primary text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-colors shadow-lg">
+                        Assign Issue
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function openAssignModal(issueId, issueTitle) {
+        document.getElementById('modal-issue-id').textContent = issueTitle;
+        document.getElementById('assign-form').action = `/issues/admin-panel/assign/${issueId}/`;
+        const modal = document.getElementById('assign-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeAssignModal() {
+        const modal = document.getElementById('assign-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    // Close modal when clicking backdrop
+    document.getElementById('assign-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeAssignModal();
+    });
+</script>
+{% endblock %}

@@ -24,7 +24,9 @@ urlpatterns = [
     path('', issue_views.landing_page, name='landing_page'),
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
+    path('accounts/', include('allauth.urls')),
     path('accounts/', include('django.contrib.auth.urls')), # For built-in auth views
     path('issues/', include('issues.urls')),
+    path('accounts/', include('issues.urls')),  # Include issue-related URLs for authenticated users
     path('notifications/', include('notifications.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

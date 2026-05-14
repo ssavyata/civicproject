@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 
 from accounts.models import User
-from .models import Issue, Feedback, Department
+from .models import Issue, Feedback, Department, IssuePhoto
 from .decorators import citizen_required, officer_required
 from .forms import IssueReportForm, FeedbackForm, IssueStatusForm, ProfileUpdateForm
 from django.contrib import messages
@@ -79,17 +79,31 @@ def profile(request):
 @login_required
 def report_issue(request):
     if request.method == 'POST':
+        # Pass request.FILES to the form so it can validate file presence/types
         form = IssueReportForm(request.POST, request.FILES)
+        
+        # Ensure this key matches your form field name (e.g., 'images' or 'photos')
+        files = request.FILES.getlist('photos') 
+
         if form.is_valid():
             issue = form.save(commit=False)
             issue.citizen = request.user
-            issue.ward_number = request.user.ward_number
+            # Automatically set the ward based on the logged-in user's profile
+            issue.ward_number = request.user.ward_number 
             issue.save()
-            assign_issue(issue)
+
+            # ✅ Save multiple photos using the 'files' list retrieved above
+            for photo in files:
+                IssuePhoto.objects.create(issue=issue, image=photo)
+
+            # Custom logic to notify or route the issue to the correct department
+            assign_issue(issue) 
+            
             messages.success(request, 'Issue reported successfully! We will look into it.')
             return redirect('my_issues')
     else:
         form = IssueReportForm()
+    
     return render(request, 'citizen/report_issue.html', {'form': form})
 
 @citizen_required
@@ -112,6 +126,7 @@ def my_issues(request):
         "page_obj": page_obj,
         "category_choices": Issue.CATEGORY_CHOICES,
     })
+
 @citizen_required
 def issue_detail(request, issue_id):
     issue = get_object_or_404(Issue, id=issue_id, citizen=request.user)

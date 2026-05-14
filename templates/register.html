@@ -1,306 +1,135 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html class="light" lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Register - CivicReport</title>
 
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+{% block title %}Register - CivicReport{% endblock %}
 
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "primary": "#004532",
-                        "primary-container": "#065f46",
-                        "secondary": "#006c49",
-                        "surface-container-lowest": "#ffffff",
-                        "on-surface": "#181c1a",
-                        "on-surface-variant": "#3f4944",
-                        "on-primary": "#ffffff",
-                        "outline": "#6f7973",
-                        "background": "#f7faf6",
-                        "surface": "#f7faf6",
-                    },
-                    "fontFamily": {
-                        "body-sm": ["Public Sans"],
-                        "body-lg": ["Public Sans"],
-                        "headline": ["Public Sans"],
-                        "label": ["Public Sans"],
-                        "title": ["Public Sans"],
-                        "display": ["Public Sans"],
-                    },
-                    "fontSize": {
-                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
-                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                        "headline": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "500"}],
-                        "label": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
-                        "title": ["18px", {"lineHeight": "1.4", "fontWeight": "500"}],
-                    }
-                },
-            },
-        }
-    </script>
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register.css' %}"/>
+{% endblock %}
 
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        body { font-family: 'Public Sans', sans-serif; }
-    </style>
-</head>
+{% block content %}
+<div class="reg-wrap">
 
-<body class="bg-surface text-on-surface min-h-screen flex flex-col">
+  <div class="card-xl">
 
-    <!-- Navbar -->
-    <header class="bg-[#F0FDF4] border-b border-[#D1FAE5]">
-        <div class="flex justify-between items-center w-full px-8 h-16 max-w-7xl mx-auto">
-            <a href="{% url 'landing_page' %}"
-               class="text-lg font-bold tracking-tight text-[#065F46]">
-                Pokhara Ward 12
-            </a>
-            <div class="hidden md:flex items-center gap-6">
-                <span class="text-[#065F46] font-semibold border-b-2 border-[#065F46] text-sm cursor-pointer">
-                    Register
-                </span>
-            </div>
+    <!-- Header -->
+    <div class="reg-header">
+      <span class="material-symbols-outlined icon">account_balance</span>
+      <h1>Create Account</h1>
+    </div>
+
+    <!-- Flash messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+          {{ message }}
         </div>
-    </header>
+      {% endfor %}
+    {% endif %}
 
-    <!-- Main Content -->
-    <main class="flex-grow flex items-center justify-center px-8 py-16">
-        <div class="w-full max-w-[480px]">
+    <!-- Form errors -->
+    {% if form.errors %}
+      <div class="alert alert-error">
+        {% for field, errors in form.errors.items %}
+          {% for error in errors %}<p>• {{ error }}</p>{% endfor %}
+        {% endfor %}
+      </div>
+    {% endif %}
 
-            <!-- Registration Card -->
-            <div class="bg-white border border-[#D1FAE5] rounded-xl p-8">
+    <form method="POST" action="{% url 'register' %}">
+      {% csrf_token %}
 
-                <!-- Card Header -->
-                <div class="mb-8 text-center">
-                    <div class="flex justify-center mb-4">
-                        <span class="material-symbols-outlined text-[#065F46] text-[48px]"
-                              style="font-variation-settings: 'FILL' 1;">account_balance</span>
-                    </div>
-                    <h1 class="text-2xl font-bold text-primary mb-2">Create Account</h1>
-                </div>
+      <!-- Username -->
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input class="form-input is-mint" name="username" type="text"
+          placeholder="Choose a username"
+          value="{{ form.username.value|default:'' }}" required/>
+      </div>
 
-                <!-- Flash Messages -->
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="mb-4 p-4 rounded-lg text-sm font-medium
-                            {% if message.tags == 'error' %} bg-red-100 text-red-800
-                            {% else %} bg-green-100 text-green-800 {% endif %}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
+      <!-- Full Name -->
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input class="form-input is-mint" name="first_name" type="text"
+          placeholder="Enter your full name"
+          value="{{ form.first_name.value|default:'' }}"/>
+      </div>
 
-                <!-- Form Errors -->
-                {% if form.errors %}
-                    <div class="mb-4 p-4 rounded-lg bg-red-100 text-red-800 text-sm">
-                        {% for field, errors in form.errors.items %}
-                            {% for error in errors %}
-                                <p>• {{ error }}</p>
-                            {% endfor %}
-                        {% endfor %}
-                    </div>
-                {% endif %}
+      <!-- Email -->
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input is-mint" name="email" type="email"
+          placeholder="email@example.com"
+          value="{{ form.email.value|default:'' }}"/>
+      </div>
 
-                <form method="POST" action="{% url 'register' %}">
-                    {% csrf_token %}
+      <!-- Phone -->
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input class="form-input is-mint" name="phone_number" type="tel"
+          placeholder="+977-98XXXXXXXX"
+          value="{{ form.phone_number.value|default:'' }}"/>
+      </div>
 
-                    <!-- Username -->
-                    <div class="flex flex-col gap-2 mb-4">
-                        <label class="text-xs text-on-surface-variant uppercase tracking-wider font-medium">
-                            Username
-                        </label>
-                        <input
-                            class="w-full h-12 px-4 rounded-lg border border-[#6EE7B7] bg-white text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                            name="username"
-                            placeholder="Choose a username"
-                            type="text"
-                            value="{{ form.username.value|default:'' }}"
-                            required
-                        />
-                    </div>
-
-                    <!-- Full Name -->
-                    <div class="flex flex-col gap-2 mb-4">
-                        <label class="text-xs text-on-surface-variant uppercase tracking-wider font-medium">
-                            Full Name
-                        </label>
-                        <input
-                            class="w-full h-12 px-4 rounded-lg border border-[#6EE7B7] bg-white text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                            name="first_name"
-                            placeholder="Enter your full name"
-                            type="text"
-                            value="{{ form.first_name.value|default:'' }}"
-                        />
-                    </div>
-
-                    <!-- Email -->
-                    <div class="flex flex-col gap-2 mb-4">
-                        <label class="text-xs text-on-surface-variant uppercase tracking-wider font-medium">
-                            Email Address
-                        </label>
-                        <input
-                            class="w-full h-12 px-4 rounded-lg border border-[#6EE7B7] bg-white text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                            name="email"
-                            placeholder="email@example.com"
-                            type="email"
-                            value="{{ form.email.value|default:'' }}"
-                        />
-                    </div>
-
-                    <!-- Phone Number -->
-                    <div class="flex flex-col gap-2 mb-4">
-                        <label class="text-xs text-on-surface-variant uppercase tracking-wider font-medium">
-                            Phone Number
-                        </label>
-                        <input
-                            class="w-full h-12 px-4 rounded-lg border border-[#6EE7B7] bg-white text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                            name="phone_number"
-                            placeholder="+977-98XXXXXXXX"
-                            type="tel"
-                            value="{{ form.phone_number.value|default:'' }}"
-                        />
-                    </div>
-
-                    <!-- Password -->
-                    <div class="flex flex-col gap-2 mb-4">
-                        <label class="text-xs text-on-surface-variant uppercase tracking-wider font-medium">
-                            Password
-                        </label>
-                        <div class="relative">
-                            <input
-                                class="w-full h-12 px-4 rounded-lg border border-[#6EE7B7] bg-white text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                                name="password1"
-                                id="password1"
-                                placeholder="••••••••"
-                                type="password"
-                                required
-                            />
-                            <button
-                                class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors"
-                                type="button"
-                                onclick="togglePassword('password1', 'icon1')"
-                            >
-                                <span class="material-symbols-outlined text-[20px]" id="icon1">visibility</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Confirm Password -->
-                    <div class="flex flex-col gap-2 mb-4">
-                        <label class="text-xs text-on-surface-variant uppercase tracking-wider font-medium">
-                            Confirm Password
-                        </label>
-                        <div class="relative">
-                            <input
-                                class="w-full h-12 px-4 rounded-lg border border-[#6EE7B7] bg-white text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                                name="password2"
-                                id="password2"
-                                placeholder="••••••••"
-                                type="password"
-                                required
-                            />
-                            <button
-                                class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors"
-                                type="button"
-                                onclick="togglePassword('password2', 'icon2')"
-                            >
-                                <span class="material-symbols-outlined text-[20px]" id="icon2">visibility</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Terms Checkbox -->
-                    <div class="flex items-start gap-3 mt-4">
-                        <input
-                            class="mt-1 h-4 w-4 rounded border-[#6EE7B7] text-primary focus:ring-primary"
-                            id="terms"
-                            type="checkbox"
-                            required
-                        />
-                        <label class="text-xs text-on-surface-variant leading-tight" for="terms">
-                            I agree to the Terms of Service and Privacy Policy
-                            for digital data handling.
-                        </label>
-                    </div>
-
-                    <!-- Register Button -->
-                    <button
-                        class="w-full h-12 bg-primary-container text-white font-semibold text-base rounded-lg hover:opacity-90 active:opacity-80 transition-opacity mt-6"
-                        type="submit"
-                    >
-                        Register
-                    </button>
-
-                </form>
-
-                <!-- Login Link -->
-                <div class="mt-6 pt-4 border-t border-[#D1FAE5] text-center">
-                    <p class="text-sm text-on-surface-variant">
-                        Already have an account?
-                        <a class="text-[#065F46] font-semibold hover:underline"
-                           href="{% url 'login' %}">Login</a>
-                    </p>
-                </div>
-            </div>
-
-            <!-- Pokhara Image -->
-            <div class="mt-8 relative h-48 rounded-xl overflow-hidden border border-[#D1FAE5]">
-                <img
-                    alt="Pokhara city landscape"
-                    class="w-full h-full object-cover grayscale-[0.2]"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDniFrYrTX9eHavAzdmE3Cl4LNTjMPe8ABcGR6ccUjPv1LBbNyeerYozVKtpFzeIB2wERFaQmr894Q1R6LkOX2F_4nffWlUpL9qrGuMryZAzoKl40Jcq4hlLYqtHcMr62GM7zVJrg9IlDzIePmza_qrCnQAyztsrjuWM2rZXpY5mNzOWt-KGrI-F9Re50eOLMCQDl_GWmeV0OMAOJAwVGIbedapVARRNkFx2jlgaNRQ-8A7h0y6wa-IeupXsxw2a_a_ii7y1Zqgei0"
-                />
-                <div class="absolute inset-0 bg-primary/20 flex items-end p-6">
-                    <p class="text-white text-sm font-medium drop-shadow-md">
-                        Building a sustainable, smart city through citizen participation.
-                    </p>
-                </div>
-            </div>
-
+      <!-- Password -->
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-wrap">
+          <input class="form-input is-mint" name="password1" id="password1"
+            type="password" placeholder="••••••••" required/>
+          <button type="button" class="pwd-toggle" onclick="togglePassword('password1','icon1')" aria-label="Show password">
+            <span class="material-symbols-outlined" id="icon1">visibility</span>
+          </button>
         </div>
-    </main>
+      </div>
 
-    <!-- Footer -->
-    <footer class="bg-[#F0FDF4] border-t border-[#D1FAE5]">
-        <div class="flex flex-col md:flex-row justify-between items-center py-8 px-8 max-w-7xl mx-auto gap-4">
-            <div class="text-sm font-semibold text-[#065F46]">
-                Pokhara Ward 12
-            </div>
-            <div class="flex flex-wrap justify-center gap-6 text-xs uppercase tracking-wider text-slate-500">
-                <a class="hover:text-[#065F46] transition-colors" href="#">Privacy Policy</a>
-                <a class="hover:text-[#065F46] transition-colors" href="#">Terms of Service</a>
-                <a class="hover:text-[#065F46] transition-colors" href="#">Public Notices</a>
-                <a class="hover:text-[#065F46] transition-colors" href="#">Contact Support</a>
-            </div>
-            <div class="text-xs uppercase tracking-wider text-slate-500">
-                © 2026 Ward 12. Digital Governance Portal.
-            </div>
+      <!-- Confirm Password -->
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <div class="input-wrap">
+          <input class="form-input is-mint" name="password2" id="password2"
+            type="password" placeholder="••••••••" required/>
+          <button type="button" class="pwd-toggle" onclick="togglePassword('password2','icon2')" aria-label="Show password">
+            <span class="material-symbols-outlined" id="icon2">visibility</span>
+          </button>
         </div>
-    </footer>
+      </div>
 
-    <!-- Password Toggle JS -->
-    <script>
-        function togglePassword(fieldId, iconId) {
-            const input = document.getElementById(fieldId);
-            const icon = document.getElementById(iconId);
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.textContent = 'visibility_off';
-            } else {
-                input.type = 'password';
-                icon.textContent = 'visibility';
-            }
-        }
-    </script>
+      <!-- Terms -->
+      <div class="checkbox-row">
+        <input id="terms" type="checkbox" required/>
+        <label for="terms">
+          I agree to the Terms of Service and Privacy Policy for digital data handling.
+        </label>
+      </div>
 
-</body>
-</html>
+      <!-- Submit -->
+      <button type="submit" class="btn btn-primary" style="margin-top:24px;">Register</button>
+    </form>
+
+    <!-- Login link -->
+    <hr class="card-divider"/>
+    <div class="reg-footer">
+      <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+
+  </div>
+  <!-- End card -->
+
+  <!-- City banner -->
+  <div class="city-banner">
+    <img
+      alt="Pokhara city landscape"
+      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDniFrYrTX9eHavAzdmE3Cl4LNTjMPe8ABcGR6ccUjPv1LBbNyeerYozVKtpFzeIB2wERFaQmr894Q1R6LkOX2F_4nffWlUpL9qrGuMryZAzoKl40Jcq4hlLYqtHcMr62GM7zVJrg9IlDzIePmza_qrCnQAyztsrjuWM2rZXpY5mNzOWt-KGrI-F9Re50eOLMCQDl_GWmeV0OMAOJAwVGIbedapVARRNkFx2jlgaNRQ-8A7h0y6wa-IeupXsxw2a_a_ii7y1Zqgei0"
+    />
+    <div class="overlay">
+      <p>Building a sustainable, smart city through citizen participation.</p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="{% static 'js/register.js' %}"></script>
+{% endblock %}

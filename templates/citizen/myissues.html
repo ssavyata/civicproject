@@ -1,240 +1,107 @@
+{% extends "citizen/citizen_base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html class="light" lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>My Issues - CivicReport</title>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "secondary-container": "#6cf8bb", "on-background": "#181c1a",
-            "primary": "#004532", "surface-container": "#ecefeb",
-            "on-surface-variant": "#3f4944", "surface-container-lowest": "#ffffff",
-            "surface": "#f7faf6", "error-container": "#ffdad6",
-            "on-primary": "#ffffff", "primary-container": "#065f46",
-            "secondary-fixed-dim": "#4edea3", "secondary": "#006c49",
-            "outline-variant": "#bec9c2", "on-secondary": "#ffffff",
-            "outline": "#6f7973", "surface-container-low": "#f1f4f0",
-            "on-surface": "#181c1a", "error": "#ba1a1a",
-            "surface-variant": "#e0e3df", "on-primary-container": "#8bd6b7",
-            "background": "#f7faf6",
-          },
-          borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
-          fontFamily: { "label": ["Public Sans"], "headline": ["Public Sans"], "display": ["Public Sans"], "body-sm": ["Public Sans"], "body-lg": ["Public Sans"], "title": ["Public Sans"] },
-          fontSize: {
-            "label": ["12px", { lineHeight: "1", letterSpacing: "0.05em", fontWeight: "500" }],
-            "headline": ["24px", { lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "500" }],
-            "display": ["32px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "500" }],
-            "body-sm": ["14px", { lineHeight: "1.5", fontWeight: "400" }],
-            "body-lg": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
-            "title": ["18px", { lineHeight: "1.4", fontWeight: "500" }],
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    body { font-family: 'Public Sans', sans-serif; background-color: #F0FDF4; }
-    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-  </style>
-</head>
-<body class="flex min-h-screen text-on-background">
 
-<!-- Sidebar -->
-<aside class="h-screen w-[220px] fixed left-0 bg-primary-container flex flex-col justify-between py-8 px-6 text-white z-50">
-  <div>
-    <div class="mb-10">
-      <h1 class="text-lg font-bold tracking-tighter uppercase">CIVICREPORT</h1>
+{% block title %}My Issues - CivicReport{% endblock %}
+
+{% block page_title %}My Issues{% endblock %}
+
+{% block content %}
+
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2rem;">
+    <div>
+      <h2 style="font-size:1.875rem;font-weight:600;color:var(--clr-primary-container);margin-bottom:0.25rem;">Your Reported Issues</h2>
+      <p style="font-size:0.875rem;color:var(--clr-outline);">Track the status of every issue you have submitted.</p>
     </div>
-    <nav class="space-y-4">
-      <a href="{% url 'citizen_dashboard' %}"
-         class="flex items-center gap-3 py-2 transition-colors
-           {% if request.resolver_match.url_name == 'citizen_dashboard' %}text-white font-bold border-l-2 border-secondary-fixed-dim -ml-6 pl-[22px]
-           {% else %}text-emerald-400/60 hover:text-white{% endif %}">
-        <span class="material-symbols-outlined">grid_view</span>
-        <span class="text-xs font-medium tracking-widest uppercase">Dashboard</span>
-      </a>
-      <a href="{% url 'my_issues' %}"
-         class="flex items-center gap-3 py-2 transition-colors
-           {% if request.resolver_match.url_name == 'my_issues' %}text-white font-bold border-l-2 border-secondary-fixed-dim -ml-6 pl-[22px]
-           {% else %}text-emerald-400/60 hover:text-white{% endif %}">
-        <span class="material-symbols-outlined">list_alt</span>
-        <span class="text-xs font-medium tracking-widest uppercase">My Issues</span>
-      </a>
-      <a href="{% url 'report_issue' %}"
-         class="flex items-center gap-3 py-2 transition-colors
-           {% if request.resolver_match.url_name == 'report_issue' %}text-white font-bold border-l-2 border-secondary-fixed-dim -ml-6 pl-[22px]
-           {% else %}text-emerald-400/60 hover:text-white{% endif %}">
-        <span class="material-symbols-outlined">add_alert</span>
-        <span class="text-xs font-medium tracking-widest uppercase">Report Issue</span>
-      </a>
-    </nav>
+    <a href="{% url 'report_issue' %}" class="btn btn--primary btn--sm" style="flex-shrink:0;margin-top:0.25rem;">
+      <span class="material-symbols-outlined">add</span>
+      New Report
+    </a>
   </div>
 
-  <!-- User + logout -->
-  <div class="border-t border-emerald-800 pt-6">
-    <div class="flex items-center gap-3">
-      <div class="w-8 h-8 rounded-full overflow-hidden border border-emerald-700 bg-emerald-900 flex items-center justify-center">
-        {% if request.user.profile_picture %}
-          <img src="{{ request.user.profile_picture.url }}" alt="{{ request.user.get_full_name }}" class="w-full h-full object-cover"/>
-        {% else %}
-          <span class="text-xs font-bold text-emerald-200">
-            {{ request.user.get_full_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
-          </span>
-        {% endif %}
-      </div>
-      <div class="flex flex-col">
-        <span class="text-xs font-semibold">{{ request.user.get_full_name|default:request.user.username }}</span>
-        <form method="post" action="{% url 'logout' %}">
-          {% csrf_token %}
-          <button type="submit" class="text-[10px] text-emerald-400/60 hover:text-white flex items-center gap-1 transition-colors">
-            <span class="material-symbols-outlined text-[12px]">logout</span>
-            Logout
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-</aside>
-
-<!-- Main content -->
-<main class="ml-[220px] flex-1 flex flex-col min-h-screen">
-
-  <!-- Top bar -->
-  <header class="w-full h-16 sticky top-0 z-40 bg-white/80 backdrop-blur-md flex items-center justify-between px-8">
-    <span class="text-2xl font-semibold text-primary-container tracking-tight">My Issues</span>
-    <div class="flex items-center gap-4 text-primary-container">
-      <span class="material-symbols-outlined cursor-pointer">notifications</span>
-      <span class="material-symbols-outlined cursor-pointer">help_outline</span>
-    </div>
-  </header>
-
-  <section class="flex-1 px-8 py-8 max-w-5xl mx-auto w-full">
-
-    <!-- Page heading + action -->
-    <div class="flex items-start justify-between mb-8">
-      <div>
-        <h2 class="text-3xl font-semibold text-primary-container mb-1">Your Reported Issues</h2>
-        <p class="text-sm text-outline">Track the status of every issue you have submitted.</p>
-      </div>
-      <a href="{% url 'report_issue' %}"
-         class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary-container text-white text-sm font-medium hover:bg-primary transition-colors shadow-sm">
-        <span class="material-symbols-outlined text-base">add</span>
-        New Report
+  {# ─── Filter tabs ─────────────────────────────────────────── #}
+  <div class="filter-tabs">
+    {% for label, value in filter_options %}
+      <a href="?status={{ value }}"
+         class="filter-tab {% if current_filter == value %}filter-tab--active{% endif %}">
+        {{ label }}
       </a>
-    </div>
+    {% endfor %}
+  </div>
 
-    <!-- Filter tabs -->
-    <div class="flex items-center gap-2 mb-6 flex-wrap">
-      {% for label, value in filter_options %}
-        <a href="?status={{ value }}"
-           class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider border transition-colors
-             {% if current_filter == value %}bg-primary-container text-white border-primary-container
-             {% else %}bg-white text-outline border-outline-variant hover:border-secondary{% endif %}">
-          {{ label }}
-        </a>
+  {% if issues %}
+    <div class="space-y-4">
+      {% for issue in issues %}
+        <div class="issue-card">
+
+          <div class="issue-card__thumb {% if not issue.image %}issue-card__thumb-empty{% endif %}">
+            {% if issue.image %}
+              <img src="{{ issue.image.url }}" alt="Issue photo"/>
+            {% else %}
+              <span class="material-symbols-outlined">image_not_supported</span>
+            {% endif %}
+          </div>
+
+          <div class="issue-card__body">
+            <div class="issue-card__header">
+              <h3 class="issue-card__title">{{ issue.title }}</h3>
+              <span class="badge
+                {% if issue.status == 'submitted' %}badge--submitted
+                {% elif issue.status == 'in_progress' %}badge--progress
+                {% elif issue.status == 'resolved' %}badge--resolved
+                {% elif issue.status == 'rejected' %}badge--rejected
+                {% else %}badge--pending{% endif %}">
+                {{ issue.get_status_display }}
+              </span>
+            </div>
+
+            <div class="issue-card__location">
+              <span class="material-symbols-outlined">location_on</span>
+              <span class="truncate">{{ issue.location|default:"Location not specified" }}</span>
+            </div>
+
+            <p class="issue-card__desc line-clamp-2">{{ issue.description }}</p>
+
+            <div class="issue-card__footer">
+              <div class="issue-card__meta">
+                <span>
+                  <span class="material-symbols-outlined">category</span>
+                  {{ issue.get_category_display|default:issue.category }}
+                </span>
+                <span>
+                  <span class="material-symbols-outlined">schedule</span>
+                  {{ issue.created_at|date:"M d, Y" }}
+                </span>
+              </div>
+              <a href="{% url 'issue_detail' issue.id %}" class="issue-card__detail-link">
+                View Details
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
       {% endfor %}
     </div>
 
-    {% if issues %}
-      <!-- Issues list -->
-      <div class="space-y-4">
-        {% for issue in issues %}
-          <div class="bg-white border border-emerald-100 rounded-xl p-5 flex gap-5 items-start hover:shadow-md transition-shadow group">
-
-            <!-- Photo thumbnail -->
-            <div class="w-20 h-20 rounded-lg overflow-hidden bg-surface-container shrink-0 border border-emerald-50">
-              {% if issue.image %}
-                <img src="{{ issue.image.url }}" alt="Issue photo" class="w-full h-full object-cover"/>
-              {% else %}
-                <div class="w-full h-full flex items-center justify-center">
-                  <span class="material-symbols-outlined text-3xl text-outline/40">image_not_supported</span>
-                </div>
-              {% endif %}
-            </div>
-
-            <!-- Details -->
-            <div class="flex-1 min-w-0">
-              <div class="flex items-start justify-between gap-4 mb-1">
-                <h3 class="font-semibold text-on-background text-base truncate">{{ issue.title }}</h3>
-
-                <!-- Status badge -->
-                <span class="shrink-0 px-3 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider
-                  {% if issue.status == 'pending' %}bg-amber-100 text-amber-700
-                  {% elif issue.status == 'in_progress' %}bg-blue-100 text-blue-700
-                  {% elif issue.status == 'resolved' %}bg-emerald-100 text-emerald-700
-                  {% elif issue.status == 'rejected' %}bg-red-100 text-red-700
-                  {% else %}bg-gray-100 text-gray-600{% endif %}">
-                  {{ issue.get_status_display }}
-                </span>
-              </div>
-
-              <div class="flex items-center gap-1 text-xs text-outline mb-2">
-                <span class="material-symbols-outlined text-[14px]">location_on</span>
-                <span class="truncate">{{ issue.location|default:"Location not specified" }}</span>
-              </div>
-
-              <p class="text-sm text-on-surface-variant line-clamp-2 mb-3">{{ issue.description }}</p>
-
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3 text-xs text-outline">
-                  <span class="flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[14px]">category</span>
-                    {{ issue.get_category_display|default:issue.category }}
-                  </span>
-                  <span class="flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[14px]">schedule</span>
-                    {{ issue.created_at|date:"M d, Y" }}
-                  </span>
-                </div>
-
-                <a href="{% url 'issue_detail' issue.id %}"
-                   class="text-xs text-secondary font-semibold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity hover:underline">
-                  View Details
-                  <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state__icon">
+        <span class="material-symbols-outlined">list_alt</span>
       </div>
+      <h3 class="empty-state__title">No issues yet</h3>
+      <p class="empty-state__desc">
+        {% if current_filter and current_filter != 'all' %}
+          No issues match this filter. Try a different status or
+        {% else %}
+          You haven't reported any issues yet.
+        {% endif %}
+        report one now.
+      </p>
+      <a href="{% url 'report_issue' %}" class="btn btn--primary">
+        <span class="material-symbols-outlined">add_alert</span>
+        Report an Issue
+      </a>
+    </div>
+  {% endif %}
 
-    {% else %}
-      <!-- Empty state -->
-      <div class="flex flex-col items-center justify-center py-24 text-center">
-        <div class="w-20 h-20 rounded-full bg-emerald-50 flex items-center justify-center mb-5">
-          <span class="material-symbols-outlined text-4xl text-secondary">list_alt</span>
-        </div>
-        <h3 class="text-lg font-semibold text-primary-container mb-2">No issues yet</h3>
-        <p class="text-sm text-outline max-w-xs mb-6">
-          {% if current_filter and current_filter != 'all' %}
-            No issues match this filter. Try a different status or
-          {% else %}
-            You haven't reported any issues yet.
-          {% endif %}
-          report one now.
-        </p>
-        <a href="{% url 'report_issue' %}"
-           class="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary-container text-white text-sm font-medium hover:bg-primary transition-colors shadow-sm">
-          <span class="material-symbols-outlined text-base">add_alert</span>
-          Report an Issue
-        </a>
-      </div>
-    {% endif %}
-
-  </section>
-
-  <footer class="w-full py-8 text-center text-outline text-xs mt-auto">
-    © 2026 Ward 12 • Digital Services Department • Privacy Policy • Accessibility
-  </footer>
-</main>
-
-</body>
-</html>
+{% endblock %}

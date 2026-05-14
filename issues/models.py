@@ -1,17 +1,17 @@
 from django.db import models
 from django.conf import settings
 
-# Create your models here.
 
 class Department(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     email = models.EmailField()
-    categories = models.JSONField(default=list)  # List of categories this department handles
+    categories = models.JSONField(default=list)
 
     def __str__(self):
         return self.name
-    
+
+
 class Issue(models.Model):
     CATEGORY_CHOICES = [
         ('pothole', 'Pothole'),
@@ -36,19 +36,14 @@ class Issue(models.Model):
         ('critical', 'Critical'),
     ]
 
-    priority = models.CharField(
-        max_length=20,
-        choices=PRIORITY_CHOICES, 
-        default='medium'
-    )
-
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium')
 
     citizen = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.CASCADE, 
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
         related_name='reported_issues'
-        )
-    
+    )
+
     assigned_department = models.ForeignKey(
         Department,
         on_delete=models.SET_NULL,
@@ -65,11 +60,10 @@ class Issue(models.Model):
         related_name='handled_issues'
     )
 
-
     title = models.CharField(max_length=200)
     description = models.TextField()
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
-    photo = models.ImageField(upload_to='issue_photos/', blank=True, null=True)
+    # ✅ Removed single 'photo' field — replaced by IssuePhoto below
     location = models.CharField(max_length=255)
     ward_number = models.IntegerField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='submitted')
@@ -79,8 +73,26 @@ class Issue(models.Model):
 
     def __str__(self):
         return self.title
-    
-    
+
+    # ✅ Helper to get first photo (useful in templates/admin)
+    def primary_photo(self):
+        return self.photos.first()
+
+    # ✅ Helper to get all photos (useful in templates)
+    def all_photos(self):
+        return self.photos.all()
+
+
+# ✅ New model — one row per uploaded photo
+class IssuePhoto(models.Model):
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='photos')
+    image = models.ImageField(upload_to='issue_photos/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Photo for Issue #{self.issue.id} — {self.issue.title}"
+
+
 class Feedback(models.Model):
     issue = models.OneToOneField(Issue, on_delete=models.CASCADE)
     citizen = models.ForeignKey(
@@ -91,3 +103,5 @@ class Feedback(models.Model):
     comment = models.TextField(blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Feedback for Issue #{self.issue.id} by {self.citizen}"

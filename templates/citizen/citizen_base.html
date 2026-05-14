@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}CivicReport{% endblock %}</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+
+  {% block extra_head %}{% endblock %}
+
+  <link rel="stylesheet" href="{% static 'css/citizen.css' %}"/>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{# ─── Sidebar ──────────────────────────────────────────────── #}
+<aside class="sidebar {% block sidebar_class %}{% endblock %}">
+
+  <div class="sidebar__brand">
+    <h1>CIVICREPORT</h1>
+    {% block sidebar_subtitle %}
+      <p>WARD {{ request.user.ward_number|default:"12" }} · POKHARA</p>
+    {% endblock %}
+  </div>
+
+  <nav class="sidebar__nav">
+    <a href="{% url 'citizen_dashboard' %}"
+       class="sidebar__link {% if request.resolver_match.url_name == 'citizen_dashboard' %}sidebar__link--active{% endif %}">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span>Dashboard</span>
+    </a>
+
+    <a href="{% url 'my_issues' %}"
+       class="sidebar__link {% if request.resolver_match.url_name == 'my_issues' %}sidebar__link--active{% endif %}">
+      <span class="material-symbols-outlined">list_alt</span>
+      <span>My Issues</span>
+    </a>
+
+    <a href="{% url 'report_issue' %}"
+       class="sidebar__link {% if request.resolver_match.url_name == 'report_issue' %}sidebar__link--active{% endif %}">
+      <span class="material-symbols-outlined">add_circle</span>
+      <span>Report Issue</span>
+    </a>
+
+    <a href="{% url 'notifications' %}"
+       class="sidebar__link {% if request.resolver_match.url_name == 'notifications' %}sidebar__link--active{% endif %}">
+      <span class="material-symbols-outlined">notifications</span>
+      <span>Notifications</span>
+      {% if unread_count > 0 %}
+        <span class="sidebar__badge">{{ unread_count }}</span>
+      {% endif %}
+    </a>
+
+    <a href="{% url 'profile' %}"
+       class="sidebar__link {% if request.resolver_match.url_name == 'profile' %}sidebar__link--active{% endif %}">
+      <span class="material-symbols-outlined">person</span>
+      <span>My Profile</span>
+    </a>
+
+    {% block sidebar_extra_nav %}{% endblock %}
+  </nav>
+
+  <div class="sidebar__footer">
+    <div class="sidebar__user">
+      <div class="sidebar__avatar">
+        {% if request.user.profile_picture %}
+          <img src="{{ request.user.profile_picture.url }}" alt="{{ request.user.get_full_name }}"/>
+        {% else %}
+          {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
+        {% endif %}
+      </div>
+      <div style="min-width:0;">
+        <p class="sidebar__user-name">
+          {{ request.user.get_full_name|default:request.user.username }}
+        </p>
+        <p style="font-size:10px;color:rgba(110,231,183,.6);">
+          Citizen · Ward {{ request.user.ward_number|default:"12" }}
+        </p>
+      </div>
+    </div>
+
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="sidebar__logout-btn">
+        <span class="material-symbols-outlined">logout</span>
+        LOGOUT
+      </button>
+    </form>
+  </div>
+
+</aside>
+
+{# ─── Main content area ────────────────────────────────────── #}
+<main class="main-content {% block main_class %}{% endblock %}">
+
+  {# ─── Topbar ─────────────────────────────────────────────── #}
+  <header class="topbar topbar--white">
+
+    <div class="topbar__left">
+      {% block topbar_left %}
+        <h2 class="topbar__title">
+          {% block page_title %}CivicReport Ward {{ request.user.ward_number|default:"12" }}{% endblock %}
+        </h2>
+      {% endblock %}
+    </div>
+
+    <div class="topbar__actions">
+      <a href="{% url 'notifications' %}" class="notif-wrap topbar__icon-btn" style="text-decoration:none;">
+        <span class="material-symbols-outlined">notifications</span>
+        {% if unread_count > 0 %}
+          <span class="notif-badge">{{ unread_count }}</span>
+        {% endif %}
+      </a>
+
+      <div class="topbar__divider"></div>
+
+      <a href="{% url 'profile' %}" class="topbar__user-link">
+        <span>{{ request.user.get_full_name|default:request.user.username }}</span>
+        <span class="material-symbols-outlined">account_circle</span>
+      </a>
+
+      {% block topbar_extra_actions %}{% endblock %}
+    </div>
+
+  </header>
+
+  <div class="page-canvas {% block canvas_class %}{% endblock %}">
+
+    {% if messages %}
+      <div class="messages-stack">
+        {% for message in messages %}
+          <div class="alert
+            {% if message.tags == 'error' %}alert--error
+            {% elif message.tags == 'success' %}alert--success
+            {% else %}alert--info{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+  </div>
+
+  {# ─── Footer ──────────────────────────────────────────────── #}
+  <footer class="site-footer {% block footer_class %}{% endblock %}">
+    <p>© {% now "Y" %} Pokhara Ward {{ request.user.ward_number|default:"12" }}. All rights reserved.</p>
+    <div class="site-footer__links">
+      {% block footer_links %}
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact Us</a>
+      {% endblock %}
+    </div>
+  </footer>
+
+</main>
+
+{# ─── Scripts ─────────────────────────────────────────────── #}
+{% block extra_head_scripts %}{% endblock %}
+<script src="{% static 'js/citizen.js' %}"></script>
+{% block extra_scripts %}{% endblock %}
+
+</body>
+</html>

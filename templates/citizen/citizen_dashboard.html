@@ -1,0 +1,121 @@
+{% extends "citizen/citizen_base.html" %}
+{% load static %}
+
+{% block title %}Dashboard - CivicReport{% endblock %}
+
+{% block page_title %}CivicReport Ward {{ request.user.ward_number|default:"12" }}{% endblock %}
+
+{% block content %}
+<section class="dashboard-welcome" style="margin-bottom:2rem;">
+  <div>
+    <h1 class="dashboard-welcome__heading">
+      Welcome back, {{ request.user.get_full_name|default:request.user.username }}
+    </h1>
+    <p class="dashboard-welcome__sub">
+      <span class="material-symbols-outlined">location_on</span>
+      Ward {{ request.user.ward_number|default:"12" }}
+    </p>
+  </div>
+
+  <a href="{% url 'report_issue' %}" class="btn btn--primary">
+    <span class="material-symbols-outlined">add</span>
+    Report New Issue
+  </a>
+</section>
+
+ <section class="stats-grid" style="gap:1.25rem;margin-bottom:2rem;">
+  <div class="stat-card stat-card--total">
+    <p class="stat-card__label">Total Reported</p>
+    <div class="stat-card__row">
+      <span class="stat-card__value">{{ stats.total }}</span>
+      <span class="material-symbols-outlined stat-card__icon">analytics</span>
+    </div>
+  </div>
+
+  <div class="stat-card stat-card--pending">
+    <p class="stat-card__label">Pending</p>
+    <div class="stat-card__row">
+      <span class="stat-card__value">{{ stats.pending }}</span>
+      <span class="material-symbols-outlined stat-card__icon">pending_actions</span>
+    </div>
+  </div>
+  
+  
+  <div class="stat-card stat-card--progress">
+    <p class="stat-card__label">In Progress</p>
+    <div class="stat-card__row">
+      <span class="stat-card__value">{{ stats.in_progress }}</span>
+      <span class="material-symbols-outlined stat-card__icon">sync</span>
+    </div>
+  </div>
+    
+  <div class="stat-card stat-card--resolved">
+    <p class="stat-card__label">Resolved</p>
+    <div class="stat-card__row">
+      <span class="stat-card__value">{{ stats.resolved }}</span>
+      <span class="material-symbols-outlined stat-card__icon">check_circle</span>
+    </div>
+  </div>
+</section>
+
+<section class="table-section" style="margin-top:0.5rem;">
+  <div class="table-section__header">
+    <h3 class="table-section__title">Recent Issues</h3>
+    <a href="{% url 'my_issues' %}" class="table-section__link">View All Issues</a>
+  </div>
+
+  <div class="table-overflow">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Issue ID</th>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      
+      <tbody>
+        {% for issue in recent_issues %}
+        <tr>
+          <td class="mono">CR-{{ issue.submitted_at|date:"Y" }}-{{ issue.id|stringformat:"04d" }}</td>
+          <td style="font-weight:500;">{{ issue.title }}</td>
+          <td>{{ issue.get_category_display }}</td>
+          <td style="color:var(--clr-on-surface-variant);">{{ issue.submitted_at|date:"M d, Y" }}</td>
+          <td>
+          {% if issue.status == 'submitted' %}
+            <span class="badge badge--submitted">PENDING</span>
+            {% elif issue.status == 'assigned' %}
+            <span class="badge badge--assigned">ASSIGNED</span>
+            {% elif issue.status == 'in_progress' %}
+            <span class="badge badge--progress">IN PROGRESS</span>
+            {% elif issue.status == 'resolved' %}
+            <span class="badge badge--resolved">RESOLVED</span>
+            {% elif issue.status == 'rejected' %}
+            <span class="badge badge--rejected">REJECTED</span>
+          {% endif %}
+          </td>
+            
+          <td>
+            <a href="{% url 'issue_detail' issue.pk %}" class="table-action-link">
+              View Details
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="table-empty">
+            <span class="material-symbols-outlined">inbox</span>
+            No issues reported yet.
+            <a href="{% url 'report_issue' %}">Report your first issue</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% endblock %}

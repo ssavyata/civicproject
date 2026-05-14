@@ -1,0 +1,165 @@
+{% extends "citizen/citizen_base.html" %}
+{% load static %}
+
+{% block title %}Issue Detail - CivicReport{% endblock %}
+
+{# Back-link instead of plain page title #}
+{% block topbar_left %}
+  <a href="{% url 'my_issues' %}" class="topbar__back-link">
+    <span class="material-symbols-outlined">arrow_back</span>
+    My Issues
+  </a>
+{% endblock %}
+
+{% block content %}
+
+  {# ─── Issue header ────────────────────────────────────────── #}
+  <div style="margin-bottom:2.5rem;">
+    <p class="issue-id-label">ISSUE ID: CR-{{ issue.submitted_at|date:"Y" }}-{{ issue.id|stringformat:"04d" }}</p>
+    <div class="issue-detail-header">
+      <h2 class="issue-detail-title">{{ issue.title }}</h2>
+      <span class="badge
+        {% if issue.status == 'submitted' %}badge--submitted
+        {% elif issue.status == 'in_progress' %}badge--progress
+        {% elif issue.status == 'resolved' %}badge--resolved
+        {% elif issue.status == 'rejected' %}badge--rejected
+        {% elif issue.status == 'assigned' %}badge--assigned
+        {% else %}badge--pending{% endif %}">
+        {{ issue.get_status_display }}
+      </span>
+    </div>
+  </div>
+
+  {# ─── Bento grid ──────────────────────────────────────────── #}
+  <div class="bento-grid">
+
+    {# Left: Issue details #}
+    <div>
+      <div class="card">
+        <h3 class="text-title" style="color:var(--clr-primary);margin-bottom:1.5rem;">Issue Details</h3>
+
+        <div class="detail-grid">
+          <div>
+            <p class="detail-field__label">Category</p>
+            <p class="detail-field__value">{{ issue.get_category_display }}</p>
+          </div>
+          <div>
+            <p class="detail-field__label">Ward Number</p>
+            <p class="detail-field__value">Ward {{ issue.ward_number|default:"12" }}</p>
+          </div>
+          <div>
+            <p class="detail-field__label">Exact Location</p>
+            <p class="detail-field__value">{{ issue.location|default:"Not specified" }}</p>
+          </div>
+          <div>
+            <p class="detail-field__label">Date Submitted</p>
+            <p class="detail-field__value">{{ issue.submitted_at|date:"M d, Y" }}</p>
+          </div>
+        </div>
+
+        <div style="margin-bottom:2rem;">
+          <p class="detail-field__label" style="margin-bottom:0.5rem;">Description</p>
+          <p class="text-body-lg" style="line-height:1.7;">{{ issue.description }}</p>
+        </div>
+
+        {% if issue.images.all %}
+          <div>
+            <p class="detail-field__label" style="margin-bottom:1rem;">Evidence Photos</p>
+            <div class="evidence-photos">
+              {% for photo in issue.images.all %}
+                <div class="evidence-photo">
+                  <img src="{{ photo.image.url }}" alt="Issue evidence photo"/>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# Right: Status timeline #}
+    <div>
+      <div class="card" style="height:100%;">
+        <h3 class="text-title" style="color:var(--clr-primary);margin-bottom:2rem;">Issue Status</h3>
+
+        <div class="timeline">
+          {% for update in issue.updates.all %}
+            <div class="timeline-step {% if not update.is_complete %}timeline-step--muted{% endif %}">
+              {% if not forloop.last %}
+                <div class="timeline-step__line {% if not update.is_complete %}timeline-step__line--dashed{% endif %}"></div>
+              {% endif %}
+              <div class="timeline-step__dot {% if not update.is_complete %}timeline-step__dot--empty{% endif %}">
+                {% if update.is_complete %}
+                  <span class="material-symbols-outlined">{{ update.icon|default:"check" }}</span>
+                {% endif %}
+              </div>
+              <div class="timeline-step__content">
+                <h4 class="timeline-step__title {% if not update.is_complete %}timeline-step__title--muted{% endif %}">{{ update.label }}</h4>
+                <p class="timeline-step__date">{{ update.timestamp|date:"M d, Y • h:i A"|default:"Pending Completion" }}</p>
+                {% if update.note %}
+                  <p class="timeline-step__note">"{{ update.note }}"</p>
+                {% endif %}
+              </div>
+            </div>
+          {% empty %}
+            {# Fallback static timeline #}
+            <div class="timeline-step">
+              <div class="timeline-step__line"></div>
+              <div class="timeline-step__dot">
+                <span class="material-symbols-outlined">check</span>
+              </div>
+              <div class="timeline-step__content">
+                <h4 class="timeline-step__title">Issue Submitted</h4>
+                <p class="timeline-step__date">{{ issue.submitted_at|date:"M d, Y • h:i A" }}</p>
+                <p class="timeline-step__note">"Report received and logged into the central system."</p>
+              </div>
+            </div>
+
+            {% if issue.status == 'assigned' or issue.status == 'in_progress' or issue.status == 'resolved' %}
+              <div class="timeline-step">
+                <div class="timeline-step__line"></div>
+                <div class="timeline-step__dot">
+                  <span class="material-symbols-outlined">check</span>
+                </div>
+                <div class="timeline-step__content">
+                  <h4 class="timeline-step__title">Assigned to Department</h4>
+                  <p class="timeline-step__note">"Assigned to relevant maintenance team."</p>
+                </div>
+              </div>
+            {% endif %}
+
+            {% if issue.status == 'in_progress' or issue.status == 'resolved' %}
+              <div class="timeline-step">
+                <div class="timeline-step__line timeline-step__line--dashed"></div>
+                <div class="timeline-step__dot">
+                  <span class="material-symbols-outlined">engineering</span>
+                </div>
+                <div class="timeline-step__content">
+                  <h4 class="timeline-step__title">In Progress</h4>
+                  <p class="timeline-step__note">"Technicians are working on this issue."</p>
+                </div>
+              </div>
+            {% endif %}
+
+            <div class="timeline-step {% if issue.status != 'resolved' %}timeline-step--muted{% endif %}">
+              <div class="timeline-step__dot {% if issue.status != 'resolved' %}timeline-step__dot--empty{% endif %}">
+                {% if issue.status == 'resolved' %}
+                  <span class="material-symbols-outlined">check</span>
+                {% endif %}
+              </div>
+              <div class="timeline-step__content">
+                <h4 class="timeline-step__title {% if issue.status != 'resolved' %}timeline-step__title--muted{% endif %}">Issue Resolved</h4>
+                <p class="timeline-step__date">
+                  {% if issue.status == 'resolved' %}{{ issue.resolved_at|date:"M d, Y" }}{% else %}Pending Completion{% endif %}
+                </p>
+                <p class="timeline-step__note">"Final quality check and resolution."</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+{% endblock %}

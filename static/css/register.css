@@ -1,0 +1,47 @@
+
+  /* Page wrapper */
+  .reg-wrap {
+    width: 100%;
+    max-width: 480px;
+  }
+
+  /* Card header */
+  .reg-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .reg-header .icon {
+    font-size: 48px;
+    color: #065F46;
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+    display: block;
+    margin: 0 auto 16px;
+  }
+  .reg-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  /* Login link footer */
+  .reg-footer {
+    text-align: center;
+  }
+  .reg-footer p {
+    font-size: var(--fs-body-sm);
+    color: var(--color-on-surface-variant);
+  }
+  .reg-footer a {
+    color: #065F46;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .reg-footer a:hover { text-decoration: underline; }
+
+  /* Register card uses rounded-xl — slightly larger */
+  .card-xl {
+    background: var(--color-surface-container-lowest);
+    border: 1px solid var(--color-border-mint);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+  }

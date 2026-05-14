@@ -1,0 +1,160 @@
+{% extends "citizen/citizen_base.html" %}
+{% load static %}
+
+{% block title %}My Profile - CivicReport{% endblock %}
+
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+
+  <div style="margin-bottom:3rem;">
+    <h2 class="text-display" style="color:#064e3b;font-weight:700;margin-bottom:0.5rem;">My Profile</h2>
+    <p class="text-body-lg" style="color:rgba(63,73,68,.7);">Manage your personal information and account settings</p>
+  </div>
+
+  {# ─── Personal Information ────────────────────────────────── #}
+  <section class="card" style="margin-bottom:2rem;">
+    <h3 class="card-section-title">Personal Information</h3>
+    <div class="divider"></div>
+
+    <form method="post" action="{% url 'profile' %}" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="form_type" value="profile"/>
+
+      <div style="display:flex;flex-direction:column;gap:3rem;">
+        <div style="display:flex;flex-direction:row;gap:3rem;align-items:flex-start;">
+
+          <div class="profile-avatar" style="flex-shrink:0;">
+            {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
+          </div>
+
+          <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+
+            <div class="field">
+              <label class="field__label" for="{{ profile_form.first_name.id_for_label }}">First Name</label>
+              <input id="{{ profile_form.first_name.id_for_label }}"
+                     name="{{ profile_form.first_name.html_name }}"
+                     type="text"
+                     value="{{ profile_form.first_name.value|default_if_none:'' }}"
+                     class="field__input {% if profile_form.first_name.errors %}field__input--error{% endif %}"/>
+              {% if profile_form.first_name.errors %}
+                <p class="field__error">{{ profile_form.first_name.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="{{ profile_form.last_name.id_for_label }}">Last Name</label>
+              <input id="{{ profile_form.last_name.id_for_label }}"
+                     name="{{ profile_form.last_name.html_name }}"
+                     type="text"
+                     value="{{ profile_form.last_name.value|default_if_none:'' }}"
+                     class="field__input {% if profile_form.last_name.errors %}field__input--error{% endif %}"/>
+              {% if profile_form.last_name.errors %}
+                <p class="field__error">{{ profile_form.last_name.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="{{ profile_form.phone.id_for_label }}">Phone Number</label>
+              <input id="{{ profile_form.phone.id_for_label }}"
+                     name="{{ profile_form.phone.html_name }}"
+                     type="tel"
+                     value="{{ profile_form.phone.value|default_if_none:'' }}"
+                     class="field__input {% if profile_form.phone.errors %}field__input--error{% endif %}"/>
+              {% if profile_form.phone.errors %}
+                <p class="field__error">{{ profile_form.phone.errors.0 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="field">
+              <label class="field__label">Email Address</label>
+              <span class="field__input" style="display:block;color:rgba(63,73,68,.8);background:var(--clr-surface-container-lowest);cursor:default;">
+                {{ request.user.email }}
+              </span>
+              <span class="field__hint">cannot be changed</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:2.5rem;display:flex;justify-content:flex-end;">
+        <button type="submit" class="btn btn--primary btn--lg">Save Changes</button>
+      </div>
+    </form>
+  </section>
+
+  {# ─── Change Password ─────────────────────────────────────── #}
+  <section class="card" style="margin-bottom:3rem;">
+    <h3 class="card-section-title">Change Password</h3>
+    <div class="divider"></div>
+
+    <form method="post" action="{% url 'profile' %}" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="form_type" value="password"/>
+
+      <div style="max-width:28rem;display:flex;flex-direction:column;gap:1.5rem;">
+
+        <div class="field">
+          <label class="field__label" for="{{ password_form.old_password.id_for_label }}">Current Password</label>
+          <div class="field__pwd-wrap">
+            <input id="{{ password_form.old_password.id_for_label }}"
+                   name="{{ password_form.old_password.html_name }}"
+                   type="password"
+                   placeholder="••••••••"
+                   class="field__input {% if password_form.old_password.errors %}field__input--error{% endif %}"/>
+            <button type="button" class="field__pwd-toggle"
+                    onclick="togglePwd('{{ password_form.old_password.id_for_label }}')">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
+          {% if password_form.old_password.errors %}
+            <p class="field__error">{{ password_form.old_password.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="{{ password_form.new_password1.id_for_label }}">New Password</label>
+          <div class="field__pwd-wrap">
+            <input id="{{ password_form.new_password1.id_for_label }}"
+                   name="{{ password_form.new_password1.html_name }}"
+                   type="password"
+                   placeholder="••••••••"
+                   class="field__input {% if password_form.new_password1.errors %}field__input--error{% endif %}"/>
+            <button type="button" class="field__pwd-toggle"
+                    onclick="togglePwd('{{ password_form.new_password1.id_for_label }}')">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
+          {% if password_form.new_password1.errors %}
+            <p class="field__error">{{ password_form.new_password1.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="{{ password_form.new_password2.id_for_label }}">Confirm New Password</label>
+          <div class="field__pwd-wrap">
+            <input id="{{ password_form.new_password2.id_for_label }}"
+                   name="{{ password_form.new_password2.html_name }}"
+                   type="password"
+                   placeholder="••••••••"
+                   class="field__input {% if password_form.new_password2.errors %}field__input--error{% endif %}"/>
+            <button type="button" class="field__pwd-toggle"
+                    onclick="togglePwd('{{ password_form.new_password2.id_for_label }}')">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
+          {% if password_form.new_password2.errors %}
+            <p class="field__error">{{ password_form.new_password2.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div style="margin-top:1rem;">
+          <button type="submit" class="btn btn--primary btn--lg">Update Password</button>
+        </div>
+
+      </div>
+    </form>
+  </section>
+
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "citizen/citizen_base.html" %}
+{% load static %}
+
+{% block title %}Report Submitted - CivicReport{% endblock %}
+
+{% block page_title %}Report Submitted{% endblock %}
+
+{% block content %}
+
+  <div class="success-canvas">
+    <div class="success-card">
+
+      <div class="success-check">
+        <span class="material-symbols-outlined">check_circle</span>
+      </div>
+
+      <h2 class="success-title">Issue Reported Successfully</h2>
+      <p class="success-desc">
+        Your issue has been submitted to the Ward services department. Our field teams will review
+        the details and provide updates as progress begins.
+      </p>
+
+      <div class="success-id-pill">
+        <span class="label-key">ISSUE ID:</span>
+        <span class="label-val">{{ issue_id|default:"CR-2024-0042" }}</span>
+      </div>
+
+      {# Progress tracker #}
+      <div class="progress-tracker">
+        <div class="progress-tracker__rail">
+          <div class="progress-tracker__bg"></div>
+          <div class="progress-tracker__fill"></div>
+
+          <div class="progress-step">
+            <div class="progress-step__dot progress-step__dot--done"></div>
+            <span class="progress-step__label progress-step__label--done">REPORTED</span>
+          </div>
+          <div class="progress-step">
+            <div class="progress-step__dot"></div>
+            <span class="progress-step__label">REVIEW</span>
+          </div>
+          <div class="progress-step">
+            <div class="progress-step__dot"></div>
+            <span class="progress-step__label">PROGRESS</span>
+          </div>
+          <div class="progress-step">
+            <div class="progress-step__dot"></div>
+            <span class="progress-step__label">RESOLVED</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="success-actions">
+        <a href="{% url 'my_issues' %}" class="btn btn--outline">
+          <span class="material-symbols-outlined">list_alt</span>
+          View My Issues
+        </a>
+        <a href="{% url 'report_issue' %}" class="btn btn--primary">
+          <span class="material-symbols-outlined">add_circle</span>
+          Report Another Issue
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+{% endblock %}

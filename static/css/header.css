@@ -1,0 +1,28 @@
+
+  .site-header {
+    background-color: #F0FDF4;
+    border-bottom: 1px solid #D1FAE5;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 50;
+  }
+  .site-header__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 32px;
+    height: 64px;
+    font-family: 'Public Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .site-header__brand {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #065F46;
+    text-decoration: none;
+  }

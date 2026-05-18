@@ -12,6 +12,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage, send_mail
 from .tokens import account_activation_token
 from allauth.account.models import EmailAddress
+from allauth.account.views import ConfirmEmailView
 import random
 
 
@@ -190,3 +191,9 @@ def verify_login_otp(request):
             return render(request, 'account/verify_otp.html', {'error': 'Invalid or expired code.'})
 
     return render(request, 'account/verify_otp.html')
+
+class CustomConfirmEmailView(ConfirmEmailView):
+    def get(self, *args, **kwargs):
+        response = super().get(*args, **kwargs)
+        messages.success(self.request, 'Your email has been confirmed! You can now log in.')
+        return redirect('login')

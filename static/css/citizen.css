@@ -877,7 +877,7 @@ ul, ol { list-style: none; }
 }
 .site-footer p,
 .site-footer a {
-  font-size: 0.75rem; color: rgba(16,185,129,.6);
+  font-size: 0.75rem; color: rgba(28, 38, 35, 0.6);
   text-transform: uppercase; letter-spacing: 0.08em;
 }
 .site-footer a:hover { color: var(--clr-emerald-900); }

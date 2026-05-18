@@ -1,151 +1,87 @@
 {% load static %}
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html lang="en">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>{% block title %}Admin — CivicReport Ward 12{% endblock %}</title>
 
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;900&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#006b2c",
-                        "primary-container": "#00873a",
-                        "secondary": "#006d30",
-                        "secondary-container": "#92f5a4",
-                        "secondary-fixed": "#95f8a7",
-                        "on-surface": "#171d16",
-                        "on-surface-variant": "#3e4a3d",
-                        "surface-container-low": "#eff6ea",
-                        "surface-container": "#e9f0e5",
-                        "surface-container-lowest": "#ffffff",
-                        "outline-variant": "#bdcaba",
-                        "background": "#f4fcf0",
-                        "surface": "#f4fcf0",
-                        "error": "#ba1a1a",
-                        "error-container": "#ffdad6",
-                    },
-                    fontFamily: {
-                        "body-sm": ["Public Sans"],
-                        "body-md": ["Public Sans"],
-                        "label-caps": ["Public Sans"],
-                        "h3": ["Public Sans"],
-                        "h2": ["Public Sans"],
-                        "button": ["Public Sans"],
-                    },
-                    fontSize: {
-                        "body-sm": ["14px", { lineHeight: "1.5", fontWeight: "400" }],
-                        "body-md": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
-                        "label-caps": ["12px", { lineHeight: "1", letterSpacing: "0.05em", fontWeight: "600" }],
-                        "h3": ["24px", { lineHeight: "1.3", fontWeight: "600" }],
-                        "h2": ["36px", { lineHeight: "1.25", letterSpacing: "-0.01em", fontWeight: "600" }],
-                        "button": ["16px", { lineHeight: "1", fontWeight: "500" }],
-                    },
-                    spacing: {
-                        "sm": "8px", "md": "16px", "lg": "24px",
-                        "xl": "32px", "xxl": "48px", "gutter": "24px",
-                        "container-max": "1280px",
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        body { font-family: 'Public Sans', sans-serif; background-color: #f4fcf0; }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            display: inline-block; vertical-align: middle;
-        }
-        .modal-overlay { background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}"/>
 
     {% block extra_css %}{% endblock %}
 </head>
 
-<body class="text-on-surface min-h-screen">
+<body>
 
 <!-- Sidebar -->
-<aside class="fixed top-0 left-0 h-full w-64 bg-emerald-900 border-r border-emerald-800 shadow-xl z-40 flex flex-col p-6">
-    <div class="mb-8">
-        <span class="text-2xl font-bold text-white block">CivicReport</span>
-        <span class="text-[10px] text-emerald-400 tracking-widest uppercase">Ward 12 Admin</span>
+<aside class="admin-sidebar">
+    <div class="sidebar-brand">
+        <span class="sidebar-brand-name">CivicReport</span>
+        <span class="sidebar-brand-sub">Ward 12 Admin</span>
     </div>
 
-    <nav class="flex flex-col gap-1 flex-grow">
+    <nav class="sidebar-nav">
         <a href="{% url 'admin_dashboard' %}"
-           class="{% if request.resolver_match.url_name == 'admin_dashboard' %}bg-emerald-800 text-white border-l-4 border-[#6EE7B7]{% else %}text-emerald-100/70 hover:text-white hover:bg-emerald-800/50{% endif %} rounded-lg px-4 py-3 flex items-center gap-3 transition-all">
+           class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
             <span class="material-symbols-outlined">dashboard</span>
-            <span class="font-medium text-sm">Dashboard</span>
+            <span>Dashboard</span>
         </a>
         <a href="{% url 'admin_all_issues' %}"
-           class="{% if request.resolver_match.url_name == 'admin_all_issues' %}bg-emerald-800 text-white border-l-4 border-[#6EE7B7]{% else %}text-emerald-100/70 hover:text-white hover:bg-emerald-800/50{% endif %} rounded-lg px-4 py-3 flex items-center gap-3 transition-all">
+           class="nav-link {% if request.resolver_match.url_name == 'admin_all_issues' %}active{% endif %}">
             <span class="material-symbols-outlined">report_problem</span>
-            <span class="font-medium text-sm">All Issues</span>
+            <span>All Issues</span>
         </a>
         <a href="{% url 'admin_manage_users' %}"
-           class="{% if request.resolver_match.url_name == 'admin_manage_users' %}bg-emerald-800 text-white border-l-4 border-[#6EE7B7]{% else %}text-emerald-100/70 hover:text-white hover:bg-emerald-800/50{% endif %} rounded-lg px-4 py-3 flex items-center gap-3 transition-all">
+           class="nav-link {% if request.resolver_match.url_name == 'admin_manage_users' %}active{% endif %}">
             <span class="material-symbols-outlined">group</span>
-            <span class="font-medium text-sm">Users</span>
+            <span>Users</span>
         </a>
         <a href="{% url 'admin_manage_departments' %}"
-           class="{% if request.resolver_match.url_name == 'admin_manage_departments' %}bg-emerald-800 text-white border-l-4 border-[#6EE7B7]{% else %}text-emerald-100/70 hover:text-white hover:bg-emerald-800/50{% endif %} rounded-lg px-4 py-3 flex items-center gap-3 transition-all">
+           class="nav-link {% if request.resolver_match.url_name == 'admin_manage_departments' %}active{% endif %}">
             <span class="material-symbols-outlined">domain</span>
-            <span class="font-medium text-sm">Departments</span>
+            <span>Departments</span>
         </a>
     </nav>
 
     <!-- Admin user + logout -->
-    <div class="mt-auto pt-6 border-t border-emerald-800 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-[#6EE7B7] flex items-center justify-center">
-            <span class="text-emerald-900 font-bold text-sm">
-                {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
-            </span>
+    <div class="sidebar-user">
+        <div class="sidebar-avatar">
+            <span>{{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}</span>
         </div>
-        <div class="overflow-hidden flex-grow">
-            <p class="text-white text-sm font-bold truncate">{{ request.user.get_full_name|default:request.user.username }}</p>
-            <p class="text-[#6EE7B7] text-[10px] font-bold">ADMIN ACCOUNT</p>
+        <div class="sidebar-user-info">
+            <p class="sidebar-user-name">{{ request.user.get_full_name|default:request.user.username }}</p>
+            <p class="sidebar-user-role">Admin Account</p>
         </div>
         <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
-            <button type="submit" class="text-[#6EE7B7] text-xs font-bold hover:underline">Logout</button>
+            <button type="submit" class="sidebar-logout-btn">Logout</button>
         </form>
     </div>
 </aside>
 
 <!-- Top Bar -->
-<header class="fixed top-0 left-64 right-0 h-16 bg-white border-b border-slate-200 shadow-sm z-30 flex justify-between items-center px-8">
-    <div>
-        <h1 class="text-lg font-bold text-emerald-900 leading-tight">{% block page_title %}Dashboard{% endblock %}</h1>
-        <p class="text-xs text-slate-500">System Administration · Pokhara Ward 12</p>
+<header class="admin-topbar">
+    <div class="topbar-title-group">
+        <h1 class="topbar-title">{% block page_title %}Dashboard{% endblock %}</h1>
+        <p class="topbar-subtitle">System Administration · Pokhara Ward 12</p>
     </div>
-    <div class="flex items-center gap-4">
-        <button class="p-2 text-slate-500 hover:bg-emerald-50 rounded-full transition-colors">
+    <div class="topbar-actions">
+        <button class="topbar-icon-btn" aria-label="Notifications">
             <span class="material-symbols-outlined">notifications</span>
         </button>
     </div>
 </header>
 
 <!-- Main Content -->
-<main class="ml-64 pt-16 p-8 min-h-screen">
+<main class="admin-main">
 
     <!-- Flash Messages -->
     {% if messages %}
-        <div class="mb-6 space-y-2">
+        <div class="flash-messages">
             {% for message in messages %}
-                <div class="rounded-lg px-4 py-3 text-sm
-                    {% if message.tags == 'error' %}bg-red-50 border border-red-200 text-red-700
-                    {% elif message.tags == 'success' %}bg-green-50 border border-green-200 text-green-700
-                    {% else %}bg-blue-50 border border-blue-200 text-blue-700{% endif %}">
-                    {{ message }}
-                </div>
+                <div class="flash-message {{ message.tags }}">{{ message }}</div>
             {% endfor %}
         </div>
     {% endif %}
@@ -153,16 +89,17 @@
     {% block content %}{% endblock %}
 
     <!-- Footer -->
-    <footer class="mt-12 pt-6 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-xs font-medium">
+    <footer class="admin-footer">
         <p>© 2026 Pokhara Ward 12. All rights reserved.</p>
-        <div class="flex gap-6 uppercase tracking-wider">
-            <a class="hover:text-emerald-700" href="#">Privacy Policy</a>
-            <a class="hover:text-emerald-700" href="#">Terms of Service</a>
-            <a class="hover:text-emerald-700" href="#">Contact Us</a>
+        <div class="admin-footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Contact Us</a>
         </div>
     </footer>
 </main>
 
+<script src="{% static 'js/admin.js' %}"></script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

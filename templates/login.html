@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load socialaccount %}
 {% load static %}
 
 {% block title %}Login - CivicReport{% endblock %}
@@ -93,7 +92,7 @@
       <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
     </div>
 
-    <!-- Google login -->
+    {% comment %} <!-- Google login -->
     <div style="margin-top:16px; text-align:center;">
       <p class="social-label">Or sign in with</p>
       <a href="{% provider_login_url 'google' %}" class="btn-google">
@@ -105,7 +104,7 @@
         </svg>
         Connect with Google
       </a>
-    </div>
+    </div> {% endcomment %}
 
   </div>
   <!-- End Card -->

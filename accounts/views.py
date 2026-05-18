@@ -38,23 +38,33 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 
-def activateEmail(request, user, to_email):
-    mail_subject = 'Activate your account.'
-    message = render_to_string('activate_account.html', {
-        'user': user.username,
-        'domain': get_current_site(request).domain,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-        'token': account_activation_token.make_token(user),
-        'protocol': 'https' if request.is_secure() else 'http',
-    })
-    email = EmailMessage(mail_subject, message, to=[to_email])
-    if email.send():
-        messages.success(request, f'Dear {user.username}, please check your email {to_email} '
-                                   f'and click the activation link to complete registration. '
-                                   f'Check your spam folder too.')
-    else:
-        messages.error(request, f'Problem sending confirmation email to {to_email}. '
-                                  f'Please check if you typed it correctly.')
+# views.py
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.contrib.sites.models import Site
+
+def activate_email(request, user, token):
+    # Option 1: Use Sites framework (production-ready)
+    domain = Site.objects.get_current().domain
+
+    # Option 2: Override for local dev (friend’s laptop)
+    # Replace with their IP or localhost
+    if settings.DEBUG:
+        domain = "127.0.0.1:8000"   # or "192.168.1.85:8000"
+
+    activation_link = f"http://{domain}{reverse('account_confirm_email', args=[token])}"
+
+    subject = "Activate your account"
+    message = f"Hi {user.username},\n\nClick the link below to activate your account:\n{activation_link}\n\nThanks!"
+    
+    send_mail(
+        subject,
+        message,
+        "no-reply@myapp.com",
+        [user.email],
+        fail_silently=False,
+    )
+
 
 
 def activate(request, uidb64, token):

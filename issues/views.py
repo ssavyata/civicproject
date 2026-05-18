@@ -170,7 +170,7 @@ def officer_dashboard(request):
     if status_filter:
         issues = issues.filter(status=status_filter)
     
-    return render(request, 'issues/officer_dashboard.html', {'issues': issues})
+    return render(request, 'officer/officer_dashboard.html', {'issues': issues})
 
 @officer_required
 def update_issue_status(request, issue_id):
@@ -191,7 +191,84 @@ def update_issue_status(request, issue_id):
             return redirect('officer_dashboard')
     else:
         form = IssueStatusForm(instance=issue)
-    return render(request, 'issues/update_issue_status.html', {'form': form, 'issue': issue})
+    return render(request, 'officer/update_issue_status.html', {'form': form, 'issue': issue})
+
+@login_required
+@officer_required  # <-- Fixed: Added the missing '@' symbol here!
+def officer_issue_queue(request):
+    """
+    Renders a searchable, filterable master list of issues 
+    assigned specifically to the logged-in officer's department.
+    """
+    issue_list = Issue.objects.filter(department=request.user.department).order_by('-submitted_at')
+
+    # Search Query Filter
+    query = request.GET.get('q', '').strip()
+    if query:
+        if query.isdigit():
+            issue_list = issue_list.filter(Q(id=query) | Q(title__icontains=query) | Q(description__icontains=query))
+        else:
+            issue_list = issue_list.filter(Q(title__icontains=query) | Q(description__icontains=query))
+
+    # Dropdown Status and Category Filters
+    status_filter = request.GET.get('status', '').strip()
+    if status_filter:
+        issue_list = issue_list.filter(status=status_filter)
+
+    category_filter = request.GET.get('category', '').strip()
+    if category_filter:
+        issue_list = issue_list.filter(category=category_filter)
+
+    # Pagination Setup (10 issues per page)
+    paginator = Paginator(issue_list, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+    }
+    # Fixed: Points explicitly inside your 'officer' folder structure
+    return render(request, 'officer/officer_issue_queue.html', context)
+
+
+@login_required
+@officer_required
+def officer_profile(request):
+    """
+    Handles updating basic officer profile fields along with a secure 
+    password mutation form on the same page.
+    """
+    profile_form = ProfileUpdateForm(instance=request.user)
+    password_form = PasswordChangeForm(user=request.user)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'update_profile':
+            profile_form = ProfileUpdateForm(request.POST, instance=request.user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, "Your profile parameters have been updated successfully.")
+                return redirect('officer_profile')
+            else:
+                messages.error(request, "Please correct the errors in your profile information.")
+
+        elif action == 'change_password':
+            password_form = PasswordChangeForm(user=request.user, data=request.POST)
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)  # Keeps the officer logged in
+                messages.success(request, "Your password has been securely updated.")
+                return redirect('officer_profile')
+            else:
+                messages.error(request, "Password validation failed. Please check the rules.")
+
+    context = {
+        'profile_form': profile_form,
+        'password_form': password_form,
+    }
+    # Fixed: Points explicitly inside your 'officer' folder structure
+    return render(request, 'officer/officer_profile.html', context)
 
 #Notifications Views
 

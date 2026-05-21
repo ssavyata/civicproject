@@ -16,6 +16,9 @@
 </head>
 <body>
 
+{# ─── Sidebar overlay (mobile) ────────────────────────────── #}
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
 {# ─── Sidebar ──────────────────────────────────────────────── #}
 <aside class="sidebar {% block sidebar_class %}{% endblock %}">
 
@@ -100,6 +103,9 @@
   <header class="topbar topbar--white">
 
     <div class="topbar__left">
+      <button class="topbar__hamburger" id="sidebarToggle" aria-label="Toggle sidebar">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
       {% block topbar_left %}
         <h2 class="topbar__title">
           {% block page_title %}CivicReport Ward {{ request.user.ward_number|default:"12" }}{% endblock %}
@@ -163,6 +169,20 @@
 {# ─── Scripts ─────────────────────────────────────────────── #}
 {% block extra_head_scripts %}{% endblock %}
 <script src="{% static 'js/citizen.js' %}"></script>
+<script>
+  const toggle = document.getElementById('sidebarToggle');
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  function closeSidebar() {
+    sidebar.classList.remove('is-open');
+    overlay.classList.remove('is-open');
+  }
+  toggle.addEventListener('click', () => {
+    const open = sidebar.classList.toggle('is-open');
+    overlay.classList.toggle('is-open', open);
+  });
+  overlay.addEventListener('click', closeSidebar);
+</script>
 {% block extra_scripts %}{% endblock %}
 
 </body>

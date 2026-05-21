@@ -111,7 +111,7 @@
           <label class="field__label" style="margin-bottom:0;">Evidence Photos</label>
           <span id="photo-counter" style="font-size:0.75rem;color:#6b7280;font-weight:500;">0 / 5</span>
         </div>
-        <label for="id_photos" class="upload-zone" id="upload-zone-label"
+        <label for="id_images" class="upload-zone" id="upload-zone-label"
                ondragover="event.preventDefault();this.style.borderColor='#059669';"
                ondragleave="this.style.borderColor='';"
                ondrop="event.preventDefault();this.style.borderColor='';
@@ -121,7 +121,7 @@
           <span class="material-symbols-outlined">add_a_photo</span>
           <p class="upload-zone__hint">Click to upload or drag and drop</p>
           <p class="upload-zone__sub">Up to 5 photos · Max 5 MB each · JPG or PNG</p>
-          <input id="id_photos" name="photos" type="file"
+          <input id="id_images" name="images" type="file"
                  accept="image/jpeg,image/png"
                  style="display:none;"
                  onchange="previewImages(event)"
@@ -134,6 +134,50 @@
         <div id="image-preview" style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:0.75rem;"></div>
       </div>
 
+      {# Captcha #}
+      <div class="field">
+        <label class="field__label">Security Check</label>
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:1rem;display:flex;flex-direction:column;gap:0.75rem;">
+          
+          {# Captcha image + refresh button #}
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <img id="captcha-image"
+                src="{{ captcha_image }}"
+                alt="Captcha"
+                style="border-radius:6px;border:1px solid #d1fae5;height:70px;"/>
+            <button type="button"
+                    onclick="refreshCaptcha()"
+                    title="Get a new captcha"
+                    style="background:none;border:none;cursor:pointer;color:#059669;">
+              <span class="material-symbols-outlined">refresh</span>
+            </button>
+          </div>
+
+          {# Answer input #}
+          <input
+            type="text"
+            name="captcha_answer"
+            id="captcha_answer"
+            placeholder="Type the characters above"
+            class="field__input"
+            autocomplete="off"
+            required
+            style="max-width:200px;letter-spacing:0.1em;"
+          />
+          <p style="font-size:0.75rem;color:#6b7280;">
+            Not case sensitive · Click refresh for a new one
+          </p>
+
+        </div>
+
+        {% if messages %}
+          {% for message in messages %}
+            {% if 'captcha' in message.message|lower %}
+              <p class="field__error">{{ message }}</p>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
       {# Actions #}
       <div style="display:flex;align-items:center;justify-content:flex-end;gap:1rem;padding-top:1.5rem;border-top:1px solid var(--clr-emerald-50);">
         <a href="{% url 'citizen_dashboard' %}" class="btn btn--outline">Cancel</a>
@@ -142,5 +186,85 @@
 
     </form>
   </div>
+{% endblock %}
+{% block extra_scripts %}
+    <script>
+      function refreshCaptcha() {
+        fetch("{% url 'refresh_captcha' %}")
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById('captcha-image').src = data.image;
+            document.getElementById('captcha_answer').value = '';
+          });
+      }
 
+      let selectedFiles = [];
+
+      function previewImages(event) {
+        const newFiles = Array.from(event.target.files);
+        const errorBox = document.getElementById('photo-errors');
+        errorBox.innerHTML = '';
+
+        for (const file of newFiles) {
+          if (selectedFiles.length >= 5) {
+            errorBox.innerHTML = '<p style="color:red;font-size:0.8rem;">Maximum 5 photos allowed.</p>';
+            break;
+          }
+          if (file.size > 5 * 1024 * 1024) {
+            errorBox.innerHTML = `<p style="color:red;font-size:0.8rem;">${file.name} is over 5MB.</p>`;
+            continue;
+          }
+          if (!['image/jpeg', 'image/png'].includes(file.type)) {
+            errorBox.innerHTML = `<p style="color:red;font-size:0.8rem;">${file.name} must be JPG or PNG.</p>`;
+            continue;
+          }
+          selectedFiles.push(file);
+        }
+
+        updateCounter();
+        updatePreviews();
+        syncFilesToInput();
+      }
+
+      function removePhoto(index) {
+        selectedFiles.splice(index, 1);
+        updateCounter();
+        updatePreviews();
+        syncFilesToInput();
+      }
+
+      function updateCounter() {
+        document.getElementById('photo-counter').textContent = `${selectedFiles.length} / 5`;
+      }
+
+      function updatePreviews() {
+        const preview = document.getElementById('image-preview');
+        preview.innerHTML = '';
+        selectedFiles.forEach((file, index) => {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const div = document.createElement('div');
+            div.style = 'position:relative;width:80px;height:80px;';
+            div.innerHTML = `
+              <img src="${e.target.result}"
+                  style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #d1fae5;"/>
+              <button type="button"
+                      onclick="removePhoto(${index})"
+                      style="position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;
+                            border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;
+                            font-size:12px;line-height:1;padding:0;">✕</button>
+            `;
+            preview.appendChild(div);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function syncFilesToInput() {
+        const input = document.getElementById('id_images');
+        const dt = new DataTransfer();
+        selectedFiles.forEach(f => dt.items.add(f));
+        input.files = dt.files;
+      }
+    </script>
 {% endblock %}

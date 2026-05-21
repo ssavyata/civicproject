@@ -12,6 +12,8 @@
 </head>
 <body>
 
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
 <!-- ===================== SIDEBAR ===================== -->
 <aside class="sidebar">
   <div class="sidebar-brand">
@@ -49,6 +51,9 @@
 <!-- ===================== MAIN ===================== -->
 <div class="main-content">
   <header class="topbar">
+    <button class="topbar-hamburger" id="sidebarToggle" aria-label="Toggle sidebar">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
     {% block topbar_content %}
 <div>
   <div class="topbar-title">Dashboard</div>
@@ -98,6 +103,23 @@
 </div>
 
 <script src="{% static 'js/officer_base.js' %}"></script>
+<script>
+  const toggle = document.getElementById('sidebarToggle');
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  function closeSidebar() {
+    sidebar.classList.remove('is-open');
+    overlay.classList.remove('is-open');
+  }
+  toggle.addEventListener('click', () => {
+    const open = sidebar.classList.toggle('is-open');
+    overlay.classList.toggle('is-open', open);
+  });
+  overlay.addEventListener('click', closeSidebar);
+</script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>
 {% block extra_scripts %}{% endblock %}
 </body>
 </html>

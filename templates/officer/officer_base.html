@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}CivicReport{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/officer_base.css' %}"/>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- ===================== SIDEBAR ===================== -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <h1>CivicReport</h1>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="{% url 'officer_dashboard' %}" class="{% block nav_dashboard %}{% endblock %}">
+      <span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+    <a href="{% url 'officer_issue_queue' %}" class="{% block nav_queue %}{% endblock %}">
+      <span class="material-symbols-outlined">assignment_late</span>
+      Issue Queue
+    </a>
+    <a href="{% url 'officer_profile' %}" class="{% block nav_profile %}{% endblock %}">
+      <span class="material-symbols-outlined">account_circle</span>
+      Profile
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="avatar">{{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}</div>
+      <div class="sidebar-user-info">
+        <p>{{ request.user.get_full_name }}</p>
+        <p>Officer Account</p>
+      </div>
+    </div>
+    <a href="{% url 'logout' %}" class="btn-logout">
+      <span class="material-symbols-outlined icon-sm">logout</span>
+      Logout
+    </a>
+  </div>
+</aside>
+
+<!-- ===================== MAIN ===================== -->
+<div class="main-content">
+  <header class="topbar">
+    {% block topbar_content %}
+<div>
+  <div class="topbar-title">Dashboard</div>
+  <div class="topbar-sub">{{ request.user.officer.department }} · Ward {{ request.user.officer.ward }}</div>
+</div>
+<div class="notif-wrapper">
+  <div class="notif-btn" id="notifBtn" onclick="toggleNotif()">
+    <span class="material-symbols-outlined">notifications</span>
+    <span class="notif-dot"></span>
+  </div>
+  <div class="notif-panel" id="notifPanel">
+    <div class="notif-panel-header">
+      <span>Notifications</span>
+      <span>Mark all as read</span>
+    </div>
+    <div class="notif-scroll">
+      {% for notif in notifications %}
+        <div class="notif-item {% if not notif.is_read %}unread{% endif %}">
+          <p>{{ notif.message }}</p>
+          <p>{{ notif.created_at|timesince }} ago</p>
+        </div>
+      {% empty %}
+        <div class="notif-item">
+          <p>No notifications</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+  </header>
+
+  <div class="page-body">
+    {% block content %}{% endblock %}
+  </div>
+
+  <footer class="site-footer">
+    <p class="footer-copy">© 2026 Pokhara Ward 12. All Rights Reserved.</p>
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <span class="footer-divider">•</span>
+      <a href="#">Terms of Service</a>
+      <span class="footer-divider">•</span>
+      <a href="#">Contact Us</a>
+    </div>
+  </footer>
+</div>
+
+<script src="{% static 'js/officer_base.js' %}"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

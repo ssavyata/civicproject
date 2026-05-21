@@ -1,4 +1,5 @@
-{% extends "base.html" %}
+{% extends "officer/officer_base.html" %}
+{% load static %}
 
 {% block title %}Issue Queue - CivicReport{% endblock %}
 
@@ -7,142 +8,14 @@
 {% block topbar_title %}Issue Queue{% endblock %}
 
 {% block extra_head %}
-<style>
-  /* ============================
-     ISSUE QUEUE STYLES
-  ============================ */
-  .filter-bar {
-    display: flex;
-    align-items: flex-end;
-    gap: 16px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-  }
-  .filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .filter-label {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-slate-500);
-  }
-  .filter-input {
-    background: #fff;
-    border: 1px solid var(--color-slate-200);
-    border-radius: var(--radius-md);
-    padding: 8px 16px;
-    font-size: 14px;
-    color: var(--color-on-surface);
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    min-width: 200px;
-  }
-  .filter-select {
-    background: #fff;
-    border: 1px solid var(--color-slate-200);
-    border-radius: var(--radius-md);
-    padding: 8px 40px 8px 16px;
-    font-size: 14px;
-    color: var(--color-on-surface);
-    outline: none;
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    cursor: pointer;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    min-width: 180px;
-    height: 40px;
-  }
-  .filter-input:focus, .filter-select:focus {
-    border-color: #10b981;
-    box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
-  }
-
-  .queue-card {
-    background: #fff;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--color-slate-100);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-  }
-
-  /* Issue queue table tweaks */
-  .iq-table { width: 100%; border-collapse: collapse; text-align: left; }
-  .iq-table thead { background: rgba(240,253,244,0.5); }
-  .iq-table th {
-    padding: 16px 24px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-slate-500);
-    white-space: nowrap;
-  }
-  .iq-table th:last-child { text-align: right; }
-  .iq-table td {
-    padding: 20px 24px;
-    font-size: 14px;
-    border-bottom: 1px solid var(--color-slate-100);
-  }
-  .iq-table tbody tr:last-child td { border-bottom: none; }
-  .iq-table tbody tr:hover { background: rgba(248,250,252,0.5); }
-  .iq-table td:last-child { text-align: right; }
-
-  /* Pagination */
-  .pagination-bar {
-    padding: 12px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid var(--color-slate-100);
-    background: rgba(248,250,252,0.3);
-  }
-  .pagination-info { font-size: 12px; color: var(--color-slate-500); }
-  .pagination-controls { display: flex; align-items: center; gap: 6px; }
-  .page-btn {
-    height: 32px;
-    min-width: 32px;
-    padding: 0 6px;
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-    color: var(--color-slate-600);
-    background: transparent;
-  }
-  .page-btn:hover { background: var(--color-slate-200); }
-  .page-btn.active {
-    background: #065F46;
-    color: #fff;
-    box-shadow: var(--shadow-sm);
-  }
-  .page-btn-nav {
-    font-size: 13px;
-    color: var(--color-accent);
-    font-weight: 600;
-    padding: 0 8px;
-    height: 32px;
-    cursor: pointer;
-    transition: color 0.15s;
-    background: transparent;
-  }
-  .page-btn-nav:hover { color: #065F46; }
-  .page-btn-nav.disabled { color: var(--color-slate-400); pointer-events: none; }
-</style>
+<link rel="stylesheet" href="{% static 'css/issue_queue.css' %}"/>
 {% endblock %}
 
 {% block content %}
 <!-- Page Header -->
 <div class="page-header">
   <h2>Issue Queue</h2>
-  <p>All issues assigned to your department — Water Supply, Ward 12.</p>
+  <p>All issues assigned to your department — {{ request.user.officer.department }}, Ward {{ request.user.officer.ward }}.</p>
 </div>
 
 <!-- Filters -->
@@ -157,10 +30,10 @@
     <span class="filter-label">Status</span>
     <select class="filter-select" onchange="filterByStatus(this.value)">
       <option value="">All Statuses</option>
-      <option value="pending"     {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
-      <option value="in_progress" {% if request.GET.status == 'in_progress' %}selected{% endif %}>In Progress</option>
-      <option value="resolved"    {% if request.GET.status == 'resolved' %}selected{% endif %}>Resolved</option>
-      <option value="rejected"    {% if request.GET.status == 'rejected' %}selected{% endif %}>Rejected</option>
+      <option value="pending"      {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+      <option value="in_progress"  {% if request.GET.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+      <option value="resolved"     {% if request.GET.status == 'resolved' %}selected{% endif %}>Resolved</option>
+      <option value="rejected"     {% if request.GET.status == 'rejected' %}selected{% endif %}>Rejected</option>
     </select>
   </div>
   <div class="filter-group">
@@ -197,80 +70,16 @@
             <a href="{% url 'officer_update_status' issue.id %}" class="td-link">{{ issue.title }}</a>
           </td>
           <td class="td-date">{{ issue.submitted_date|date:"M d, Y" }}</td>
-          <td>
-            {% if issue.status == 'pending' %}
-              <span class="badge badge-pending">Pending</span>
-            {% elif issue.status == 'in_progress' %}
-              <span class="badge badge-progress">In Progress</span>
-            {% elif issue.status == 'resolved' %}
-              <span class="badge badge-resolved">Resolved</span>
-            {% elif issue.status == 'rejected' %}
-              <span class="badge badge-rejected">Rejected</span>
-            {% elif issue.status == 'acknowledged' %}
-              <span class="badge badge-acknowledge">Acknowledged</span>
-            {% endif %}
-          </td>
+          <td>{% include "partials/badge_status.html" with status=issue.status %}</td>
           <td>
             <a href="{% url 'officer_update_status' issue.id %}" class="td-action">Manage</a>
           </td>
         </tr>
         {% empty %}
-        <!-- Static fallback for design preview -->
         <tr>
-          <td class="td-mono">CR-2024-0051</td>
-          <td><a href="#" class="td-link">Leaking Main Pipeline</a></td>
-          <td class="td-date">Dec 10, 2024</td>
-          <td><span class="badge badge-pending">Pending</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
-        </tr>
-        <tr>
-          <td class="td-mono">CR-2024-0049</td>
-          <td><a href="#" class="td-link">No Water Supply for 3 Days</a></td>
-          <td class="td-date">Dec 09, 2024</td>
-          <td><span class="badge badge-progress">In Progress</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
-        </tr>
-        <tr>
-          <td class="td-mono">CR-2024-0047</td>
-          <td><a href="#" class="td-link">Burst Pipe near School</a></td>
-          <td class="td-date">Dec 08, 2024</td>
-          <td><span class="badge badge-progress">In Progress</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
-        </tr>
-        <tr>
-          <td class="td-mono">CR-2024-0044</td>
-          <td><a href="#" class="td-link">Contaminated Water Report</a></td>
-          <td class="td-date">Dec 06, 2024</td>
-          <td><span class="badge badge-pending">Pending</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
-        </tr>
-        <tr>
-          <td class="td-mono">CR-2024-0040</td>
-          <td><a href="#" class="td-link">Water Meter Damage</a></td>
-          <td class="td-date">Dec 03, 2024</td>
-          <td><span class="badge badge-resolved">Resolved</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
-        </tr>
-        <tr>
-          <td class="td-mono">CR-2024-0038</td>
-          <td><a href="#" class="td-link">Broken Water Tap at Park</a></td>
-          <td class="td-date">Dec 01, 2024</td>
-          <td><span class="badge badge-pending">Pending</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
-        </tr>
-        <tr>
-          <td class="td-mono">CR-2024-0035</td>
-          <td><a href="#" class="td-link">Pipeline Blockage</a></td>
-          <td class="td-date">Nov 28, 2024</td>
-          <td><span class="badge badge-pending">Pending</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
-        </tr>
-        <tr>
-          <td class="td-mono">CR-2024-0031</td>
-          <td><a href="#" class="td-link">Low Water Pressure</a></td>
-          <td class="td-date">Nov 25, 2024</td>
-          <td><span class="badge badge-resolved">Resolved</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
+          <td colspan="5" style="text-align:center; color:var(--color-slate-400); padding:40px;">
+            No issues found matching your filters.
+          </td>
         </tr>
         {% endfor %}
       </tbody>
@@ -280,12 +89,12 @@
   <!-- Pagination -->
   <div class="pagination-bar">
     <p class="pagination-info">
-      Showing {{ page_obj.start_index|default:"1" }}–{{ page_obj.end_index|default:"8" }}
-      of {{ page_obj.paginator.count|default:"18" }} assigned issues
+      Showing {{ page_obj.start_index }}–{{ page_obj.end_index }}
+      of {{ page_obj.paginator.count }} assigned issues
     </p>
     <div class="pagination-controls">
       {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">
           <button class="page-btn-nav">Prev</button>
         </a>
       {% else %}
@@ -293,17 +102,13 @@
       {% endif %}
 
       {% for num in page_obj.paginator.page_range %}
-        <a href="?page={{ num }}">
+        <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">
           <button class="page-btn {% if page_obj.number == num %}active{% endif %}">{{ num }}</button>
         </a>
-      {% empty %}
-        <button class="page-btn active">1</button>
-        <button class="page-btn">2</button>
-        <button class="page-btn">3</button>
       {% endfor %}
 
       {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">
           <button class="page-btn-nav">Next</button>
         </a>
       {% else %}
@@ -315,33 +120,5 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script>
-  // Client-side search filter (supplements server-side filtering)
-  function filterTable(query) {
-    const rows = document.querySelectorAll('#issueTable tbody tr');
-    const q = query.toLowerCase();
-    rows.forEach(row => {
-      const text = row.textContent.toLowerCase();
-      row.style.display = text.includes(q) ? '' : 'none';
-    });
-  }
-
-  // Status filter — submits form to server
-  function filterByStatus(val) {
-    const url = new URL(window.location.href);
-    if (val) url.searchParams.set('status', val);
-    else url.searchParams.delete('status');
-    url.searchParams.delete('page');
-    window.location.href = url.toString();
-  }
-
-  // Category filter — submits form to server
-  function filterByCategory(val) {
-    const url = new URL(window.location.href);
-    if (val) url.searchParams.set('category', val);
-    else url.searchParams.delete('category');
-    url.searchParams.delete('page');
-    window.location.href = url.toString();
-  }
-</script>
+<script src="{% static 'js/issue_queue.js' %}"></script>
 {% endblock %}

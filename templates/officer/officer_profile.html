@@ -1,4 +1,5 @@
-{% extends "base.html" %}
+{% extends "officer/officer_base.html" %}
+{% load static %}
 
 {% block title %}Officer Profile - CivicReport{% endblock %}
 
@@ -7,83 +8,7 @@
 {% block topbar_title %}Profile{% endblock %}
 
 {% block extra_head %}
-<style>
-  /* ============================
-     PROFILE PAGE STYLES
-  ============================ */
-  .profile-avatar {
-    width: 56px; height: 56px;
-    border-radius: 9999px;
-    background: var(--color-primary-dark);
-    display: flex; align-items: center; justify-content: center;
-    color: #fff;
-    font-size: 20px;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-  .profile-meta h3 {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--color-on-surface);
-    line-height: 1.2;
-  }
-  .profile-meta p {
-    font-size: 14px;
-    color: var(--color-on-surface-variant);
-    margin-top: 2px;
-  }
-  .profile-user-row {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    margin-bottom: 32px;
-  }
-
-  /* Password strength indicator */
-  .pw-strength {
-    height: 4px;
-    border-radius: 2px;
-    background: var(--color-slate-200);
-    margin-top: 8px;
-    overflow: hidden;
-  }
-  .pw-strength-bar {
-    height: 100%;
-    border-radius: 2px;
-    width: 0%;
-    transition: width 0.3s, background 0.3s;
-  }
-  .pw-hint {
-    font-size: 11px;
-    color: var(--color-slate-500);
-    margin-top: 4px;
-  }
-
-  /* Save feedback */
-  .save-feedback {
-    display: none;
-    align-items: center;
-    gap: 6px;
-    color: #065F46;
-    font-size: 14px;
-    font-weight: 600;
-    margin-left: 16px;
-  }
-  .save-feedback.visible { display: flex; }
-
-  /* Alert / messages */
-  .alert {
-    padding: 12px 16px;
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .alert-success { background: #d1fae5; color: #065F46; border: 1px solid #6ee7b7; }
-  .alert-error   { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-</style>
+<link rel="stylesheet" href="{% static 'css/profile.css' %}"/>
 {% endblock %}
 
 {% block content %}
@@ -119,7 +44,7 @@
         </div>
         <div class="profile-meta">
           <h3>{{ request.user.get_full_name }}</h3>
-          <p>{{ officer.department|default:"Water Supply Department" }} • Ward {{ officer.ward|default:"12" }}</p>
+          <p>{{ request.user.officer.department }} • Ward {{ request.user.officer.ward }}</p>
         </div>
       </div>
 
@@ -135,33 +60,25 @@
 
         <div class="form-group">
           <label class="form-label">Email Address</label>
-          <div>
-            <p class="form-readonly">{{ request.user.email }}</p>
-            <p class="form-readonly-note">(cannot be changed)</p>
-          </div>
+          <p class="form-readonly">{{ request.user.email }}</p>
+          <p class="form-readonly-note">(cannot be changed)</p>
         </div>
 
         <div class="form-group">
           <label class="form-label">Department</label>
-          <div>
-            <p class="form-readonly">{{ officer.department|default:"Water Supply" }}</p>
-            <p class="form-readonly-note">(assigned by admin)</p>
-          </div>
+          <p class="form-readonly">{{ request.user.officer.department }}</p>
+          <p class="form-readonly-note">(assigned by admin)</p>
         </div>
 
         <div class="form-group">
           <label class="form-label">Phone Number</label>
           <input type="tel" name="phone" class="form-input"
-                 value="{{ officer.phone|default:'' }}"
+                 value="{{ request.user.officer.phone }}"
                  placeholder="98XXXXXXXX"/>
         </div>
 
         <div style="display:flex; align-items:center; padding-top:8px;">
           <button type="submit" class="btn btn-primary">Save Changes</button>
-          <div class="save-feedback" id="saveProfileFeedback">
-            <span class="material-symbols-outlined icon-sm">check_circle</span>
-            Saved!
-          </div>
         </div>
       </form>
     </div>
@@ -173,7 +90,7 @@
       <h4>Change Password</h4>
     </div>
     <div class="card-body">
-      <form method="post" action="{% url 'officer_profile' %}" class="space-y-6" id="passwordForm">
+      <form method="post" action="{% url 'officer_profile' %}" class="space-y-6">
         {% csrf_token %}
         <input type="hidden" name="form_type" value="password"/>
 
@@ -223,48 +140,5 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script>
-  // Toggle password visibility
-  function togglePw(iconEl) {
-    const wrapper = iconEl.closest('.input-wrapper');
-    const input = wrapper.querySelector('input');
-    if (input.type === 'password') {
-      input.type = 'text';
-      iconEl.textContent = 'visibility_off';
-    } else {
-      input.type = 'password';
-      iconEl.textContent = 'visibility';
-    }
-  }
-
-  // Password strength meter
-  function checkStrength(val) {
-    const bar = document.getElementById('pwBar');
-    const hint = document.getElementById('pwHint');
-    let score = 0;
-    if (val.length >= 8)  score++;
-    if (/[A-Z]/.test(val)) score++;
-    if (/[0-9]/.test(val)) score++;
-    if (/[^A-Za-z0-9]/.test(val)) score++;
-
-    const levels = [
-      { pct: '0%',   color: '',        label: 'Enter a new password' },
-      { pct: '25%',  color: '#ef4444', label: 'Weak' },
-      { pct: '50%',  color: '#f59e0b', label: 'Fair' },
-      { pct: '75%',  color: '#3b82f6', label: 'Good' },
-      { pct: '100%', color: '#10b981', label: 'Strong' },
-    ];
-    const lvl = levels[score];
-    bar.style.width = lvl.pct;
-    bar.style.background = lvl.color;
-    hint.textContent = lvl.label;
-    hint.style.color = lvl.color || '#64748b';
-  }
-
-  // Show save confirmation on AJAX-free submit (optional enhancement)
-  document.getElementById('profileForm').addEventListener('submit', function(e) {
-    // Let Django handle the POST. The success message comes from messages framework.
-    // Optionally add client-side loading state here.
-  });
-</script>
+<script src="{% static 'js/profile.js' %}"></script>
 {% endblock %}

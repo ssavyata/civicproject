@@ -1,4 +1,5 @@
-{% extends "base.html" %}
+{% extends "officer/officer_base.html" %}
+{% load static %}
 
 {% block title %}Officer Dashboard - CivicReport{% endblock %}
 
@@ -7,192 +8,33 @@
 {% block topbar_title %}Dashboard{% endblock %}
 
 {% block extra_head %}
-<style>
-  /* ============================
-     DASHBOARD-SPECIFIC STYLES
-  ============================ */
-  .summary-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-    margin-bottom: 40px;
-  }
-
-  .stat-card {
-    background: #fff;
-    border: 1px solid #d1fae5;
-    border-radius: 8px;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    border-left-width: 4px;
-    border-left-style: solid;
-  }
-  .stat-card .stat-label {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-on-surface-variant);
-    margin-bottom: 8px;
-  }
-  .stat-card .stat-value {
-    font-size: 32px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-  }
-  .stat-total  { border-left-color: #006b2c; }
-  .stat-total .stat-value  { color: var(--color-primary-darker); }
-  .stat-pending { border-left-color: #ba1a1a; }
-  .stat-pending .stat-value { color: #ba1a1a; }
-  .stat-progress { border-left-color: #f59e0b; }
-  .stat-progress .stat-label { color: #f59e0b; }
-  .stat-progress .stat-value { color: #f59e0b; }
-  .stat-resolved { border-left-color: #006d30; }
-  .stat-resolved .stat-label { color: #006d30; }
-  .stat-resolved .stat-value { color: #006d30; }
-
-  .section-card {
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid #d1fae5;
-    overflow: hidden;
-  }
-  .section-card-header {
-    padding: 20px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .section-card-header h3 {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-primary-darker);
-  }
-  .section-card-header a {
-    color: var(--color-accent);
-    font-size: 13px;
-    font-weight: 700;
-  }
-  .section-card-header a:hover { text-decoration: underline; }
-
-  .welcome-header { margin-bottom: 32px; }
-  .welcome-header h1 {
-    font-size: 32px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--color-primary-darker);
-    line-height: 1.2;
-  }
-  .welcome-header p {
-    font-size: 16px;
-    color: var(--color-on-surface-variant);
-    margin-top: 4px;
-  }
-
-  /* Notification dropdown */
-  .notif-wrapper { position: relative; }
-  .notif-panel {
-    display: none;
-    position: absolute;
-    right: 0; top: calc(100% + 8px);
-    width: 320px;
-    background: #fff;
-    border: 1px solid var(--color-slate-200);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-xl);
-    z-index: 999;
-  }
-  .notif-panel-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--color-slate-200);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .notif-panel-header span:first-child { font-size: 14px; font-weight: 700; }
-  .notif-panel-header span:last-child {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-primary);
-    cursor: pointer;
-  }
-  .notif-scroll { max-height: 260px; overflow-y: auto; }
-  .notif-item {
-    padding: 14px 16px;
-    border-bottom: 1px solid rgba(189,202,186,0.3);
-    transition: background 0.1s;
-  }
-  .notif-item:hover { background: var(--color-slate-50); }
-  .notif-item.unread { background: #d1fae5; }
-  .notif-item.unread:hover { background: #bbf7d0; }
-  .notif-item p:first-child { font-size: 14px; font-weight: 500; }
-  .notif-item p:last-child { font-size: 11px; color: var(--color-on-surface-variant); margin-top: 2px; }
-</style>
-{% endblock %}
-
-{% block topbar_content %}
-<div>
-  <div class="topbar-title">Dashboard</div>
-  <div class="topbar-sub">Water Supply Department · Ward 12</div>
-</div>
-<div class="notif-wrapper">
-  <div class="notif-btn" id="notifBtn" onclick="toggleNotif()">
-    <span class="material-symbols-outlined">notifications</span>
-    <span class="notif-dot"></span>
-  </div>
-  <div class="notif-panel" id="notifPanel">
-    <div class="notif-panel-header">
-      <span>Notifications</span>
-      <span>Mark all as read</span>
-    </div>
-    <div class="notif-scroll">
-      <div class="notif-item unread">
-        <p>New pipe leak reported - Ward 12</p>
-        <p>2 mins ago</p>
-      </div>
-      <div class="notif-item unread">
-        <p>Urgent: Main line maintenance required</p>
-        <p>1 hour ago</p>
-      </div>
-      <div class="notif-item">
-        <p>Issue #WS-451 was resolved</p>
-        <p>4 hours ago</p>
-      </div>
-    </div>
-  </div>
-</div>
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}"/>
 {% endblock %}
 
 {% block content %}
 <!-- Welcome Header -->
 <header class="welcome-header">
   <h1>Welcome, {{ request.user.get_full_name }}</h1>
-  <p>Water Supply Department · Ward 12</p>
+  <p>{{ request.user.officer.department }} · Ward {{ request.user.officer.ward }}</p>
 </header>
 
 <!-- Summary Stats -->
 <div class="summary-grid">
   <div class="stat-card stat-total">
     <span class="stat-label">Total Assigned</span>
-    <span class="stat-value">{{ total_assigned|default:"18" }}</span>
+    <span class="stat-value">{{ total_assigned }}</span>
   </div>
   <div class="stat-card stat-pending">
     <span class="stat-label">Pending</span>
-    <span class="stat-value">{{ pending_count|default:"6" }}</span>
+    <span class="stat-value">{{ pending_count }}</span>
   </div>
   <div class="stat-card stat-progress">
     <span class="stat-label">In Progress</span>
-    <span class="stat-value">{{ in_progress_count|default:"8" }}</span>
+    <span class="stat-value">{{ in_progress_count }}</span>
   </div>
   <div class="stat-card stat-resolved">
     <span class="stat-label">Resolved</span>
-    <span class="stat-value">{{ resolved_count|default:"4" }}</span>
+    <span class="stat-value">{{ resolved_count }}</span>
   </div>
 </div>
 
@@ -220,54 +62,15 @@
           <td><a href="{% url 'officer_update_status' issue.id %}" class="td-link">{{ issue.title }}</a></td>
           <td class="td-date">{{ issue.submitted_date|date:"M d, Y" }}</td>
           <td>
-            {% if issue.status == 'pending' %}
-              <span class="badge badge-pending">Pending</span>
-            {% elif issue.status == 'in_progress' %}
-              <span class="badge badge-progress">In Progress</span>
-            {% elif issue.status == 'resolved' %}
-              <span class="badge badge-resolved">Resolved</span>
-            {% elif issue.status == 'rejected' %}
-              <span class="badge badge-rejected">Rejected</span>
-            {% endif %}
+            {% include "partials/badge_status.html" with status=issue.status %}
           </td>
           <td><a href="{% url 'officer_update_status' issue.id %}" class="td-action">Manage</a></td>
         </tr>
         {% empty %}
-        <!-- Static fallback for design preview -->
         <tr>
-          <td class="td-mono">CR-2024-0051</td>
-          <td><a href="#" class="td-link">Leaking Main Pipeline</a></td>
-          <td class="td-date">Dec 10, 2024</td>
-          <td><span class="badge badge-pending">Pending</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
-        </tr>
-        <tr>
-          <td class="td-mono">CR-2024-0049</td>
-          <td><a href="#" class="td-link">No Water Supply for 3 Days</a></td>
-          <td class="td-date">Dec 09, 2024</td>
-          <td><span class="badge badge-progress">In Progress</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
-        </tr>
-        <tr>
-          <td class="td-mono">CR-2024-0047</td>
-          <td><a href="#" class="td-link">Burst Pipe near School</a></td>
-          <td class="td-date">Dec 08, 2024</td>
-          <td><span class="badge badge-progress">In Progress</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
-        </tr>
-        <tr>
-          <td class="td-mono">CR-2024-0044</td>
-          <td><a href="#" class="td-link">Contaminated Water Report</a></td>
-          <td class="td-date">Dec 06, 2024</td>
-          <td><span class="badge badge-pending">Pending</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
-        </tr>
-        <tr>
-          <td class="td-mono">CR-2024-0040</td>
-          <td><a href="#" class="td-link">Water Meter Damage</a></td>
-          <td class="td-date">Dec 03, 2024</td>
-          <td><span class="badge badge-resolved">Resolved</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
+          <td colspan="5" style="text-align:center; color:var(--color-slate-400); padding:40px;">
+            No issues assigned yet.
+          </td>
         </tr>
         {% endfor %}
       </tbody>

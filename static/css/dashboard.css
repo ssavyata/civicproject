@@ -123,3 +123,13 @@
 .notif-item.unread:hover { background: #bbf7d0; }
 .notif-item p:first-child { font-size: 14px; font-weight: 500; }
 .notif-item p:last-child  { font-size: 11px; color: var(--color-on-surface-variant); margin-top: 2px; }
+
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .summary-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .summary-grid { grid-template-columns: 1fr; }
+  .welcome-header h1 { font-size: 24px; }
+}

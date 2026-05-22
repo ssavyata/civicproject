@@ -1,3 +1,4 @@
+from .captcha import generate_captcha_text, generate_captcha_image
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
@@ -149,33 +150,49 @@ def profile(request):
 
 @login_required
 def report_issue(request):
+    captcha_text = generate_captcha_text()
+    captcha_image = generate_captcha_image(captcha_text)
+
     if request.method == 'POST':
-        # Pass request.FILES to the form so it can validate file presence/types
         form = IssueReportForm(request.POST, request.FILES)
-        
-        # Ensure this key matches your form field name (e.g., 'images' or 'photos')
-        files = request.FILES.getlist('photos') 
+        files = request.FILES.getlist('images')
+
+        user_answer = request.POST.get('captcha_answer', '').strip().lower()
+        correct_answer = request.session.get('captcha_text', '').lower()
+
+        if user_answer != correct_answer:
+            captcha_text = generate_captcha_text()
+            request.session['captcha_text'] = captcha_text
+            captcha_image = generate_captcha_image(captcha_text)
+            messages.error(request, 'Incorrect captcha. Please try again.')
+            return render(request, 'citizen/report_issue.html', {
+                'form': form,
+                'captcha_image': captcha_image,
+            })
 
         if form.is_valid():
             issue = form.save(commit=False)
             issue.citizen = request.user
-            # Automatically set the ward based on the logged-in user's profile
-            issue.ward_number = request.user.ward_number 
+            issue.ward_number = request.user.ward_number
             issue.save()
 
-            # ✅ Save multiple photos using the 'files' list retrieved above
             for photo in files:
                 IssuePhoto.objects.create(issue=issue, image=photo)
 
-            # Custom logic to notify or route the issue to the correct department
-            assign_issue(issue) 
-            
+            assign_issue(issue)
             messages.success(request, 'Issue reported successfully! We will look into it.')
             return redirect('my_issues')
+
     else:
         form = IssueReportForm()
-    
-    return render(request, 'citizen/report_issue.html', {'form': form})
+        captcha_text = generate_captcha_text()
+        request.session['captcha_text'] = captcha_text
+        captcha_image = generate_captcha_image(captcha_text)
+
+    return render(request, 'citizen/report_issue.html', {
+        'form': form,
+        'captcha_image': captcha_image,
+    })
 
 @citizen_required
 def my_issues(request):
@@ -203,7 +220,7 @@ def my_issues(request):
 @citizen_required
 def issue_detail(request, issue_id):
     issue = get_object_or_404(Issue, id=issue_id, citizen=request.user)
-    return render(request, 'issues/issue_detail.html', {'issue': issue})
+    return render(request, 'citizen/issue_detail.html', {'issue': issue})
 
 @citizen_required
 def submit_feedback(request, issue_id):
@@ -594,3 +611,10 @@ def admin_manage_users(request):
         'departments': departments,
     }
     return render(request, 'admin/manage_users.html', context)
+
+def refresh_captcha(request):
+    from django.http import JsonResponse
+    captcha_text = generate_captcha_text()
+    request.session['captcha_text'] = captcha_text
+    captcha_image = generate_captcha_image(captcha_text)
+    return JsonResponse({'image': captcha_image})

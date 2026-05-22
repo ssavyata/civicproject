@@ -20,7 +20,7 @@ load_dotenv()  # loads the .env file
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
+# Quick-start development settings - unsuitable for production 
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -52,7 +52,12 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+
+    'django_recaptcha',
 ]
+# reCAPTCHA
+RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')
 
 SITE_ID = 2
 
@@ -154,22 +159,17 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'lunaagg1@gmail.com'
 EMAIL_HOST_USER = 'lunaagg1@gmail.com'
 EMAIL_HOST_PASSWORD = 'rraw cdmh hiai nuow'
+DEFAULT_FROM_EMAIL= 'lunaagg1@gmail.com'
 
 PASSWORD_RESET_TIMEOUT = 14400 
 
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 
-SOCIALACCOUNT_AUTO_SIGNUP = True
-SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
-
-LOGIN_URL = 'login/'
-LOGIN_REDIRECT_URL = 'dashboard/'
-ACCOUNT_SIGNUP_REDIRECT_URL = 'login/'
+#SOCIALACCOUNT_AUTO_SIGNUP = True
+#SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
 

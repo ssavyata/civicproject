@@ -173,3 +173,14 @@
   letter-spacing: 0.08em;
   color: #64748b;
 }
+
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 900px) {
+  .update-grid { grid-template-columns: 1fr; }
+  .issue-page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .issue-page-header h1 { font-size: 24px; }
+  .detail-meta-grid { grid-template-columns: 1fr; }
+  .meta-divider { grid-column: span 1; }
+  .photos-grid { overflow-x: auto; flex-wrap: nowrap; }
+}

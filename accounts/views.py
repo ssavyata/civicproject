@@ -15,6 +15,11 @@ from allauth.account.models import EmailAddress
 from allauth.account.views import ConfirmEmailView
 import random
 
+# Core configuration utilities
+from django.conf import settings
+from django.urls import reverse
+from django.contrib.sites.models import Site
+
 
 @user_not_authenticated
 def register(request):
@@ -26,8 +31,10 @@ def register(request):
             user.ward_number = 12
             user.is_active = False
             user.save()
-            activateEmail(request, user, form.cleaned_data.get('email'))
-            # ✅ FIX 1: Don't redirect to login yet — user needs to verify email first
+            
+            # ✅ Sends token correctly to matching snake_case utility
+            activate_email(request, user, form.cleaned_data.get('email'))
+            
             return render(request, 'register.html', {'form': form, 'email_sent': True})
         else:
             for error in form.errors.values():
@@ -38,34 +45,17 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 
-# views.py
-from django.core.mail import send_mail
-from django.urls import reverse
-from django.contrib.sites.models import Site
-
-def activate_email(request, user, token):
-    # Option 1: Use Sites framework (production-ready)
-    domain = Site.objects.get_current().domain
-
-    # Option 2: Override for local dev (friend’s laptop)
-    # Replace with their IP or localhost
-    if settings.DEBUG:
-        domain = "127.0.0.1:8000"   # or "192.168.1.85:8000"
-
-    activation_link = f"http://{domain}{reverse('account_confirm_email', args=[token])}"
-
-    subject = "Activate your account"
-    message = f"Hi {user.username},\n\nClick the link below to activate your account:\n{activation_link}\n\nThanks!"
-    
-    send_mail(
-        subject,
-        message,
-        "no-reply@myapp.com",
-        [user.email],
-        fail_silently=False,
-    )
-
-
+def activate_email(request, user, to_email):
+    mail_subject = 'Activate your account'
+    message = render_to_string('activate_account.html', {
+        'user': user,
+        'domain': get_current_site(request).domain,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': account_activation_token.make_token(user),
+        'protocol': 'http' if settings.DEBUG else 'https',
+    })
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    email.send()
 
 def activate(request, uidb64, token):
     User = get_user_model()
@@ -87,6 +77,7 @@ def activate(request, uidb64, token):
     else:
         messages.error(request, 'Activation link is invalid or has expired.')
         return redirect('register')  # ✅ FIX 3: Send back to register, not login, on failure
+
 
 
 def user_login(request):

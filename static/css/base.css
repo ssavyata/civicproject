@@ -261,3 +261,89 @@
       font-weight: 500;
       text-shadow: 0 1px 3px rgba(0,0,0,0.4);
     }
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE ADDITIONS
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Responsive spacing tokens ────────────────────────── */
+@media (max-width: 768px) {
+  :root {
+    --space-section: 40px;
+    --space-page-x:  16px;
+    --space-lg:      24px;
+    --fs-headline:   20px;
+    --fs-title:      16px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --space-section: 24px;
+    --space-page-x:  12px;
+  }
+}
+
+/* ── site-main: stop centering on small screens ───────── */
+@media (max-width: 768px) {
+  .site-main {
+    align-items: flex-start;
+    padding: var(--space-section) var(--space-page-x);
+    margin-top: 56px;
+  }
+}
+
+/* ── Responsive tables ────────────────────────────────── */
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  table {
+    min-width: 560px;
+  }
+}
+
+/* ── Responsive grid helpers ──────────────────────────── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-gutter);
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-gutter);
+}
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-gutter);
+}
+
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .grid-2,
+  .grid-3,
+  .grid-4 { grid-template-columns: 1fr; }
+}
+
+/* ── Card: reduce padding on mobile ───────────────────── */
+@media (max-width: 480px) {
+  .card { padding: var(--space-md); }
+}
+
+/* ── Buttons: full-width on mobile ───────────────────── */
+@media (max-width: 480px) {
+  .btn-sm-full { width: 100%; }
+}
+
+/* ── Utility: hide/show at breakpoints ───────────────── */
+@media (max-width: 768px)  { .hide-mobile  { display: none !important; } }
+@media (min-width: 769px)  { .hide-desktop { display: none !important; } }
+@media (max-width: 1024px) { .hide-tablet  { display: none !important; } }

@@ -28,6 +28,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')), # For built-in auth views
     path('issues/', include('issues.urls')),
     path('accounts/', include('issues.urls')),  # Include issue-related URLs for authenticated users
+    path('refresh-captcha/', issue_views.refresh_captcha, name='refresh_captcha'),
     path('notifications/', include('notifications.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

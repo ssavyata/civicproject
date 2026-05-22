@@ -1,7 +1,29 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/header.css' %}"/>
+
 <header class="site-header">
   <div class="site-header__inner">
     <a class="site-header__brand" href="/">Pokhara Ward 12</a>
+
+    <!-- Nav links (desktop) -->
+    <nav class="site-header__nav" id="siteNav">
+      {% block nav_links %}{% endblock %}
+    </nav>
+
+    <!-- Hamburger button (mobile only) -->
+    <button class="site-header__hamburger" id="hamburgerBtn" aria-label="Toggle menu" aria-expanded="false">
+      <span class="hamburger-bar"></span>
+      <span class="hamburger-bar"></span>
+      <span class="hamburger-bar"></span>
+    </button>
   </div>
 </header>
+
+<script>
+  const btn = document.getElementById('hamburgerBtn');
+  const nav = document.getElementById('siteNav');
+  btn.addEventListener('click', () => {
+    const open = nav.classList.toggle('is-open');
+    btn.setAttribute('aria-expanded', open);
+  });
+</script>

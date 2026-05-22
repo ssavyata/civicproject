@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block title %}My Issues - CivicReport{% endblock %}
-
 {% block page_title %}My Issues{% endblock %}
 
 {% block content %}
@@ -18,15 +17,42 @@
     </a>
   </div>
 
-  {# ─── Filter tabs ─────────────────────────────────────────── #}
-  <div class="filter-tabs">
-    {% for label, value in filter_options %}
-      <a href="?status={{ value }}"
-         class="filter-tab {% if current_filter == value %}filter-tab--active{% endif %}">
-        {{ label }}
-      </a>
-    {% endfor %}
-  </div>
+  {# ─── Filter Bar ───────────────────────────────────────────── #}
+  <form method="GET" style="background:var(--clr-surface-container-lowest);border:1px solid var(--clr-emerald-100);border-radius:var(--radius-xl);padding:1.25rem 1.5rem;margin-bottom:1.5rem;">
+    <div style="display:flex;align-items:flex-end;gap:1rem;flex-wrap:wrap;">
+
+      <div class="field" style="flex:1;min-width:10rem;">
+        <label class="field__label">Status</label>
+        <select name="status" class="field__select">
+          <option value="">All</option>
+          <option value="submitted"   {% if status_filter == 'submitted'   %}selected{% endif %}>Pending</option>
+          <option value="assigned"    {% if status_filter == 'assigned'    %}selected{% endif %}>Assigned</option>
+          <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>In Progress</option>
+          <option value="resolved"    {% if status_filter == 'resolved'    %}selected{% endif %}>Resolved</option>
+          <option value="rejected"    {% if status_filter == 'rejected'    %}selected{% endif %}>Rejected</option>
+        </select>
+      </div>
+
+      <div class="field" style="flex:1;min-width:10rem;">
+        <label class="field__label">Category</label>
+        <select name="category" class="field__select">
+          <option value="">All</option>
+          <option value="pothole"     {% if category_filter == 'pothole'     %}selected{% endif %}>Pothole</option>
+          <option value="streetlight" {% if category_filter == 'streetlight' %}selected{% endif %}>Street Lighting</option>
+          <option value="water"       {% if category_filter == 'water'       %}selected{% endif %}>Water Supply</option>
+          <option value="waste"       {% if category_filter == 'waste'       %}selected{% endif %}>Waste</option>
+          <option value="drainage"    {% if category_filter == 'drainage'    %}selected{% endif %}>Drainage</option>
+          <option value="other"       {% if category_filter == 'other'       %}selected{% endif %}>Other</option>
+        </select>
+      </div>
+
+      <div style="display:flex;gap:0.5rem;padding-bottom:1px;">
+        <button type="submit" class="btn btn--primary">Filter</button>
+        <a href="{% url 'my_issues' %}" class="btn btn--outline">Clear</a>
+      </div>
+
+    </div>
+  </form>
 
   {% if issues %}
     <div class="space-y-4">
@@ -69,7 +95,7 @@
                 </span>
                 <span>
                   <span class="material-symbols-outlined">schedule</span>
-                  {{ issue.created_at|date:"M d, Y" }}
+                  {{ issue.submitted_at|date:"M d, Y" }}
                 </span>
               </div>
               <a href="{% url 'issue_detail' issue.id %}" class="issue-card__detail-link">
@@ -90,8 +116,8 @@
       </div>
       <h3 class="empty-state__title">No issues yet</h3>
       <p class="empty-state__desc">
-        {% if current_filter and current_filter != 'all' %}
-          No issues match this filter. Try a different status or
+        {% if status_filter or category_filter %}
+          No issues match this filter. Try a different combination or
         {% else %}
           You haven't reported any issues yet.
         {% endif %}

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+import requests
 
 from accounts.models import User
 from .models import Issue, Feedback, Department, IssuePhoto
@@ -14,6 +15,76 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Q
 
 # Create your views here.
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from .services.image_ai import generate_image_description
+import json
+import os
+from django.conf import settings
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def upload_issue_photo(request):
+    """Temporarily saves uploaded photo and returns filename for AI analysis."""
+    try:
+        photo = request.FILES.get('photo')
+        if not photo:
+            return JsonResponse({"success": False, "error": "No photo provided"}, status=400)
+
+        # Save to MEDIA_ROOT/issue_photos/
+        from django.core.files.storage import default_storage
+        from django.core.files.base import ContentFile
+
+        filename = photo.name
+        save_path = os.path.join(settings.MEDIA_PHOTOS_ROOT, filename)
+        os.makedirs(settings.MEDIA_PHOTOS_ROOT, exist_ok=True)
+        saved_path = default_storage.save(save_path, ContentFile(photo.read()))
+        
+        # Get just the filename
+        actual_filename = os.path.basename(saved_path)
+        image_url = f"{settings.MEDIA_URL}{saved_path}"
+
+        return JsonResponse({
+            "success": True,
+            "filename": actual_filename,
+            "image_url": image_url
+        })
+
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=500)
+    
+@csrf_exempt
+@require_http_methods(["POST"])
+# views.py
+
+def analyze_image(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST required'})
+    
+    try:
+        body = json.loads(request.body)
+        filename = body.get('filename')
+        
+        # Build your image path
+        import base64, os
+        image_path = os.path.join(settings.MEDIA_PHOTOS_ROOT, filename)
+        with open(image_path, 'rb') as f:
+            image_b64 = base64.b64encode(f.read()).decode('utf-8')
+        
+        response = requests.post('http://localhost:11434/api/generate', json={
+            "model": "llava",
+            "prompt": "Describe this civic issue briefly for a report.",
+            "images": [image_b64],
+            "stream": False
+        }, timeout=60)
+        
+        result = response.json()
+        return JsonResponse({'success': True, 'description': result['response']})
+    
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
 #Citizen Views
 
@@ -108,10 +179,10 @@ def report_issue(request):
 
 @citizen_required
 def my_issues(request):
-    issues = Issue.objects.filter(citizen=request.user).order_by("-submitted_at")
-
     status = request.GET.get("status", "").strip()
     category = request.GET.get("category", "").strip()
+
+    issues = Issue.objects.filter(citizen=request.user).order_by("-submitted_at")
 
     if status:
         issues = issues.filter(status=status)
@@ -124,6 +195,8 @@ def my_issues(request):
     return render(request, 'citizen/myissues.html', {
         "issues": page_obj,
         "page_obj": page_obj,
+        "status_filter": status,        # ← added
+        "category_filter": category,    # ← added
         "category_choices": Issue.CATEGORY_CHOICES,
     })
 
@@ -162,53 +235,74 @@ def submit_feedback(request, issue_id):
 
 @officer_required
 def officer_dashboard(request):
-    issues = Issue.objects.filter(
+    all_issues = Issue.objects.filter(
         assigned_department=request.user.department
-        ).order_by('-submitted_at')
-   
-    status_filter = request.GET.get('status')
-    if status_filter:
-        issues = issues.filter(status=status_filter)
-    
-    return render(request, 'officer/officer_dashboard.html', {'issues': issues})
+    ).order_by('-submitted_at')
+
+    context = {
+        'total_assigned':    all_issues.count(),
+        'pending_count':     all_issues.filter(status='submitted').count(),
+        'in_progress_count': all_issues.filter(status='in_progress').count(),
+        'resolved_count':    all_issues.filter(status='resolved').count(),
+        'recent_issues':     all_issues[:5],
+        'notifications':     Notification.objects.filter(
+                                 user=request.user, is_read=False
+                             ).order_by('-created_at')[:10],
+    }
+    return render(request, 'officer/officer_dashboard.html', context)
 
 @officer_required
 def update_issue_status(request, issue_id):
-    issue = get_object_or_404(Issue, id=issue_id, assigned_department=request.user.department)
+    issue = get_object_or_404(
+        Issue, id=issue_id, assigned_department=request.user.department
+    )
 
     if request.method == 'POST':
-        form = IssueStatusForm(request.POST, instance=issue)
-        if form.is_valid():
-            form.save()
+        new_status = request.POST.get('status')
+        remarks    = request.POST.get('remarks', '').strip()
 
-            # Create notification for the citizen
+        if new_status:
+            issue.status = new_status
+            if remarks:
+                issue.officer_remarks = remarks
+            issue.save()
+
             Notification.objects.create(
-                user = issue.citizen,
-                issue = issue,
-                message=f'Your issue "{issue.title}" has been updated to: {issue.get_status_display()}. {issue.officer_remarks}'
+                user=issue.citizen,
+                issue=issue,
+                message=(
+                    f'Your issue "{issue.title}" status has been updated to: '
+                    f'{issue.get_status_display()}.'
+                    + (f' Note: {remarks}' if remarks else '')
+                )
             )
             messages.success(request, 'Issue status updated and citizen notified!')
-            return redirect('officer_dashboard')
-    else:
-        form = IssueStatusForm(instance=issue)
-    return render(request, 'officer/update_issue_status.html', {'form': form, 'issue': issue})
+            return redirect('officer_issue_queue')
+
+    return render(request, 'officer/officer_update_status.html', {'issue': issue})
 
 @login_required
-@officer_required  # <-- Fixed: Added the missing '@' symbol here!
+@officer_required
 def officer_issue_queue(request):
     """
-    Renders a searchable, filterable master list of issues 
+    Renders a searchable, filterable master list of issues
     assigned specifically to the logged-in officer's department.
     """
-    issue_list = Issue.objects.filter(department=request.user.department).order_by('-submitted_at')
+    issue_list = Issue.objects.filter(
+        assigned_department=request.user.department
+    ).order_by('-submitted_at')
 
     # Search Query Filter
     query = request.GET.get('q', '').strip()
     if query:
         if query.isdigit():
-            issue_list = issue_list.filter(Q(id=query) | Q(title__icontains=query) | Q(description__icontains=query))
+            issue_list = issue_list.filter(
+                Q(id=query) | Q(title__icontains=query) | Q(description__icontains=query)
+            )
         else:
-            issue_list = issue_list.filter(Q(title__icontains=query) | Q(description__icontains=query))
+            issue_list = issue_list.filter(
+                Q(title__icontains=query) | Q(description__icontains=query)
+            )
 
     # Dropdown Status and Category Filters
     status_filter = request.GET.get('status', '').strip()
@@ -225,9 +319,9 @@ def officer_issue_queue(request):
     page_obj = paginator.get_page(page_number)
 
     context = {
-        'page_obj': page_obj,
+        'issues':   page_obj,   # template iterates {% for issue in issues %}
+        'page_obj': page_obj,   # template uses page_obj for pagination controls
     }
-    # Fixed: Points explicitly inside your 'officer' folder structure
     return render(request, 'officer/officer_issue_queue.html', context)
 
 
@@ -235,29 +329,29 @@ def officer_issue_queue(request):
 @officer_required
 def officer_profile(request):
     """
-    Handles updating basic officer profile fields along with a secure 
+    Handles updating basic officer profile fields along with a secure
     password mutation form on the same page.
     """
     profile_form = ProfileUpdateForm(instance=request.user)
     password_form = PasswordChangeForm(user=request.user)
 
     if request.method == 'POST':
-        action = request.POST.get('action')
+        form_type = request.POST.get('form_type')  # matches hidden input in template
 
-        if action == 'update_profile':
+        if form_type == 'profile':
             profile_form = ProfileUpdateForm(request.POST, instance=request.user)
             if profile_form.is_valid():
                 profile_form.save()
-                messages.success(request, "Your profile parameters have been updated successfully.")
+                messages.success(request, "Your profile has been updated successfully.")
                 return redirect('officer_profile')
             else:
                 messages.error(request, "Please correct the errors in your profile information.")
 
-        elif action == 'change_password':
+        elif form_type == 'password':
             password_form = PasswordChangeForm(user=request.user, data=request.POST)
             if password_form.is_valid():
                 user = password_form.save()
-                update_session_auth_hash(request, user)  # Keeps the officer logged in
+                update_session_auth_hash(request, user)  # keeps the officer logged in
                 messages.success(request, "Your password has been securely updated.")
                 return redirect('officer_profile')
             else:

@@ -5,7 +5,10 @@ var MAX_MB      = 5;
 function previewImages(event) {
   var incoming = Array.from(event.target.files);
   var container = document.getElementById('image-preview');
-  var input     = document.getElementById('id_photos');
+  /* Support both id_photos (legacy) and id_images (report form) as the
+     authoritative hidden input that gets submitted with the form */
+  var input = document.getElementById('id_photos')
+           || document.getElementById('id_images');
   if (!container || !input) return;
 
   /* 1. Validate and merge, avoiding duplicates by name+size */
@@ -43,9 +46,12 @@ function previewImages(event) {
 
 function _removePhoto(index, input) {
   _photoFiles.splice(index, 1);
-  _syncInputFiles(input);
+  var resolvedInput = input
+    || document.getElementById('id_photos')
+    || document.getElementById('id_images');
+  _syncInputFiles(resolvedInput);
   var container = document.getElementById('image-preview');
-  if (container) _renderPreviews(container, input);
+  if (container) _renderPreviews(container, resolvedInput);
   var errBox = document.getElementById('photo-errors');
   if (errBox) errBox.innerHTML = '';
 }
@@ -127,7 +133,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* reset file list in case of bfcache restore */
   _photoFiles = [];
-  var inp = document.getElementById('id_photos');
+  var inp = document.getElementById('id_photos')
+         || document.getElementById('id_images');
   if (inp) { try { inp.files = new DataTransfer().files; } catch(e){} }
 
   var mapEl = document.getElementById('location-map');

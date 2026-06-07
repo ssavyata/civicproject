@@ -10,6 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
     <link rel="stylesheet" href="{% static 'css/landingpage.css' %}"/>
+    <style>
+        .navbar__logo-link { display: flex; align-items: center; text-decoration: none; }
+        .navbar__logo { height: 48px; width: auto; display: block; }
+    </style>
 </head>
 
 <body>
@@ -18,8 +22,9 @@
     <nav class="navbar">
         <div class="navbar__inner">
             <div class="navbar__brand">
-                <span class="navbar__brand-name">Pokhara Ward 12</span>
-                <span class="navbar__brand-sub">Ward 12 · Pokhara Metropolitan City</span>
+                <a href="/" class="navbar__logo-link">
+                    <img src="{% static 'images/logo.png' %}" alt="CivicReport" class="navbar__logo" />
+                </a>
             </div>
             <div class="navbar__actions">
                 {% if user.is_authenticated %}

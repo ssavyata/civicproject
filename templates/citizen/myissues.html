@@ -59,13 +59,15 @@
       {% for issue in issues %}
         <div class="issue-card">
 
-          <div class="issue-card__thumb {% if not issue.image %}issue-card__thumb-empty{% endif %}">
-            {% if issue.image %}
-              <img src="{{ issue.image.url }}" alt="Issue photo"/>
+          {% with photo=issue.primary_photo %}
+          <div class="issue-card__thumb {% if not photo %}issue-card__thumb-empty{% endif %}">
+            {% if photo %}
+              <img src="{{ photo.image.url }}" alt="Issue photo"/>
             {% else %}
               <span class="material-symbols-outlined">image_not_supported</span>
             {% endif %}
           </div>
+          {% endwith %}
 
           <div class="issue-card__body">
             <div class="issue-card__header">

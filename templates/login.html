@@ -5,6 +5,10 @@
 
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'css/login.css' %}"/>
+  <style>
+    .login-brand { text-align: center; margin-bottom: 24px; }
+    .login-logo  { height: 90px; width: auto; display: inline-block; mix-blend-mode: multiply; }
+  </style>
 {% endblock %}
 
 {% block content %}
@@ -12,7 +16,9 @@
 
   <!-- Branding -->
   <div class="login-brand">
-    <h1>Civic Report</h1>
+    <a href="/">
+      <img src="{% static 'images/logo.png' %}" alt="CivicReport" class="login-logo" />
+    </a>
   </div>
 
   <!-- Card -->

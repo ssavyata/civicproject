@@ -111,22 +111,57 @@
           <label class="field__label" style="margin-bottom:0;">Evidence Photos</label>
           <span id="photo-counter" style="font-size:0.75rem;color:#6b7280;font-weight:500;">0 / 5</span>
         </div>
-        <label for="id_images" class="upload-zone" id="upload-zone-label"
-               ondragover="event.preventDefault();this.style.borderColor='#059669';"
-               ondragleave="this.style.borderColor='';"
-               ondrop="event.preventDefault();this.style.borderColor='';
-                       var dt=event.dataTransfer;
-                       var inp=document.getElementById('id_photos');
-                       previewImages({target:{files:dt.files}});">
-          <span class="material-symbols-outlined">add_a_photo</span>
-          <p class="upload-zone__hint">Click to upload or drag and drop</p>
-          <p class="upload-zone__sub">Up to 5 photos · Max 5 MB each · JPG or PNG</p>
-          <input id="id_images" name="images" type="file"
-                 accept="image/jpeg,image/png"
-                 style="display:none;"
-                 onchange="previewImages(event)"
-                 multiple/>
-        </label>
+        <div style="display:flex;gap:0.75rem;align-items:stretch;">
+
+          {# --- Upload from gallery --- #}
+          <label for="id_images" class="upload-zone" id="upload-zone-label"
+                 style="flex:1;"
+                 ondragover="event.preventDefault();this.style.borderColor='#059669';"
+                 ondragleave="this.style.borderColor='';"
+                 ondrop="event.preventDefault();this.style.borderColor='';
+                         previewImages({target:{files:event.dataTransfer.files}});">
+            <span class="material-symbols-outlined">photo_library</span>
+            <p class="upload-zone__hint">Click to upload or drag &amp; drop</p>
+            <p class="upload-zone__sub">Up to 5 photos · Max 5 MB each · JPG or PNG</p>
+            <input id="id_images" name="images" type="file"
+                   accept="image/jpeg,image/png"
+                   style="display:none;"
+                   onchange="previewImages(event)"
+                   multiple/>
+          </label>
+
+          {# --- Take photo with camera --- #}
+          <button type="button" id="camera-zone-btn" class="upload-zone"
+                  style="flex:0 0 auto;min-width:120px;cursor:pointer;background:none;border:2px dashed #6ee7b7;"
+                  title="Take a photo with your camera"
+                  onclick="openCamera()">
+            <span class="material-symbols-outlined">photo_camera</span>
+            <p class="upload-zone__hint" style="font-size:0.8rem;margin:0;">Take Photo</p>
+            <p class="upload-zone__sub" style="margin:0;">Use camera</p>
+          </button>
+
+        </div>
+
+        {# Hidden camera modal — must live OUTSIDE the <label for="id_images"> so #}
+        {# clicks on Capture/Cancel don't bubble up and trigger the file picker.   #}
+        <div id="camera-modal" style="display:none;position:fixed;inset:0;z-index:9999;
+             background:rgba(0,0,0,0.85);align-items:center;justify-content:center;flex-direction:column;gap:1rem;">
+          <video id="camera-video" autoplay playsinline
+                 style="max-width:min(480px,95vw);max-height:60vh;border-radius:12px;background:#000;"></video>
+          <canvas id="camera-canvas" style="display:none;"></canvas>
+          <div style="display:flex;gap:1rem;">
+            <button type="button" onclick="capturePhoto()"
+                    style="padding:0.6rem 1.4rem;background:#059669;color:#fff;border:none;
+                           border-radius:8px;font-size:1rem;cursor:pointer;display:flex;align-items:center;gap:0.4rem;">
+              <span class="material-symbols-outlined">camera</span> Capture
+            </button>
+            <button type="button" onclick="closeCamera()"
+                    style="padding:0.6rem 1.4rem;background:#6b7280;color:#fff;border:none;
+                           border-radius:8px;font-size:1rem;cursor:pointer;">
+              Cancel
+            </button>
+          </div>
+        </div>
         <div id="photo-errors"></div>
         {% if form.photos.errors %}
           <p class="field__error">{{ form.photos.errors.0 }}</p>
@@ -189,82 +224,95 @@
 {% endblock %}
 {% block extra_scripts %}
     <script>
+      /* ── Captcha refresh ── */
       function refreshCaptcha() {
         fetch("{% url 'refresh_captcha' %}")
-          .then(response => response.json())
+          .then(r => r.json())
           .then(data => {
             document.getElementById('captcha-image').src = data.image;
             document.getElementById('captcha_answer').value = '';
           });
       }
 
-      let selectedFiles = [];
+      /* ── Live camera via getUserMedia ── */
+      var _cameraStream = null;
 
-      function previewImages(event) {
-        const newFiles = Array.from(event.target.files);
-        const errorBox = document.getElementById('photo-errors');
-        errorBox.innerHTML = '';
+      function openCamera() {
+        var modal = document.getElementById('camera-modal');
+        var video = document.getElementById('camera-video');
+        modal.style.display = 'flex';
+        var constraints = { video: { facingMode: { ideal: 'environment' } }, audio: false };
+        navigator.mediaDevices.getUserMedia(constraints)
+          .then(function(stream) {
+            _cameraStream = stream;
+            video.srcObject = stream;
+          })
+          .catch(function(err) {
+            closeCamera();
+            alert('Camera access denied or unavailable: ' + err.message);
+          });
+      }
 
-        for (const file of newFiles) {
-          if (selectedFiles.length >= 5) {
-            errorBox.innerHTML = '<p style="color:red;font-size:0.8rem;">Maximum 5 photos allowed.</p>';
-            break;
-          }
-          if (file.size > 5 * 1024 * 1024) {
-            errorBox.innerHTML = `<p style="color:red;font-size:0.8rem;">${file.name} is over 5MB.</p>`;
-            continue;
-          }
-          if (!['image/jpeg', 'image/png'].includes(file.type)) {
-            errorBox.innerHTML = `<p style="color:red;font-size:0.8rem;">${file.name} must be JPG or PNG.</p>`;
-            continue;
-          }
-          selectedFiles.push(file);
+      function capturePhoto() {
+        var video  = document.getElementById('camera-video');
+        var canvas = document.getElementById('camera-canvas');
+
+        console.log('[Camera] capturePhoto called. videoWidth:', video.videoWidth, 'videoHeight:', video.videoHeight);
+
+        if (!video.videoWidth || !video.videoHeight) {
+          console.log('[Camera] Video not ready, waiting for playing event...');
+          video.addEventListener('playing', function onPlaying() {
+            video.removeEventListener('playing', onPlaying);
+            capturePhoto();
+          });
+          return;
         }
 
-        updateCounter();
-        updatePreviews();
-        syncFilesToInput();
+        canvas.width  = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        console.log('[Camera] Canvas drawn, calling toBlob...');
+
+        canvas.toBlob(function(blob) {
+          console.log('[Camera] toBlob result:', blob);
+          if (!blob) {
+            alert('Could not capture photo — blob was null.');
+            return;
+          }
+          var fileName = 'camera-' + Date.now() + '.jpg';
+          var file = new File([blob], fileName, { type: 'image/jpeg' });
+          console.log('[Camera] File created:', file.name, file.size, 'bytes');
+
+          var input = document.getElementById('id_photos') || document.getElementById('id_images');
+          var previewContainer = document.getElementById('image-preview');
+          console.log('[Camera] input el:', input, '| preview container:', previewContainer);
+
+          if (typeof previewImages === 'function') {
+            console.log('[Camera] calling previewImages()');
+            previewImages({ target: { files: [file] } });
+          } else if (input && previewContainer && typeof _photoFiles !== 'undefined') {
+            console.log('[Camera] previewImages not in scope, using direct fallback');
+            _photoFiles.push(file);
+            if (typeof _syncInputFiles === 'function') _syncInputFiles(input);
+            if (typeof _renderPreviews === 'function') _renderPreviews(previewContainer, input);
+          } else {
+            console.error('[Camera] Cannot attach photo: previewImages missing and fallback unavailable.');
+            alert('Photo captured but could not be attached. Check the browser console (F12) for details.');
+          }
+
+          closeCamera();
+        }, 'image/jpeg', 0.92);
       }
 
-      function removePhoto(index) {
-        selectedFiles.splice(index, 1);
-        updateCounter();
-        updatePreviews();
-        syncFilesToInput();
-      }
-
-      function updateCounter() {
-        document.getElementById('photo-counter').textContent = `${selectedFiles.length} / 5`;
-      }
-
-      function updatePreviews() {
-        const preview = document.getElementById('image-preview');
-        preview.innerHTML = '';
-        selectedFiles.forEach((file, index) => {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            const div = document.createElement('div');
-            div.style = 'position:relative;width:80px;height:80px;';
-            div.innerHTML = `
-              <img src="${e.target.result}"
-                  style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #d1fae5;"/>
-              <button type="button"
-                      onclick="removePhoto(${index})"
-                      style="position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;
-                            border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;
-                            font-size:12px;line-height:1;padding:0;">✕</button>
-            `;
-            preview.appendChild(div);
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-
-      function syncFilesToInput() {
-        const input = document.getElementById('id_images');
-        const dt = new DataTransfer();
-        selectedFiles.forEach(f => dt.items.add(f));
-        input.files = dt.files;
+      function closeCamera() {
+        if (_cameraStream) {
+          _cameraStream.getTracks().forEach(function(t) { t.stop(); });
+          _cameraStream = null;
+        }
+        var modal = document.getElementById('camera-modal');
+        if (modal) modal.style.display = 'none';
+        var video = document.getElementById('camera-video');
+        if (video) video.srcObject = null;
       }
     </script>
 {% endblock %}

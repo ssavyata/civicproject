@@ -24,6 +24,7 @@ urlpatterns = [
     path('officer/issue/<int:issue_id>/update/', views.update_issue_status, name='update_issue_status'),
     path('officer/queue/', views.officer_issue_queue, name='officer_issue_queue'),
     path('officer/profile/', views.officer_profile, name='officer_profile'),
+    path('officer/issues/<int:issue_id>/update/', views.officer_update_status, name='officer_update_status'),
 
     # CAPTCHA
     path('captcha/refresh/', views.refresh_captcha, name='refresh_captcha'),

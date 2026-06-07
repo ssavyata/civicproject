@@ -6,7 +6,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 import requests
 
 from accounts.models import User
-from .models import Issue, Feedback, Department, IssuePhoto
+from .models import Issue, Feedback, Department, IssuePhoto, IssueStatusLog
 from .decorators import citizen_required, officer_required
 from .forms import IssueReportForm, FeedbackForm, IssueStatusForm, ProfileUpdateForm
 from django.contrib import messages
@@ -19,7 +19,7 @@ from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from .services.image_ai import generate_image_description
+# from .services.image_ai import generate_image_description
 import json
 import os
 from django.conf import settings
@@ -380,6 +380,48 @@ def officer_profile(request):
     }
     # Fixed: Points explicitly inside your 'officer' folder structure
     return render(request, 'officer/officer_profile.html', context)
+
+@officer_required
+def officer_update_status(request, issue_id):
+    issue = get_object_or_404(
+        Issue,
+        id=issue_id,
+        assigned_department=request.user.department
+    )
+
+    if request.method == 'POST':
+        new_status = request.POST.get('status', '').strip()
+        remarks    = request.POST.get('remarks', '').strip()
+
+        if new_status:
+            issue.status = new_status
+            issue.assigned_officer = request.user   # ← always stamp who acted
+            if remarks:
+                issue.officer_remarks = remarks
+            issue.save()
+
+            IssueStatusLog.objects.create(
+                issue=issue,
+                updated_by=request.user,
+                status=new_status,
+                remarks=remarks,
+            )
+
+            Notification.objects.create(
+                user=issue.citizen,
+                issue=issue,
+                message=(
+                    f'Your issue "{issue.title}" status has been updated to '
+                    f'"{issue.get_status_display()}".'
+                    + (f' Note: {remarks}' if remarks else '')
+                )
+            )
+
+            messages.success(request, 'Status updated and citizen notified.')
+            return redirect('officer_issue_queue')
+
+    context = {'issue': issue}
+    return render(request, 'officer/officer_update_status.html', context)
 
 #Notifications Views
 

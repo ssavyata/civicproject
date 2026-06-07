@@ -60,6 +60,17 @@ class Issue(models.Model):
         related_name='handled_issues'
     )
 
+    VISIBILITY_CHOICES = [
+    ('public', 'Public'),
+    ('confidential', 'Confidential'),
+    ]
+
+    visibility = models.CharField(
+        max_length=20,
+        choices=VISIBILITY_CHOICES,
+        default='public'
+    )
+
     title = models.CharField(max_length=200)
     description = models.TextField()
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)

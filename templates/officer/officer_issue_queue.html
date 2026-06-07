@@ -65,11 +65,16 @@
       <tbody>
         {% for issue in issues %}
         <tr>
-          <td class="td-mono">{{ issue.issue_id }}</td>
           <td>
-            <a href="{% url 'officer_update_status' issue.id %}" class="td-link">{{ issue.title }}</a>
-          </td>
-          <td class="td-date">{{ issue.submitted_date|date:"M d, Y" }}</td>
+  {% if issue.visibility == 'confidential' %}
+    <span style="color:#6b7280;font-style:italic;font-size:0.85rem;">
+      <span class="material-symbols-outlined" style="font-size:0.9rem;vertical-align:middle;">lock</span>
+      Anonymous
+    </span>
+  {% else %}
+    {{ issue.citizen.get_full_name|default:issue.citizen.username }}
+  {% endif %}
+</td>
           <td>{% include "partials/badge_status.html" with status=issue.status %}</td>
           <td>
             <a href="{% url 'officer_update_status' issue.id %}" class="td-action">Manage</a>

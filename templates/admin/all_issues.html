@@ -60,7 +60,14 @@
                         </td>
                         <td>
                             <p class="cell-title">{{ issue.title }}</p>
-                            <p class="cell-sub">{{ issue.citizen.get_full_name|default:issue.citizen.username }}</p>
+                            {% if issue.visibility == 'confidential' %}
+                                <p class="cell-sub" style="color:#6b7280;font-style:italic;">
+                                <span class="material-symbols-outlined" style="font-size:0.85rem;vertical-align:middle;">lock</span>
+                                     Anonymous
+                                 </p>
+                            {% else %}
+                                <p class="cell-sub">{{ issue.citizen.get_full_name|default:issue.citizen.username }}</p>
+                            {% endif %}
                         </td>
                         <td>{{ issue.get_category_display }}</td>
                         <td class="cell-muted">{{ issue.submitted_at|date:"M d, Y" }}</td>

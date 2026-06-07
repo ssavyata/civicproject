@@ -71,16 +71,28 @@
 
           <div class="issue-card__body">
             <div class="issue-card__header">
-              <h3 class="issue-card__title">{{ issue.title }}</h3>
-              <span class="badge
-                {% if issue.status == 'submitted' %}badge--submitted
-                {% elif issue.status == 'in_progress' %}badge--progress
-                {% elif issue.status == 'resolved' %}badge--resolved
-                {% elif issue.status == 'rejected' %}badge--rejected
-                {% else %}badge--pending{% endif %}">
-                {{ issue.get_status_display }}
-              </span>
-            </div>
+  <h3 class="issue-card__title">{{ issue.title }}</h3>
+  <div style="display:flex;align-items:center;gap:0.5rem;">
+    <span class="badge
+      {% if issue.status == 'submitted' %}badge--submitted
+      {% elif issue.status == 'in_progress' %}badge--progress
+      {% elif issue.status == 'resolved' %}badge--resolved
+      {% elif issue.status == 'rejected' %}badge--rejected
+      {% else %}badge--pending{% endif %}">
+      {{ issue.get_status_display }}
+    </span>
+    {% if issue.visibility == 'confidential' %}
+      <span style="display:inline-flex;align-items:center;gap:0.25rem;
+                   background:#f0fdf4;border:1px solid #bbf7d0;
+                   color:#059669;border-radius:999px;
+                   font-size:0.7rem;font-weight:600;
+                   padding:0.15rem 0.6rem;">
+        <span class="material-symbols-outlined" style="font-size:0.85rem;">lock</span>
+        Anonymous
+      </span>
+    {% endif %}
+  </div>
+</div>
 
             <div class="issue-card__location">
               <span class="material-symbols-outlined">location_on</span>
@@ -90,16 +102,22 @@
             <p class="issue-card__desc line-clamp-2">{{ issue.description }}</p>
 
             <div class="issue-card__footer">
-              <div class="issue-card__meta">
-                <span>
-                  <span class="material-symbols-outlined">category</span>
-                  {{ issue.get_category_display|default:issue.category }}
-                </span>
-                <span>
-                  <span class="material-symbols-outlined">schedule</span>
-                  {{ issue.submitted_at|date:"M d, Y" }}
-                </span>
-              </div>
+             <div class="issue-card__meta">
+  <span>
+    <span class="material-symbols-outlined">category</span>
+    {{ issue.get_category_display|default:issue.category }}
+  </span>
+  <span>
+    <span class="material-symbols-outlined">schedule</span>
+    {{ issue.submitted_at|date:"M d, Y" }}
+  </span>
+  <span>
+    <span class="material-symbols-outlined">
+      {% if issue.visibility == 'confidential' %}lock{% else %}lock_open{% endif %}
+    </span>
+    {% if issue.visibility == 'confidential' %}Anonymous{% else %}Public{% endif %}
+  </span>
+</div>
               <a href="{% url 'issue_detail' issue.id %}" class="issue-card__detail-link">
                 View Details
                 <span class="material-symbols-outlined">arrow_forward</span>

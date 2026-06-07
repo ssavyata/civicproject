@@ -174,6 +174,7 @@ def report_issue(request):
             issue = form.save(commit=False)
             issue.citizen = request.user
             issue.ward_number = request.user.ward_number
+            issue.visibility = request.POST.get('visibility', 'public')
             issue.save()
 
             for photo in files:

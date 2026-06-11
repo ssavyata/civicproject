@@ -3,147 +3,429 @@
 {% block title %}Dashboard — CivicReport Admin{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
 
+{% block extra_head %}
+<style>
+  .alert-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-left: 4px solid #f97316;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: #9a3412;
+  }
+  .alert-banner .material-symbols-outlined { color: #f97316; font-size: 1.3rem; }
+  .alert-banner strong { font-weight: 600; }
+  .alert-banner a { color: #ea580c; font-weight: 600; text-decoration: underline; }
+
+  /* Charts row — fixed height cards so charts don't overflow */
+  .charts-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .chart-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px 20px 16px;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .chart-card__title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    margin-bottom: 12px;
+  }
+  /* Explicit pixel height — Chart.js reads offsetHeight before flex resolves,
+     so flex:1 gives it 0 and the chart expands unbounded */
+  .chart-canvas-wrap {
+    position: relative;
+    width: 100%;
+    height: 200px;
+  }
+  .chart-canvas-wrap canvas {
+    display: block;
+  }
+
+  /* Officer performance table */
+  .officer-table-wrap { overflow-x: auto; }
+  .officer-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    table-layout: fixed;
+  }
+  .officer-col-name     { width: 44%; }
+  .officer-col-assigned { width: 16%; }
+  .officer-col-resolved { width: 16%; }
+  .officer-col-rate     { width: 24%; }
+  .officer-table thead tr {
+    border-bottom: 2px solid #e5e7eb; /* border on the row works with border-collapse */
+  }
+  .officer-table thead th {
+    background: #f9fafb;
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .officer-table tbody td {
+    padding: 11px 12px;
+    border-bottom: 1px solid #f3f4f6;
+    color: #374151;
+    vertical-align: middle;
+    overflow: hidden;
+  }
+  .officer-table tbody tr:last-child td { border-bottom: none; }
+  .officer-table tbody tr:hover td { background: #f9fafb; }
+
+  .officer-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .officer-name-cell span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .officer-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* Rate bar */
+  .rate-cell { white-space: nowrap; }
+  .rate-pct {
+    display: inline-block;
+    width: 36px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #374151;
+    text-align: right;
+    margin-right: 8px;
+  }
+  .perf-bar-track {
+    display: inline-block;
+    vertical-align: middle;
+    background: #e5e7eb;
+    border-radius: 99px;
+    height: 6px;
+    width: 70px;
+  }
+  .perf-bar-fill {
+    display: block;
+    height: 6px;
+    border-radius: 99px;
+    background: #22c55e;
+    min-width: 2px;
+  }
+  .perf-bar-fill--low { background: #ef4444; }
+  .perf-bar-fill--mid { background: #f59e0b; }
+
+  /* Flags */
+  .flag-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 99px;
+  }
+  .flag-badge--overdue { background: #fee2e2; color: #dc2626; }
+  .flag-badge--warning { background: #fef9c3; color: #ca8a04; }
+
+  @media (max-width: 1100px) { .charts-row { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .charts-row { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="page-container space-y-8">
 
-    <!-- Summary Cards -->
-    <div class="stat-grid">
-        <div class="card card-body">
-            <span class="stat-label">Total Issues</span>
-            <h3 class="stat-value stat-value--default">{{ total }}</h3>
-        </div>
-        <div class="card card-body card--pending">
-            <span class="stat-label">Pending</span>
-            <h3 class="stat-value stat-value--pending">{{ pending }}</h3>
-        </div>
-        <div class="card card-body card--in-progress">
-            <span class="stat-label">In Progress</span>
-            <h3 class="stat-value stat-value--in-progress">{{ in_progress }}</h3>
-        </div>
-        <div class="card card-body card--resolved">
-            <span class="stat-label">Resolved</span>
-            <h3 class="stat-value stat-value--resolved">{{ resolved }}</h3>
-        </div>
+  {% if overdue_count %}
+  <div class="alert-banner">
+    <span class="material-symbols-outlined">warning</span>
+    <div>
+      <strong>{{ overdue_count }} issue{{ overdue_count|pluralize }} overdue</strong> —
+      pending for more than 7 days without assignment or progress.
+      <a href="{% url 'admin_all_issues' %}?status=submitted">Review now →</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Summary Cards -->
+  <div class="stat-grid">
+    <div class="card card-body">
+      <span class="stat-label">Total Issues</span>
+      <h3 class="stat-value stat-value--default">{{ total }}</h3>
+    </div>
+    <div class="card card-body card--pending">
+      <span class="stat-label">Pending</span>
+      <h3 class="stat-value stat-value--pending">{{ pending }}</h3>
+    </div>
+    <div class="card card-body card--in-progress">
+      <span class="stat-label">In Progress</span>
+      <h3 class="stat-value stat-value--in-progress">{{ in_progress }}</h3>
+    </div>
+    <div class="card card-body card--resolved">
+      <span class="stat-label">Resolved</span>
+      <h3 class="stat-value stat-value--resolved">{{ resolved }}</h3>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-card__title">Status Breakdown</div>
+      <div class="chart-canvas-wrap">
+        <canvas id="statusDonut"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card__title">Issues by Category</div>
+      <div class="chart-canvas-wrap">
+        <canvas id="categoryBar"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card__title">Monthly Trend</div>
+      <div class="chart-canvas-wrap">
+        <canvas id="trendLine"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Issues + Officer Performance -->
+  <div class="two-col">
+
+    <div class="two-col__main card">
+      <div class="card-header">
+        <h2 class="section-title">Recent Issues</h2>
+        <a href="{% url 'admin_all_issues' %}" class="section-link">View All</a>
+      </div>
+      <div class="table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Issue ID</th>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Assigned To</th>
+              <th>Flag</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for issue in recent_issues %}
+            <tr>
+              <td class="cell-id">CR-{{ issue.submitted_at|date:"Y" }}-{{ issue.id|stringformat:"04d" }}</td>
+              <td>{{ issue.title }}</td>
+              <td>
+                {% if issue.status == 'submitted' %}<span class="badge badge--pending">Pending</span>
+                {% elif issue.status == 'assigned' %}<span class="badge badge--assigned">Assigned</span>
+                {% elif issue.status == 'in_progress' %}<span class="badge badge--in-progress">In Progress</span>
+                {% elif issue.status == 'resolved' %}<span class="badge badge--resolved">Resolved</span>
+                {% elif issue.status == 'rejected' %}<span class="badge badge--rejected">Rejected</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if issue.assigned_officer %}
+                  {{ issue.assigned_officer.get_full_name|default:issue.assigned_officer.username }}
+                {% else %}
+                  <span class="cell-italic">Not Assigned</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if issue.is_overdue %}
+                  <span class="flag-badge flag-badge--overdue">
+                    <span class="material-symbols-outlined" style="font-size:0.85rem;">schedule</span> Overdue
+                  </span>
+                {% elif issue.days_old > 3 and issue.status == 'submitted' %}
+                  <span class="flag-badge flag-badge--warning">
+                    <span class="material-symbols-outlined" style="font-size:0.85rem;">hourglass_top</span> Stale
+                  </span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr class="empty-row"><td colspan="5">No issues yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <!-- Two Column Layout -->
-    <div class="two-col">
-
-        <!-- Recent Issues Table (60%) -->
-        <div class="two-col__main card">
-            <div class="card-header">
-                <h2 class="section-title">Recent Issues</h2>
-                <a href="{% url 'admin_all_issues' %}" class="section-link">View All</a>
-            </div>
-            <div class="table-wrapper">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Issue ID</th>
-                            <th>Title</th>
-                            <th>Status</th>
-                            <th>Assigned To</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for issue in recent_issues %}
-                        <tr>
-                            <td class="cell-id">
-                                CR-{{ issue.submitted_at|date:"Y" }}-{{ issue.id|stringformat:"04d" }}
-                            </td>
-                            <td>{{ issue.title }}</td>
-                            <td>
-                                {% if issue.status == 'submitted' %}
-                                    <span class="badge badge--pending">Pending</span>
-                                {% elif issue.status == 'assigned' %}
-                                    <span class="badge badge--assigned">Assigned</span>
-                                {% elif issue.status == 'in_progress' %}
-                                    <span class="badge badge--in-progress">In Progress</span>
-                                {% elif issue.status == 'resolved' %}
-                                    <span class="badge badge--resolved">Resolved</span>
-                                {% elif issue.status == 'rejected' %}
-                                    <span class="badge badge--rejected">Rejected</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if issue.assigned_officer %}
-                                    {{ issue.assigned_officer.get_full_name|default:issue.assigned_officer.username }}
-                                {% else %}
-                                    <span class="cell-italic">Not Assigned</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr class="empty-row">
-                            <td colspan="4">No issues yet.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Right Column (40%) -->
-        <div class="two-col__aside space-y-6">
-
-            <!-- Issues by Category -->
-            <div class="card card-body">
-                <h2 class="section-title" style="margin-bottom:24px">Issues by Category</h2>
-                <div class="space-y-4">
-                    {% for cat in categories %}
-                    <div class="space-y-1">
-                        <div class="progress-label-row">
-                            <span>{{ cat.category|capfirst }}</span>
-                            <span>{{ cat.count }} issues</span>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill progress-fill--green"
-                                 style="width: {% widthratio cat.count max_count 100 %}%"></div>
-                        </div>
-                    </div>
-                    {% endfor %}
+    <!-- Officer Performance -->
+    <div class="two-col__aside card" style="padding: 0; overflow: hidden;">
+      <div class="card-header" style="padding: 16px 20px; border-bottom: 1px solid #f3f4f6;">
+        <h2 class="section-title">Officer Performance</h2>
+      </div>
+      <div class="officer-table-wrap" style="padding: 0 0 4px 0;">
+        <table class="officer-table">
+          <colgroup>
+            <col class="officer-col-name">
+            <col class="officer-col-assigned">
+            <col class="officer-col-resolved">
+            <col class="officer-col-rate">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Officer</th>
+              <th>Assigned</th>
+              <th>Resolved</th>
+              <th>Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for officer in officer_performance %}
+            {% with name=officer.get_full_name|default:officer.username %}
+            <tr>
+              <td>
+                <div class="officer-name-cell">
+                  <div class="officer-avatar">{{ name|slice:":2"|upper }}</div>
+                  <span>{{ name }}</span>
                 </div>
-            </div>
-
-            <!-- Issues by Status -->
-            <div class="card card-body">
-                <h2 class="section-title" style="margin-bottom:24px">Issues by Status</h2>
-                <div class="space-y-4">
-                    {% if total > 0 %}
-                    <div class="space-y-1">
-                        <div class="progress-label-row">
-                            <span>Pending</span><span>{{ pending }}</span>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill progress-fill--red"
-                                 style="width: {% widthratio pending total 100 %}%"></div>
-                        </div>
-                    </div>
-                    <div class="space-y-1">
-                        <div class="progress-label-row">
-                            <span>In Progress</span><span>{{ in_progress }}</span>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill progress-fill--amber"
-                                 style="width: {% widthratio in_progress total 100 %}%"></div>
-                        </div>
-                    </div>
-                    <div class="space-y-1">
-                        <div class="progress-label-row">
-                            <span>Resolved</span><span>{{ resolved }}</span>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill progress-fill--green"
-                                 style="width: {% widthratio resolved total 100 %}%"></div>
-                        </div>
-                    </div>
-                    {% else %}
-                    <p class="cell-italic">No issues yet.</p>
-                    {% endif %}
-                </div>
-            </div>
-
-        </div>
+              </td>
+              <td>{{ officer.assigned_count }}</td>
+              <td>{{ officer.resolved_count }}</td>
+              <td class="rate-cell">
+                <span class="rate-pct">{{ officer.resolution_rate }}%</span>
+                <span class="perf-bar-track">
+                  <span class="perf-bar-fill
+                    {% if officer.resolution_rate < 40 %}perf-bar-fill--low
+                    {% elif officer.resolution_rate < 70 %}perf-bar-fill--mid
+                    {% endif %}"
+                    style="width:{{ officer.resolution_rate }}%;">
+                  </span>
+                </span>
+              </td>
+            </tr>
+            {% endwith %}
+            {% empty %}
+            <tr>
+              <td colspan="4" style="text-align:center;color:#9ca3af;padding:24px;">No officers yet.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
+
+  </div>
 </div>
+
+<!-- Chart.js at bottom so DOM is ready -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // Status Donut
+  var statusCtx = document.getElementById('statusDonut');
+  if (statusCtx) {
+    new Chart(statusCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Pending', 'Assigned', 'In Progress', 'Resolved', 'Rejected'],
+        datasets: [{
+          data: [{{ pending }}, {{ assigned }}, {{ in_progress }}, {{ resolved }}, {{ rejected }}],
+          backgroundColor: ['#f97316','#6366f1','#3b82f6','#22c55e','#ef4444'],
+          borderWidth: 2,
+          borderColor: '#fff',
+        }]
+      },
+      options: {
+        cutout: '65%',
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 8, boxWidth: 12 } }
+        },
+        maintainAspectRatio: false,
+        responsive: true,
+      }
+    });
+  }
+
+  // Category Bar
+  var catCtx = document.getElementById('categoryBar');
+  if (catCtx) {
+    new Chart(catCtx, {
+      type: 'bar',
+      data: {
+        labels: [{% for cat in categories %}'{{ cat.category|capfirst }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+        datasets: [{
+          label: 'Issues',
+          data: [{% for cat in categories %}{{ cat.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+          backgroundColor: ['#6366f1','#3b82f6','#22c55e','#f59e0b','#ef4444'],
+          borderRadius: 5,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+          y: { grid: { color: '#f3f4f6' }, ticks: { font: { size: 10 }, stepSize: 1 }, beginAtZero: true }
+        },
+        maintainAspectRatio: false,
+        responsive: true,
+      }
+    });
+  }
+
+  // Monthly Trend Line
+  var trendCtx = document.getElementById('trendLine');
+  if (trendCtx) {
+    new Chart(trendCtx, {
+      type: 'line',
+      data: {
+        labels: [{% for m in monthly_trend %}'{{ m.month }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+        datasets: [{
+          label: 'Issues',
+          data: [{% for m in monthly_trend %}{{ m.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+          borderColor: '#6366f1',
+          backgroundColor: 'rgba(99,102,241,0.08)',
+          pointBackgroundColor: '#6366f1',
+          tension: 0.4,
+          fill: true,
+          pointRadius: 3,
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+          y: { grid: { color: '#f3f4f6' }, ticks: { font: { size: 10 }, stepSize: 1 }, beginAtZero: true }
+        },
+        maintainAspectRatio: false,
+        responsive: true,
+      }
+    });
+  }
+
+});
+</script>
 {% endblock %}

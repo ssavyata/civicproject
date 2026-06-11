@@ -14,6 +14,9 @@ from notifications.models import Notification
 from .utils import assign_issue 
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models.functions import TruncMonth
 
 # Create your views here.
 from django.http import JsonResponse
@@ -167,20 +170,40 @@ def citizen_dashboard(request):
     if not request.user.is_citizen():
         return redirect('login')
 
-    all_issues = Issue.objects.filter(
-        citizen=request.user
-    ).order_by('-submitted_at')
+    all_issues = Issue.objects.filter(citizen=request.user).order_by('-submitted_at')
+
+    # ── Resolution rate ──────────────────────────────────────────
+    total_issues   = all_issues.count()
+    resolved_count = all_issues.filter(status='resolved').count()
+    resolution_rate = round((resolved_count / total_issues) * 100) if total_issues > 0 else 0
+
+    # ── Monthly activity (last 6 months) ────────────────────────
+    monthly_qs = (
+        all_issues
+        .annotate(month=TruncMonth('submitted_at'))
+        .values('month')
+        .annotate(count=Count('id'))
+        .order_by('month')
+    )
+    today = timezone.now()
+    month_map = {entry['month'].strftime('%b %Y'): entry['count'] for entry in monthly_qs}
+    monthly_activity = []
+    for i in range(5, -1, -1):
+        d = today - timedelta(days=30 * i)
+        label = d.strftime('%b %Y')
+        monthly_activity.append({'month': label, 'count': month_map.get(label, 0)})
 
     context = {
         'stats': {
-            'total': all_issues.count(),
-            'pending': all_issues.filter(status='submitted').count(),
+            'total':       total_issues,
+            'pending':     all_issues.filter(status='submitted').count(),
             'in_progress': all_issues.filter(status='in_progress').count(),
-            'resolved': all_issues.filter(status='resolved').count(),
+            'resolved':    resolved_count,
         },
-        'recent_issues': all_issues[:5],
+        'recent_issues':    all_issues[:5],
+        'resolution_rate':  resolution_rate,
+        'monthly_activity': monthly_activity,
     }
-
     return render(request, 'citizen/citizen_dashboard.html', context)
 
 @citizen_required
@@ -366,15 +389,38 @@ def officer_dashboard(request):
         assigned_department=request.user.department
     ).order_by('-submitted_at')
 
+    now = timezone.now()
+    seven_days_ago = now - timedelta(days=7)
+
+    # Annotate each issue with days_old for priority queue
+    issues_with_age = []
+    for issue in all_issues[:10]:
+        issue.days_old = (now - issue.submitted_at).days
+        issues_with_age.append(issue)
+
+    # Overdue = submitted status + older than 7 days
+    overdue_count = all_issues.filter(
+        status='submitted',
+        submitted_at__lt=seven_days_ago
+    ).count()
+
+    # Resolved this week
+    resolved_this_week = all_issues.filter(
+        status='resolved',
+        submitted_at__gte=seven_days_ago
+    ).count()
+
     context = {
-        'total_assigned':    all_issues.count(),
-        'pending_count':     all_issues.filter(status='submitted').count(),
-        'in_progress_count': all_issues.filter(status='in_progress').count(),
-        'resolved_count':    all_issues.filter(status='resolved').count(),
-        'recent_issues':     all_issues[:5],
-        'notifications':     Notification.objects.filter(
-                                 user=request.user, is_read=False
-                             ).order_by('-created_at')[:10],
+        'total_assigned':     all_issues.count(),
+        'pending_count':      all_issues.filter(status='submitted').count(),
+        'in_progress_count':  all_issues.filter(status='in_progress').count(),
+        'resolved_count':     all_issues.filter(status='resolved').count(),
+        'recent_issues':      issues_with_age,
+        'overdue_count':      overdue_count,
+        'resolved_this_week': resolved_this_week,
+        'notifications':      Notification.objects.filter(
+                                  user=request.user, is_read=False
+                              ).order_by('-created_at')[:10],
     }
     return render(request, 'officer/officer_dashboard.html', context)
 
@@ -551,31 +597,77 @@ def admin_dashboard(request):
     if not request.user.is_admin():
         return redirect('login')
 
-    total = Issue.objects.count()
-    pending = Issue.objects.filter(status='submitted').count()
+    now = timezone.now()
+    seven_days_ago = now - timedelta(days=7)
+
+    total       = Issue.objects.count()
+    pending     = Issue.objects.filter(status='submitted').count()
     in_progress = Issue.objects.filter(status='in_progress').count()
-    resolved = Issue.objects.filter(status='resolved').count()
-    assigned = Issue.objects.filter(status='assigned').count()
+    resolved    = Issue.objects.filter(status='resolved').count()
+    assigned    = Issue.objects.filter(status='assigned').count()
+    rejected    = Issue.objects.filter(status='rejected').count()
 
-    recent_issues = Issue.objects.order_by('-submitted_at')[:8]
+    # Overdue issues (submitted > 7 days, unassigned)
+    overdue_count = Issue.objects.filter(
+        status='submitted',
+        submitted_at__lt=seven_days_ago
+    ).count()
 
-    # Issues by category for bar chart
+    # Recent issues with days_old + overdue flag
+    recent_issues_qs = Issue.objects.order_by('-submitted_at')[:8]
+    recent_issues = []
+    for issue in recent_issues_qs:
+        issue.days_old  = (now - issue.submitted_at).days
+        issue.is_overdue = (issue.status == 'submitted' and issue.days_old > 7)
+        recent_issues.append(issue)
+
+    # Issues by category
     categories = Issue.objects.values('category').annotate(
         count=Count('id')
     ).order_by('-count')
-
-    # Calculate max for percentage bars
     max_count = categories[0]['count'] if categories else 1
 
+    # Monthly trend (last 6 months)
+    monthly_qs = (
+        Issue.objects
+        .annotate(month=TruncMonth('submitted_at'))
+        .values('month')
+        .annotate(count=Count('id'))
+        .order_by('month')
+    )
+    month_map = {entry['month'].strftime('%b'): entry['count'] for entry in monthly_qs}
+    monthly_trend = []
+    for i in range(5, -1, -1):
+        d = now - timedelta(days=30 * i)
+        label = d.strftime('%b')
+        monthly_trend.append({'month': label, 'count': month_map.get(label, 0)})
+
+    # Officer performance
+    officers = User.objects.filter(role='officer')
+    officer_performance = []
+    for officer in officers:
+        assigned_count     = Issue.objects.filter(assigned_officer=officer).count()
+        resolved_count_off = Issue.objects.filter(assigned_officer=officer, status='resolved').count()
+        rate = round((resolved_count_off / assigned_count) * 100) if assigned_count > 0 else 0
+        officer.assigned_count  = assigned_count
+        officer.resolved_count  = resolved_count_off
+        officer.resolution_rate = rate
+        officer_performance.append(officer)
+    officer_performance.sort(key=lambda o: o.resolution_rate, reverse=True)
+
     context = {
-        'total': total,
-        'pending': pending,
-        'in_progress': in_progress,
-        'resolved': resolved,
-        'assigned': assigned,
-        'recent_issues': recent_issues,
-        'categories': categories,
-        'max_count': max_count,
+        'total':               total,
+        'pending':             pending,
+        'in_progress':         in_progress,
+        'resolved':            resolved,
+        'assigned':            assigned,
+        'rejected':            rejected,
+        'overdue_count':       overdue_count,
+        'recent_issues':       recent_issues,
+        'categories':          categories,
+        'max_count':           max_count,
+        'monthly_trend':       monthly_trend,
+        'officer_performance': officer_performance,
     }
     return render(request, 'admin/admin_dashboard.html', context)
 
@@ -611,11 +703,11 @@ def admin_all_issues(request):
 
 @login_required
 @login_required
-def admin_assign_issue(request, pk):
+def admin_assign_issue(request, issue_id):
     if not request.user.is_admin():
         return redirect('login')
 
-    issue = get_object_or_404(Issue, pk=pk)
+    issue = get_object_or_404(Issue, pk=issue_id)
     if request.method == 'POST':
         officer_id = request.POST.get('officer')
         remarks    = request.POST.get('remarks', '').strip()
@@ -756,4 +848,3 @@ def refresh_captcha(request):
     request.session['captcha_text'] = captcha_text
     captcha_image = generate_captcha_image(captcha_text)
     return JsonResponse({'image': captcha_image})
-

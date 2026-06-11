@@ -128,16 +128,18 @@
 <!-- Main Content -->
 <main class="admin-main">
 
-    <!-- Flash Messages -->
-    {% if messages %}
-        <div class="flash-messages">
-            {% for message in messages %}
-                <div class="flash-message {{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
+    <div class="admin-scroll-area">
+        <!-- Flash Messages -->
+        {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                    <div class="flash-message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
 
-    {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
+    </div>
 
     <!-- Footer -->
     <footer class="admin-footer">

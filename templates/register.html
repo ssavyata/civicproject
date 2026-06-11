@@ -109,13 +109,13 @@
         </label>
       </div>
 
-      <!-- reCAPTCHA -->
+      {% comment %} <!-- reCAPTCHA -->
       <div class="form-group">
         {{ form.captcha }}
         {% if form.captcha.errors %}
           <p class="field-error">{{ form.captcha.errors.0 }}</p>
         {% endif %}
-      </div>
+      </div> {% endcomment %}
 
       <!-- Submit -->
       <button type="submit" class="btn btn-primary" style="margin-top:24px;">Register</button>
@@ -146,5 +146,5 @@
 
 {% block extra_scripts %}
     <script src="{% static 'js/register.js' %}"></script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    {% comment %} <script src="https://www.google.com/recaptcha/api.js" async defer></script> {% endcomment %}
 {% endblock %}

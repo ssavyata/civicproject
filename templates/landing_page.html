@@ -5,206 +5,801 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>CivicReport Ward 12 | Pokhara Metropolitan City</title>
-
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-
     <link rel="stylesheet" href="{% static 'css/landingpage.css' %}"/>
     <style>
         .navbar__logo-link { display: flex; align-items: center; text-decoration: none; }
         .navbar__logo { height: 48px; width: auto; display: block; }
     </style>
 </head>
-
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="navbar__inner">
-            <div class="navbar__brand">
-                <a href="/" class="navbar__logo-link">
-                    <img src="{% static 'images/logo.png' %}" alt="CivicReport" class="navbar__logo" />
+<!-- ═══════════════════ NAVBAR ═══════════════════ -->
+<nav class="navbar">
+    <div class="navbar__inner">
+        <div class="navbar__brand">
+            <a href="/" class="navbar__logo-link">
+                <img src="{% static 'images/logo.png' %}" alt="CivicReport" class="navbar__logo" />
+            </a>
+        </div>
+        <div class="navbar__actions">
+            {% if user.is_authenticated %}
+                {% if user.is_citizen %}
+                    <a class="navbar__link" href="{% url 'citizen_dashboard' %}">Dashboard</a>
+                {% elif user.is_officer %}
+                    <a class="navbar__link" href="{% url 'officer_dashboard' %}">Dashboard</a>
+                {% elif user.is_admin %}
+                    <a class="navbar__link" href="{% url 'admin_dashboard' %}">Dashboard</a>
+                {% endif %}
+                <a href="{% url 'logout' %}" class="btn-pill">Logout</a>
+            {% else %}
+                <a class="navbar__link" href="{% url 'login' %}">Login</a>
+                <a class="btn-pill" href="{% url 'register' %}">Register</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<header class="hero">
+    <div class="hero__content">
+        <div class="hero__badge">Ward 12 Civic Portal</div>
+        <h1 class="hero__title">
+            Report issues in Ward 12.
+            <span class="hero__title-accent">Track progress.</span> See change.
+        </h1>
+        <p class="hero__description">
+            Empowering the citizens of Ward 12, Pokhara. Report municipal concerns directly
+            to your local office and monitor real-time resolution updates.
+        </p>
+        <div class="hero__actions">
+            {% if user.is_authenticated %}
+                <a href="{% url 'report_issue' %}" class="btn-primary">
+                    Report an Issue
+                    <span class="material-symbols-outlined">arrow_forward</span>
                 </a>
-            </div>
-            <div class="navbar__actions">
-                {% if user.is_authenticated %}
-                    {% if user.is_citizen %}
-                        <a class="navbar__link" href="{% url 'citizen_dashboard' %}">Dashboard</a>
-                    {% elif user.is_officer %}
-                        <a class="navbar__link" href="{% url 'officer_dashboard' %}">Dashboard</a>
-                    {% elif user.is_admin %}
-                        <a class="navbar__link" href="{% url 'admin_dashboard' %}">Dashboard</a>
-                    {% endif %}
-                    <a href="{% url 'logout' %}" class="btn-pill">Logout</a>
-                {% else %}
-                    <a class="navbar__link" href="{% url 'login' %}">Login</a>
-                    <a class="btn-pill" href="{% url 'register' %}">Register</a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <header class="hero">
-        <div class="hero__content">
-            <div class="hero__badge">Ward 12 Civic Portal</div>
-            <h1 class="hero__title">
-                Report issues in Ward 12.
-                <span class="hero__title-accent">Track progress.</span> See change.
-            </h1>
-            <p class="hero__description">
-                Empowering the citizens of Ward 12, Pokhara. Report municipal concerns directly
-                to your local office and monitor real-time resolution updates.
-            </p>
-            <div class="hero__actions">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'report_issue' %}" class="btn-primary">
-                        Report an Issue
-                        <span class="material-symbols-outlined">arrow_forward</span>
-                    </a>
+                {% if user.is_citizen %}
                     <a href="{% url 'citizen_dashboard' %}" class="btn-outline">Go to Dashboard</a>
-                {% else %}
-                    <a href="{% url 'register' %}" class="btn-primary">
-                        Report an Issue
-                        <span class="material-symbols-outlined">arrow_forward</span>
-                    </a>
-                    <a href="{% url 'login' %}" class="btn-outline">Sign in to Portal</a>
+                {% elif user.is_officer %}
+                    <a href="{% url 'officer_dashboard' %}" class="btn-outline">Go to Dashboard</a>
+                {% elif user.is_admin %}
+                    <a href="{% url 'admin_dashboard' %}" class="btn-outline">Go to Dashboard</a>
                 {% endif %}
-            </div>
+            {% else %}
+                <a href="{% url 'register' %}" class="btn-primary">
+                    Report an Issue
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </a>
+                <a href="{% url 'login' %}" class="btn-outline">Sign in to Portal</a>
+            {% endif %}
         </div>
-
-        <div class="hero__image-wrap">
-            <div class="hero__image-box">
-                <img
-                    alt="Abstract map background"
-                    src="{% static 'images/ward.jpg' %}"
-                />
-            </div>
+    </div>
+    <div class="hero__image-wrap">
+        <div class="hero__image-box">
+            <img alt="Ward 12 map" src="{% static 'images/ward.jpg' %}" />
         </div>
-    </header>
+    </div>
+</header>
 
-    <!-- Stats Bar -->
-    <section class="stats-bar">
-        <div class="stats-bar__inner">
-            <div class="stat">
-                <span class="stat__value">{{ total_issues }}+</span>
-                <span class="stat__label">Issues Reported</span>
-            </div>
-            <div class="stat">
-                <span class="stat__value">{{ resolution_rate }}%</span>
-                <span class="stat__label">Resolution Rate</span>
-            </div>
-            <div class="stat">
-                <span class="stat__value stat__value--sm">Ward 12</span>
-                <span class="stat__label">Pokhara Metropolitan City</span>
-            </div>
-        </div>
-    </section>
 
-    <!-- How It Works -->
-    <section class="how-section">
+
+<!-- ═══════════════════ PUBLIC ISSUES FEED ═══════════════════ -->
+<section class="feed-section">
+    <div class="feed-section__inner">
         <div class="section-heading">
-            <h2>Three simple steps</h2>
+            <h2>Recently Reported Issues</h2>
             <div class="section-heading__bar"></div>
         </div>
-        <div class="steps-grid">
-            <div class="step-card">
-                <span class="step-card__number">01</span>
-                <h3>Submit a report</h3>
-                <p>Capture a photo, describe the issue, and pin the location on our interactive map.</p>
-            </div>
-            <div class="step-card">
-                <span class="step-card__number">02</span>
-                <h3>We assign it</h3>
-                <p>The Ward office reviews and dispatches the appropriate maintenance or municipal team.</p>
-            </div>
-            <div class="step-card">
-                <span class="step-card__number">03</span>
-                <h3>Track progress</h3>
-                <p>Receive notifications at every stage, from initial review to final resolution.</p>
-            </div>
+        <div class="feed-filters">
+            <a href="?" class="feed-filter {% if not status_filter %}feed-filter--active{% endif %}">All</a>
+            <a href="?status=submitted" class="feed-filter {% if status_filter == 'submitted' %}feed-filter--active{% endif %}">
+                <span class="material-symbols-outlined">pending</span> Submitted
+            </a>
+            <a href="?status=assigned" class="feed-filter {% if status_filter == 'assigned' %}feed-filter--active{% endif %}">
+                <span class="material-symbols-outlined">assignment_ind</span> Assigned
+            </a>
+            <a href="?status=in_progress" class="feed-filter {% if status_filter == 'in_progress' %}feed-filter--active{% endif %}">
+                <span class="material-symbols-outlined">autorenew</span> In Progress
+            </a>
+            <a href="?status=resolved" class="feed-filter {% if status_filter == 'resolved' %}feed-filter--active{% endif %}">
+                <span class="material-symbols-outlined">check_circle</span> Resolved
+            </a>
         </div>
-    </section>
-
-    <!-- Issue Categories -->
-    <section class="categories-section">
-        <div class="categories-section__inner">
-            <div class="categories-header">
-                <span class="categories-header__label">Common Areas</span>
-                <h2>Issue categories</h2>
-            </div>
-            <div class="categories-grid">
-                {% for category in categories %}
-                <a href="{% if user.is_authenticated %}{% url 'report_issue' %}{% else %}{% url 'register' %}{% endif %}"
-                   class="category-card">
-                    <div class="category-card__icon">
-                        <span class="material-symbols-outlined">{{ category.icon }}</span>
+        <div class="feed-grid">
+            {% for issue in public_issues %}
+            {% with photo=issue.primary_photo %}
+            <div class="issue-card issue-card--brief"
+                 onclick="openIssueModal(this)"
+                 data-title="{{ issue.title }}"
+                 data-category="{{ issue.get_category_display }}"
+                 data-category-icon="{{ issue.category_icon }}"
+                 data-status="{{ issue.status }}"
+                 data-status-label="{{ issue.get_status_display }}"
+                 data-priority="{{ issue.priority }}"
+                 data-priority-label="{{ issue.get_priority_display }}"
+                 data-description="{{ issue.description }}"
+                 data-location="{{ issue.location|default:'Ward 12' }}"
+                 data-ward="{{ issue.ward_number }}"
+                 data-date="{{ issue.submitted_at|date:'M d, Y' }}"
+                 data-time="{{ issue.submitted_at|date:'h:i A' }}"
+                 data-reporter="{% if issue.visibility == 'confidential' %}Confidential{% else %}{{ issue.citizen.get_full_name|default:issue.citizen.username }}{% endif %}"
+                 data-issue-id="{{ issue.issue_id }}"
+                 data-photo="{% if photo %}{{ photo.image.url }}{% endif %}"
+                 data-photo-alt="{% if photo %}Photo of {{ issue.title }}{% endif %}">
+                <div class="issue-card__body">
+                    <div class="issue-card__meta">
+                        <span class="issue-card__category">
+                            <span class="material-symbols-outlined">{{ issue.category_icon }}</span>
+                            {{ issue.get_category_display }}
+                        </span>
+                        <span class="issue-card__status issue-card__status--{{ issue.status }}">
+                            {% if issue.status == 'submitted' %}<span class="material-symbols-outlined">pending</span>
+                            {% elif issue.status == 'assigned' %}<span class="material-symbols-outlined">assignment_ind</span>
+                            {% elif issue.status == 'in_progress' %}<span class="material-symbols-outlined">autorenew</span>
+                            {% elif issue.status == 'resolved' %}<span class="material-symbols-outlined">check_circle</span>
+                            {% elif issue.status == 'rejected' %}<span class="material-symbols-outlined">cancel</span>
+                            {% endif %}
+                            {{ issue.get_status_display }}
+                        </span>
                     </div>
-                    <span class="category-card__name">{{ category.name }}</span>
-                </a>
-                {% endfor %}
-            </div>
-        </div>
-    </section>
-
-    <!-- Ward Banner -->
-    <section class="ward-banner">
-        <div class="ward-banner__inner">
-            <span class="material-symbols-outlined">grid_view</span>
-            <p>Serving Ward 12, Pokhara Metropolitan City</p>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="cta-box">
-            <img
-                class="cta-box__bg"
-                alt="Office Background"
-                src="{% static 'images/ward.jpg' % }"
-            />
-            <div class="cta-box__content">
-                <h2>Ready to improve Ward 12?</h2>
-                <p>
-                    Join hundreds of your neighbors in building a better community.
-                    Reporting an issue takes less than two minutes.
-                </p>
-                <div class="cta-box__action">
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'report_issue' %}" class="btn-cta">Report an Issue Now</a>
-                    {% else %}
-                        <a href="{% url 'register' %}" class="btn-cta">Get started — it's free</a>
-                    {% endif %}
+                    <div class="issue-card__priority issue-card__priority--{{ issue.priority }}">
+                        <span class="material-symbols-outlined">flag</span> {{ issue.get_priority_display }}
+                    </div>
+                    <h3 class="issue-card__title">{{ issue.title }}</h3>
+                    <p class="issue-card__desc">{{ issue.description|truncatewords:12 }}</p>
+                    <div class="issue-card__footer">
+                        <span class="issue-card__location">
+                            <span class="material-symbols-outlined">location_on</span>
+                            <span>{{ issue.location|default:"Ward 12" }}</span>
+                        </span>
+                        <span class="issue-card__date">{{ issue.submitted_at|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="issue-card__hint">
+                        <span class="material-symbols-outlined">expand_circle_down</span> Tap to view details
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer__inner">
-            <div class="footer__brand">
-                <div>
-                    <span class="footer__brand-name">CivicReport</span>
-                    <span class="footer__brand-sub">Pokhara Metropolitan City · Ward 12 Office</span>
-                </div>
-                <p class="footer__copy">
-                    © 2026 Pokhara Metropolitan City, Ward 12 Office. All rights reserved.
-                </p>
+            {% endwith %}
+            {% empty %}
+            <div class="feed-empty">
+                <span class="material-symbols-outlined">inbox</span>
+                <p>No public issues to display yet.</p>
             </div>
-            <div class="footer__right">
-                <p class="footer__access-note">
-                    Access regulated for citizens and verified ward personnel only.
-                </p>
-                <div class="footer__links">
-                    <a class="footer__link" href="#">Privacy Policy</a>
-                    <a class="footer__link" href="#">Terms of Service</a>
-                    <a class="footer__link" href="#">Open Data</a>
-                    <a class="footer__link" href="#">Accessibility</a>
+            {% endfor %}
+        </div>
+
+        <!-- ── Issue Detail Modal ── -->
+        <div id="issueModal" class="issue-modal" onclick="closeIssueModal(event)" aria-modal="true" role="dialog" aria-label="Issue details">
+            <div class="issue-modal__panel">
+
+                <!-- Header bar -->
+                <div class="issue-modal__header">
+                    <div>
+                        <span id="imd__id" class="issue-modal__id"></span>
+                        <h2 id="imd__title" class="issue-modal__title"></h2>
+                    </div>
+                    <button class="issue-modal__close" onclick="event.stopPropagation();document.getElementById('issueModal').classList.remove('is-open');document.body.style.overflow=''" aria-label="Close">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
                 </div>
+
+                <!-- Photo (shown only if available) -->
+                <div id="imd__photo-wrap" class="issue-modal__photo-wrap" style="display:none">
+                    <img id="imd__photo" class="issue-modal__photo" src="" alt="" loading="lazy" />
+                </div>
+
+                <!-- Badges row -->
+                <div class="issue-modal__badges">
+                    <span id="imd__status"   class="issue-card__status"></span>
+                    <span id="imd__priority" class="issue-card__priority"></span>
+                    <span id="imd__category" class="issue-card__category issue-modal__cat-badge"></span>
+                </div>
+
+                <!-- Description -->
+                <div class="issue-modal__section">
+                    <div class="issue-modal__section-label">
+                        <span class="material-symbols-outlined">description</span> Description
+                    </div>
+                    <p id="imd__desc" class="issue-modal__desc-text"></p>
+                </div>
+
+                <!-- Details table -->
+                <div class="issue-modal__section">
+                    <div class="issue-modal__section-label">
+                        <span class="material-symbols-outlined">info</span> Report Details
+                    </div>
+                    <table class="issue-modal__table">
+                        <tbody>
+                            <tr>
+                                <th><span class="material-symbols-outlined">person</span> Reported by</th>
+                                <td id="imd__reporter"></td>
+                            </tr>
+                            <tr>
+                                <th><span class="material-symbols-outlined">location_on</span> Location</th>
+                                <td id="imd__location"></td>
+                            </tr>
+                            <tr>
+                                <th><span class="material-symbols-outlined">map</span> Ward</th>
+                                <td id="imd__ward"></td>
+                            </tr>
+                            <tr>
+                                <th><span class="material-symbols-outlined">calendar_today</span> Date</th>
+                                <td id="imd__date"></td>
+                            </tr>
+                            <tr>
+                                <th><span class="material-symbols-outlined">schedule</span> Time</th>
+                                <td id="imd__time"></td>
+                            </tr>
+                            <tr>
+                                <th><span class="material-symbols-outlined">category</span> Category</th>
+                                <td id="imd__cat-text"></td>
+                            </tr>
+                            <tr>
+                                <th><span class="material-symbols-outlined">flag</span> Priority</th>
+                                <td id="imd__pri-text"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
         </div>
-    </footer>
+        {% if public_issues %}
+        <div class="feed-more">
+            {% if user.is_authenticated %}
+                {% if user.is_citizen %}<a href="{% url 'my_issues' %}" class="btn-outline">View All Issues</a>
+                {% elif user.is_officer %}<a href="{% url 'officer_issue_queue' %}" class="btn-outline">View All Issues</a>
+                {% elif user.is_admin %}<a href="{% url 'admin_all_issues' %}" class="btn-outline">View All Issues</a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-outline">Log in to see all issues</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
 
+<!-- ═══════════════════ HOW IT WORKS ═══════════════════ -->
+<section class="how-section">
+    <div class="section-heading">
+        <h2>Three simple steps</h2>
+        <div class="section-heading__bar"></div>
+    </div>
+    <div class="steps-grid">
+        <div class="step-card">
+            <span class="step-card__number">01</span>
+            <h3>Submit a report</h3>
+            <p>Capture a photo, describe the issue, and share the location. Takes under two minutes.</p>
+        </div>
+        <div class="step-card">
+            <span class="step-card__number">02</span>
+            <h3>We assign it</h3>
+            <p>The Ward office reviews and dispatches the appropriate maintenance or municipal team.</p>
+        </div>
+        <div class="step-card">
+            <span class="step-card__number">03</span>
+            <h3>Track progress</h3>
+            <p>Receive notifications at every stage — from initial review to final resolution.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ ISSUE OVERVIEW (stats + chart) ═══════════════════ -->
+<section class="status-section">
+    <div class="status-section__inner">
+        <div class="section-heading">
+            <h2>Issue Overview</h2>
+            <div class="section-heading__bar"></div>
+        </div>
+        <div class="status-layout">
+
+            <!-- Left: status cards + category breakdown -->
+            <div class="status-cards">
+                <div class="status-row">
+                    <div class="status-card status-card--submitted">
+                        <span class="material-symbols-outlined status-card__icon">pending</span>
+                        <div class="status-card__info">
+                            <span class="status-card__count">{{ submitted_count }}</span>
+                            <span class="status-card__label">Submitted</span>
+                        </div>
+                    </div>
+                    <div class="status-card status-card--assigned">
+                        <span class="material-symbols-outlined status-card__icon">assignment_ind</span>
+                        <div class="status-card__info">
+                            <span class="status-card__count">{{ assigned_count }}</span>
+                            <span class="status-card__label">Assigned</span>
+                        </div>
+                    </div>
+                    <div class="status-card status-card--inprogress">
+                        <span class="material-symbols-outlined status-card__icon">autorenew</span>
+                        <div class="status-card__info">
+                            <span class="status-card__count">{{ in_progress_count }}</span>
+                            <span class="status-card__label">In Progress</span>
+                        </div>
+                    </div>
+                    <div class="status-card status-card--resolved">
+                        <span class="material-symbols-outlined status-card__icon">check_circle</span>
+                        <div class="status-card__info">
+                            <span class="status-card__count">{{ resolved_count }}</span>
+                            <span class="status-card__label">Resolved</span>
+                        </div>
+                    </div>
+                    <div class="status-card status-card--rejected">
+                        <span class="material-symbols-outlined status-card__icon">cancel</span>
+                        <div class="status-card__info">
+                            <span class="status-card__count">{{ rejected_count }}</span>
+                            <span class="status-card__label">Rejected</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category breakdown -->
+                <div class="category-breakdown">
+                    <h3 class="category-breakdown__title">Issues by Category</h3>
+                    <ul class="category-breakdown__list">
+                        {% for cat in category_stats %}
+                        <li class="category-breakdown__item">
+                            <span class="material-symbols-outlined category-breakdown__icon">{{ cat.icon }}</span>
+                            <span class="category-breakdown__name">{{ cat.label }}</span>
+                            <span class="category-breakdown__count">{{ cat.count }}</span>
+                            <div class="category-breakdown__bar-wrap">
+                                <div class="category-breakdown__bar" style="width: {{ cat.percent }}%"></div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right: doughnut chart -->
+            <div class="pie-wrap">
+                <h3 class="pie-wrap__title">Resolution Breakdown</h3>
+                <canvas id="statusPieChart" role="img"
+                    aria-label="Doughnut chart showing issue status distribution">
+                    Submitted: {{ submitted_count }}, Assigned: {{ assigned_count }}, In Progress: {{ in_progress_count }}, Resolved: {{ resolved_count }}, Rejected: {{ rejected_count }}.
+                </canvas>
+                <div class="pie-legend">
+                    <span class="pie-legend__item pie-legend__item--submitted"><span class="pie-legend__dot"></span> Submitted</span>
+                    <span class="pie-legend__item pie-legend__item--assigned"><span class="pie-legend__dot"></span> Assigned</span>
+                    <span class="pie-legend__item pie-legend__item--inprogress"><span class="pie-legend__dot"></span> In Progress</span>
+                    <span class="pie-legend__item pie-legend__item--resolved"><span class="pie-legend__dot"></span> Resolved</span>
+                    <span class="pie-legend__item pie-legend__item--rejected"><span class="pie-legend__dot"></span> Rejected</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ ISSUE CATEGORIES ═══════════════════ -->
+<section class="categories-section">
+    <div class="categories-section__inner">
+        <div class="categories-header">
+            <span class="categories-header__label">Common Areas</span>
+            <h2>Issue categories</h2>
+        </div>
+        <div class="categories-grid">
+            {% for category in categories %}
+            <a href="{% if user.is_authenticated %}{% url 'report_issue' %}{% else %}{% url 'register' %}{% endif %}"
+               class="category-card">
+                <div class="category-card__icon">
+                    <span class="material-symbols-outlined">{{ category.icon }}</span>
+                </div>
+                <span class="category-card__name">{{ category.label }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ WHY CIVICREPORT ═══════════════════ -->
+<section class="why-section">
+    <div class="why-section__inner">
+        <div class="section-heading">
+            <h2>Why CivicReport?</h2>
+            <div class="section-heading__bar"></div>
+        </div>
+        <div class="why-grid">
+            <div class="why-card">
+                <span class="material-symbols-outlined why-card__icon">photo_camera</span>
+                <h3>Photo evidence</h3>
+                <p>Attach photos directly to your report so the ward team arrives fully informed and ready to act.</p>
+            </div>
+            <div class="why-card">
+                <span class="material-symbols-outlined why-card__icon">notifications_active</span>
+                <h3>Live notifications</h3>
+                <p>Get instant updates at every status change — from assignment through to final resolution.</p>
+            </div>
+            <div class="why-card">
+                <span class="material-symbols-outlined why-card__icon">lock</span>
+                <h3>Confidential option</h3>
+                <p>Choose to keep your report private. Your identity is never shared publicly without your consent.</p>
+            </div>
+            <div class="why-card">
+                <span class="material-symbols-outlined why-card__icon">verified</span>
+                <h3>Verified officers</h3>
+                <p>Every issue is handled by a verified Ward 12 officer — no bots, no middlemen, no delays.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ CTA ═══════════════════ -->
+<section class="cta-section">
+    <div class="cta-box">
+        <img class="cta-box__bg" alt="Office Background" src="{% static 'images/ward.jpg' %}" />
+        <div class="cta-box__content">
+            <h2>Ready to improve Ward 12?</h2>
+            <p>Join your neighbors in building a better community. Reporting an issue takes less than two minutes.</p>
+            <div class="cta-box__action">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'report_issue' %}" class="btn-cta">Report an Issue Now</a>
+                {% else %}
+                    <a href="{% url 'register' %}" class="btn-cta">Get started — it's free</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+    <div class="footer__inner">
+        <div class="footer__brand">
+            <div>
+                <span class="footer__brand-name">CivicReport</span>
+                <span class="footer__brand-sub">Pokhara Metropolitan City · Ward 12 Office</span>
+            </div>
+            <p class="footer__copy">© 2026 Pokhara Metropolitan City, Ward 12 Office. All rights reserved.</p>
+        </div>
+        <div class="footer__right">
+            <p class="footer__access-note">Access regulated for citizens and verified ward personnel only.</p>
+            <div class="footer__links">
+                <a class="footer__link" href="#">Privacy Policy</a>
+                <a class="footer__link" href="#">Terms of Service</a>
+                <a class="footer__link" href="#">Open Data</a>
+                <a class="footer__link" href="#">Accessibility</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- ═══════════════════ CHART.JS ═══════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+(function () {
+    var data = [
+        parseInt("{{ submitted_count }}", 10)   || 0,
+        parseInt("{{ assigned_count }}", 10)    || 0,
+        parseInt("{{ in_progress_count }}", 10) || 0,
+        parseInt("{{ resolved_count }}", 10)    || 0,
+        parseInt("{{ rejected_count }}", 10)    || 0
+    ];
+    var canvas = document.getElementById('statusPieChart');
+    if (!canvas) return;
+    new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+            labels: ['Submitted', 'Assigned', 'In Progress', 'Resolved', 'Rejected'],
+            datasets: [{
+                data: data,
+                backgroundColor: ['#f59e0b', '#6366f1', '#3b82f6', '#22c55e', '#ef4444'],
+                borderWidth: 0,
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            cutout: '68%',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) {
+                            var total = ctx.dataset.data.reduce(function(a,b){ return a+b; }, 0);
+                            var pct = total ? Math.round(ctx.parsed / total * 100) : 0;
+                            return ' ' + ctx.label + ': ' + ctx.parsed + ' (' + pct + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+})();
+</script>
+
+<style>
+/* ── Issue card priority badge ── */
+.issue-card__priority { display: inline-flex; align-items: center; gap: .25rem; font-size: .72rem; font-weight: 600; padding: .15rem .55rem; border-radius: 99px; width: fit-content; }
+.issue-card__priority .material-symbols-outlined { font-size: .8rem; }
+.issue-card__priority--low      { background: #f0fdf4; color: #166534; }
+.issue-card__priority--medium   { background: #fefce8; color: #854d0e; }
+.issue-card__priority--high     { background: #fff7ed; color: #9a3412; }
+.issue-card__priority--critical { background: #fef2f2; color: #991b1b; }
+
+/* ── Status Overview ── */
+.status-section { padding: 5rem 1.5rem; background: #f9fafb; }
+.status-section__inner { max-width: 1100px; margin: 0 auto; }
+.status-layout { display: grid; grid-template-columns: 1fr 320px; gap: 2.5rem; align-items: start; margin-top: 2.5rem; }
+@media (max-width: 860px) { .status-layout { grid-template-columns: 1fr; } }
+
+.status-cards { display: flex; flex-direction: column; gap: 1rem; }
+.status-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: .75rem; }
+
+.status-card {
+    display: flex; align-items: center; gap: 1rem;
+    padding: .9rem 1.1rem; border-radius: 12px; border-left: 4px solid;
+    background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.status-card--submitted  { border-color: #f59e0b; }
+.status-card--assigned   { border-color: #6366f1; }
+.status-card--inprogress { border-color: #3b82f6; }
+.status-card--resolved   { border-color: #22c55e; }
+.status-card--rejected   { border-color: #ef4444; }
+.status-card__icon { font-size: 1.6rem; }
+.status-card--submitted  .status-card__icon { color: #f59e0b; }
+.status-card--assigned   .status-card__icon { color: #6366f1; }
+.status-card--inprogress .status-card__icon { color: #3b82f6; }
+.status-card--resolved   .status-card__icon { color: #22c55e; }
+.status-card--rejected   .status-card__icon { color: #ef4444; }
+.status-card__count { display: block; font-size: 1.6rem; font-weight: 800; line-height: 1; }
+.status-card__label { font-size: .75rem; color: #6b7280; margin-top: .2rem; display: block; }
+
+.category-breakdown { background: #fff; border-radius: 12px; padding: 1.25rem 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+.category-breakdown__title { font-size: .95rem; font-weight: 700; margin: 0 0 1rem; }
+.category-breakdown__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .75rem; }
+.category-breakdown__item { display: grid; grid-template-columns: auto 1fr auto 100px; align-items: center; gap: .5rem; font-size: .875rem; }
+.category-breakdown__icon { font-size: 1.1rem; color: #6b7280; }
+.category-breakdown__count { font-weight: 700; text-align: right; min-width: 24px; }
+.category-breakdown__bar-wrap { height: 6px; background: #e5e7eb; border-radius: 99px; overflow: hidden; }
+.category-breakdown__bar { height: 100%; background: #3b82f6; border-radius: 99px; transition: width .5s ease; }
+
+.pie-wrap { background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.06); text-align: center; position: sticky; top: 1rem; }
+.pie-wrap__title { font-size: .95rem; font-weight: 700; margin: 0 0 1.25rem; text-align: left; }
+#statusPieChart { max-width: 220px; margin: 0 auto; display: block; }
+.pie-legend { display: flex; flex-direction: column; gap: .5rem; margin-top: 1.25rem; font-size: .8rem; color: #374151; text-align: left; }
+.pie-legend__item { display: flex; align-items: center; gap: .5rem; }
+.pie-legend__dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; flex-shrink: 0; }
+.pie-legend__item--submitted  .pie-legend__dot { background: #f59e0b; }
+.pie-legend__item--assigned   .pie-legend__dot { background: #6366f1; }
+.pie-legend__item--inprogress .pie-legend__dot { background: #3b82f6; }
+.pie-legend__item--resolved   .pie-legend__dot { background: #22c55e; }
+.pie-legend__item--rejected   .pie-legend__dot { background: #ef4444; }
+
+/* ── Feed ── */
+.hero { padding-bottom: 3rem !important; }
+.feed-section { padding: 3rem 1.5rem 5rem; }
+.feed-section__inner { max-width: 1100px; margin: 0 auto; }
+.feed-filters { display: flex; gap: .5rem; flex-wrap: wrap; margin: 2rem 0; }
+.feed-filter { display: inline-flex; align-items: center; gap: .3rem; padding: .4rem .9rem; border-radius: 99px; font-size: .85rem; font-weight: 500; border: 1px solid #d1d5db; color: #374151; text-decoration: none; transition: background .15s; }
+.feed-filter .material-symbols-outlined { font-size: .95rem; }
+.feed-filter:hover { background: #f3f4f6; }
+.feed-filter--active { background: #1a3c5e; color: #fff; border-color: #1a3c5e; }
+.feed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+.issue-card { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; display: flex; flex-direction: column; transition: box-shadow .2s, transform .2s; }
+.issue-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,.1); transform: translateY(-2px); }
+.issue-card__img-wrap { aspect-ratio: 16/9; overflow: hidden; }
+.issue-card__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.issue-card__body { padding: 1rem 1.2rem; display: flex; flex-direction: column; gap: .45rem; flex: 1; }
+.issue-card__meta { display: flex; align-items: center; justify-content: space-between; gap: .4rem; flex-wrap: wrap; }
+.issue-card__category { display: flex; align-items: center; gap: .3rem; font-size: .75rem; color: #6b7280; }
+.issue-card__category .material-symbols-outlined { font-size: .95rem; }
+.issue-card__status { display: inline-flex; align-items: center; gap: .2rem; font-size: .72rem; font-weight: 600; padding: .18rem .6rem; border-radius: 99px; white-space: nowrap; }
+.issue-card__status .material-symbols-outlined { font-size: .8rem; }
+.issue-card__status--submitted  { background: #fef3c7; color: #92400e; }
+.issue-card__status--assigned   { background: #ede9fe; color: #4c1d95; }
+.issue-card__status--in_progress { background: #dbeafe; color: #1e40af; }
+.issue-card__status--resolved   { background: #dcfce7; color: #166534; }
+.issue-card__status--rejected   { background: #fee2e2; color: #991b1b; }
+.issue-card__title { font-size: .975rem; font-weight: 700; margin: 0; color: #111827; }
+.issue-card__desc  { font-size: .85rem; color: #6b7280; margin: 0; line-height: 1.5; flex: 1; }
+.issue-card__footer { display: flex; justify-content: space-between; align-items: center; margin-top: .4rem; font-size: .75rem; color: #9ca3af; }
+.issue-card__location { display: flex; align-items: center; gap: .2rem; overflow: hidden; }
+.issue-card__location .material-symbols-outlined { font-size: .9rem; flex-shrink: 0; }
+.issue-card__location span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.feed-empty { grid-column: 1/-1; text-align: center; padding: 3rem; color: #9ca3af; }
+.feed-empty .material-symbols-outlined { font-size: 3rem; display: block; margin-bottom: .5rem; }
+.feed-more { margin-top: 2.5rem; text-align: center; }
+
+/* ── Brief card (collapsed, no photo) ── */
+.issue-card--brief { cursor: pointer; }
+.issue-card--brief:hover { box-shadow: 0 6px 24px rgba(0,0,0,.12); transform: translateY(-3px); }
+.issue-card__hint { display: flex; align-items: center; gap: .25rem; font-size: .72rem; color: #9ca3af; margin-top: .5rem; }
+.issue-card__hint .material-symbols-outlined { font-size: .9rem; color: #3b82f6; }
+
+/* ── Issue detail modal ── */
+.issue-modal {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.55); backdrop-filter: blur(3px);
+    z-index: 9999; align-items: center; justify-content: center;
+    padding: 1.25rem;
+}
+.issue-modal.is-open { display: flex; }
+.issue-modal__panel {
+    background: #fff; border-radius: 16px; width: 100%; max-width: 560px;
+    max-height: 90vh; overflow-y: auto; overflow-x: hidden; position: relative;
+    box-shadow: 0 24px 64px rgba(0,0,0,.28);
+    animation: modalIn .22s ease;
+    display: flex; flex-direction: column;
+}
+@keyframes modalIn {
+    from { opacity: 0; transform: translateY(20px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+/* Header */
+.issue-modal__header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 1rem; padding: 1.4rem 1.5rem 0;
+}
+.issue-modal__id {
+    font-size: .72rem; font-weight: 700; color: #9ca3af;
+    letter-spacing: .04em; text-transform: uppercase; display: block; margin-bottom: .25rem;
+}
+.issue-modal__title {
+    font-size: 1.15rem; font-weight: 800; color: #111827;
+    margin: 0; line-height: 1.3;
+}
+.issue-modal__close {
+    flex-shrink: 0; background: #f3f4f6; border: none; border-radius: 50%;
+    width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background .15s; margin-top: .1rem;
+}
+.issue-modal__close:hover { background: #e5e7eb; }
+.issue-modal__close .material-symbols-outlined { font-size: 1.1rem; }
+
+/* Photo */
+.issue-modal__photo-wrap {
+    margin: 1rem 1.5rem 0; border-radius: 10px;
+    overflow: visible;
+}
+.issue-modal__photo {
+    width: 100%; height: auto; display: block;
+    border-radius: 10px;
+}
+
+/* Badges row */
+.issue-modal__badges {
+    display: flex; align-items: center; flex-wrap: wrap; gap: .5rem;
+    padding: 1rem 1.5rem 0;
+}
+.issue-modal__cat-badge {
+    background: #f3f4f6; padding: .18rem .65rem; border-radius: 99px;
+    font-size: .78rem; font-weight: 600; color: #374151;
+}
+.issue-modal__cat-badge .material-symbols-outlined { font-size: .9rem; }
+
+/* Sections */
+.issue-modal__section { padding: 1rem 1.5rem 0; }
+.issue-modal__section:last-child { padding-bottom: 1.6rem; }
+.issue-modal__section-label {
+    display: flex; align-items: center; gap: .35rem;
+    font-size: .72rem; font-weight: 700; color: #6b7280;
+    text-transform: uppercase; letter-spacing: .06em;
+    margin-bottom: .65rem;
+}
+.issue-modal__section-label .material-symbols-outlined { font-size: 1rem; }
+
+/* Description */
+.issue-modal__desc-text {
+    font-size: .9rem; color: #374151; line-height: 1.7;
+    margin: 0; background: #f9fafb; border-radius: 8px;
+    padding: .75rem 1rem; border-left: 3px solid #d1d5db;
+}
+
+/* Details table */
+.issue-modal__table {
+    width: 100%; border-collapse: collapse; font-size: .875rem;
+    border-radius: 10px; overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+.issue-modal__table tbody tr { border-bottom: 1px solid #f3f4f6; }
+.issue-modal__table tbody tr:last-child { border-bottom: none; }
+.issue-modal__table tbody tr:nth-child(odd) { background: #f9fafb; }
+.issue-modal__table tbody tr:nth-child(even) { background: #fff; }
+.issue-modal__table th {
+    width: 38%; padding: .65rem .9rem; font-weight: 600; color: #6b7280;
+    text-align: left; font-size: .8rem; white-space: nowrap;
+    display: table-cell; vertical-align: middle;
+}
+.issue-modal__table th .material-symbols-outlined {
+    font-size: .9rem; vertical-align: middle; margin-right: .3rem; color: #9ca3af;
+}
+.issue-modal__table td {
+    padding: .65rem .9rem; color: #111827; font-weight: 500;
+    vertical-align: middle;
+}
+
+.why-section { padding: 5rem 1.5rem; background: #f9fafb; }
+.why-section__inner { max-width: 1100px; margin: 0 auto; }
+.why-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.5rem; margin-top: 2.5rem; }
+.why-card { background: #fff; border-radius: 14px; padding: 1.75rem 1.5rem; border: 1px solid #e5e7eb; transition: box-shadow .2s; }
+.why-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,.08); }
+.why-card__icon { font-size: 2rem; color: #1a3c5e; display: block; margin-bottom: 1rem; }
+.why-card h3 { font-size: 1rem; font-weight: 700; margin: 0 0 .5rem; color: #111827; }
+.why-card p { font-size: .875rem; color: #6b7280; line-height: 1.6; margin: 0; }
+</style>
+
+<script>
+(function () {
+    var modal = document.getElementById('issueModal');
+
+    var statusIcons = {
+        submitted: 'pending', assigned: 'assignment_ind',
+        in_progress: 'autorenew', resolved: 'check_circle', rejected: 'cancel'
+    };
+
+    function set(id, html, isText) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        if (isText) el.textContent = html;
+        else el.innerHTML = html;
+    }
+
+    window.openIssueModal = function (card) {
+        var d = card.dataset;
+
+        // Photo
+        var photoWrap = document.getElementById('imd__photo-wrap');
+        var photoEl   = document.getElementById('imd__photo');
+        if (d.photo) {
+            photoEl.src = d.photo;
+            photoEl.alt = d.photoAlt || d.title;
+            photoWrap.style.display = '';
+        } else {
+            photoWrap.style.display = 'none';
+        }
+
+        // Header
+        set('imd__id',    d.issueId, true);
+        set('imd__title', d.title,   true);
+
+        // Status badge
+        var sIcon = statusIcons[d.status] || 'info';
+        var statusEl = document.getElementById('imd__status');
+        statusEl.className = 'issue-card__status issue-card__status--' + d.status;
+        statusEl.innerHTML = '<span class="material-symbols-outlined">' + sIcon + '</span> ' + d.statusLabel;
+
+        // Priority badge
+        var priEl = document.getElementById('imd__priority');
+        priEl.className = 'issue-card__priority issue-card__priority--' + d.priority;
+        priEl.innerHTML = '<span class="material-symbols-outlined">flag</span> ' + d.priorityLabel;
+
+        // Category badge
+        set('imd__category',
+            '<span class="material-symbols-outlined">' + d.categoryIcon + '</span> ' + d.category);
+
+        // Description
+        set('imd__desc', d.description, true);
+
+        // Table fields
+        set('imd__reporter', d.reporter, true);
+        set('imd__location',  d.location,  true);
+        set('imd__ward',      'Ward ' + d.ward, true);
+        set('imd__date',      d.date,      true);
+        set('imd__time',      d.time,      true);
+        set('imd__cat-text',  d.category,  true);
+        set('imd__pri-text',  d.priorityLabel, true);
+
+        modal.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeIssueModal = function (e) {
+        if (e && e.target !== modal) return;
+        modal.classList.remove('is-open');
+        document.body.style.overflow = '';
+    };
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            modal.classList.remove('is-open');
+            document.body.style.overflow = '';
+        }
+    });
+})();
+</script>
 </body>
 </html>

@@ -23,6 +23,79 @@ from django.views.decorators.http import require_http_methods
 import json
 import os
 from django.conf import settings
+from notifications.utils import notify
+
+
+
+# Map category choice values → Material Symbol icon names
+CATEGORY_ICONS = {
+    'pothole':     'warning',
+    'streetlight': 'light_mode',
+    'water':       'water_drop',
+    'waste':       'delete',
+    'other':       'help_outline',
+}
+
+def landing_page(request):
+    status_filter = request.GET.get('status', '')
+
+    # Public issues feed
+    issues_qs = Issue.objects.filter(visibility='public').order_by('-submitted_at')
+    if status_filter:
+        issues_qs = issues_qs.filter(status=status_filter)
+
+    # Status counts (all issues, not just public)
+    status_counts = Issue.objects.aggregate(
+        submitted=Count('id', filter=Q(status='submitted')),
+        assigned=Count('id',   filter=Q(status='assigned')),
+        in_progress=Count('id',filter=Q(status='in_progress')),
+        resolved=Count('id',   filter=Q(status='resolved')),
+        rejected=Count('id',   filter=Q(status='rejected')),
+    )
+
+    # Category stats with icons + percentages
+    total = Issue.objects.count() or 1
+    cat_qs = (
+        Issue.objects
+        .values('category')
+        .annotate(count=Count('id'))
+        .order_by('-count')
+    )
+    category_stats = [
+        {
+            'value':   row['category'],
+            'label':   dict(Issue.CATEGORY_CHOICES).get(row['category'], row['category']),
+            'icon':    CATEGORY_ICONS.get(row['category'], 'report'),
+            'count':   row['count'],
+            'percent': round(row['count'] / total * 100),
+        }
+        for row in cat_qs
+    ]
+
+    # Categories list for the "Issue categories" cards section
+    categories = [
+        {'value': value, 'label': label, 'icon': CATEGORY_ICONS.get(value, 'report')}
+        for value, label in Issue.CATEGORY_CHOICES
+    ]
+
+    # Resolution rate for stats bar
+    resolved_count = status_counts['resolved']
+    resolution_rate = round(resolved_count / total * 100) if total > 1 else 0
+
+    context = {
+        'public_issues':      issues_qs[:9],
+        'submitted_count':    status_counts['submitted'],
+        'assigned_count':     status_counts['assigned'],
+        'in_progress_count':  status_counts['in_progress'],
+        'resolved_count':     resolved_count,
+        'rejected_count':     status_counts['rejected'],
+        'category_stats':     category_stats,
+        'categories':         categories,
+        'status_filter':      status_filter,
+        'total_issues':       Issue.objects.count(),
+        'resolution_rate':    resolution_rate,
+    }
+    return render(request, 'landing_page.html', context)
 
 
 @csrf_exempt
@@ -149,6 +222,7 @@ def profile(request):
     })
 
 @login_required
+@login_required
 def report_issue(request):
     captcha_text = generate_captcha_text()
     captcha_image = generate_captcha_image(captcha_text)
@@ -181,8 +255,28 @@ def report_issue(request):
                 IssuePhoto.objects.create(issue=issue, image=photo)
 
             assign_issue(issue)
-            messages.success(request, 'Issue reported successfully! We will look into it.')
-            return redirect('my_issues')
+
+            # Notify citizen confirmation
+            notify(
+                request.user,
+                'Issue Submitted',
+                f'Your issue "{issue.title}" has been submitted successfully.',
+                'issue_submitted',
+                issue
+            )
+
+            # Notify all admins
+            for admin in User.objects.filter(role='admin'):
+                notify(
+                    admin,
+                    'New Issue Submitted',
+                    f'A new issue "{issue.title}" was submitted by {request.user.get_full_name() or request.user.username}.',
+                    'issue_submitted',
+                    issue
+                )
+
+            issue_id = f"CR-{issue.submitted_at.year}-{issue.id:04d}"
+            return render(request, 'citizen/report_success.html', {'issue_id': issue_id})
 
     else:
         form = IssueReportForm()
@@ -224,17 +318,19 @@ def issue_detail(request, issue_id):
     return render(request, 'citizen/issue_detail.html', {'issue': issue})
 
 @citizen_required
+@citizen_required
 def submit_feedback(request, issue_id):
     issue = get_object_or_404(Issue, id=issue_id, citizen=request.user)
 
-    if issue.status != 'Resolved':
+    # ← was 'Resolved' (wrong), status value is 'resolved'
+    if issue.status != 'resolved':
         messages.error(request, 'You can only give feedback on resolved issues.')
         return redirect('my_issues')
-    
+
     if hasattr(issue, 'feedback'):
         messages.error(request, 'You have already submitted feedback for this issue.')
         return redirect('my_issues')
-    
+
     if request.method == 'POST':
         form = FeedbackForm(request.POST)
         if form.is_valid():
@@ -242,11 +338,24 @@ def submit_feedback(request, issue_id):
             feedback.issue = issue
             feedback.citizen = request.user
             feedback.save()
+
+            # Notify admin that feedback was received
+            for admin in User.objects.filter(role='admin'):
+                notify(
+                    admin,
+                    'Feedback Received',
+                    f'Citizen {request.user.get_full_name() or request.user.username} '
+                    f'left feedback on resolved issue "{issue.title}".',
+                    'general',
+                    issue
+                )
+
             messages.success(request, 'Thank you for your feedback!')
             return redirect('my_issues')
     else:
         form = FeedbackForm()
-    return render(request, 'issues/submit_feedback.html', {'form': form, 'issue': issue})
+
+    return render(request, 'citizen/submit_feedback.html', {'form': form, 'issue': issue})
 
 
 # Officer Views
@@ -270,34 +379,23 @@ def officer_dashboard(request):
     return render(request, 'officer/officer_dashboard.html', context)
 
 @officer_required
-def update_issue_status(request, issue_id):
-    issue = get_object_or_404(
-        Issue, id=issue_id, assigned_department=request.user.department
-    )
+def update_issue_status(request, pk):
+    issue = get_object_or_404(Issue, pk=pk)
+    new_status = request.POST.get('status')
+    issue.status = new_status
+    issue.save()
 
-    if request.method == 'POST':
-        new_status = request.POST.get('status')
-        remarks    = request.POST.get('remarks', '').strip()
+    # ✅ notify goes HERE
+    if new_status == 'resolved':
+        notify(issue.citizen, 'Issue Resolved',
+               f'Your issue "{issue.title}" has been resolved!',
+               'issue_resolved', issue)
+    elif new_status == 'rejected':
+        notify(issue.citizen, 'Issue Rejected',
+               f'Your issue "{issue.title}" was rejected.',
+               'issue_rejected', issue)
 
-        if new_status:
-            issue.status = new_status
-            if remarks:
-                issue.officer_remarks = remarks
-            issue.save()
-
-            Notification.objects.create(
-                user=issue.citizen,
-                issue=issue,
-                message=(
-                    f'Your issue "{issue.title}" status has been updated to: '
-                    f'{issue.get_status_display()}.'
-                    + (f' Note: {remarks}' if remarks else '')
-                )
-            )
-            messages.success(request, 'Issue status updated and citizen notified!')
-            return redirect('officer_issue_queue')
-
-    return render(request, 'officer/officer_update_status.html', {'issue': issue})
+    return redirect('admin_all_issues')
 
 @login_required
 @officer_required
@@ -383,6 +481,7 @@ def officer_profile(request):
     return render(request, 'officer/officer_profile.html', context)
 
 @officer_required
+@officer_required
 def officer_update_status(request, issue_id):
     issue = get_object_or_404(
         Issue,
@@ -396,7 +495,7 @@ def officer_update_status(request, issue_id):
 
         if new_status:
             issue.status = new_status
-            issue.assigned_officer = request.user   # ← always stamp who acted
+            issue.assigned_officer = request.user
             if remarks:
                 issue.officer_remarks = remarks
             issue.save()
@@ -408,56 +507,42 @@ def officer_update_status(request, issue_id):
                 remarks=remarks,
             )
 
-            Notification.objects.create(
-                user=issue.citizen,
-                issue=issue,
-                message=(
-                    f'Your issue "{issue.title}" status has been updated to '
-                    f'"{issue.get_status_display()}".'
-                    + (f' Note: {remarks}' if remarks else '')
-                )
+            # Map status → notification type + citizen message
+            status_map = {
+                'in_progress': ('status_changed', 'In Progress',
+                    f'Your issue "{issue.title}" is now being worked on.'),
+                'resolved':    ('issue_resolved', 'Issue Resolved',
+                    f'Your issue "{issue.title}" has been resolved. Thank you for your patience!'),
+                'rejected':    ('issue_rejected', 'Issue Rejected',
+                    f'Your issue "{issue.title}" has been rejected.'
+                    + (f' Reason: {remarks}' if remarks else '')),
+            }
+
+            notif_type, notif_title, notif_msg = status_map.get(
+                new_status,
+                ('status_changed', 'Issue Updated',
+                 f'Your issue "{issue.title}" status changed to "{issue.get_status_display()}".')
             )
+
+            # Notify citizen
+            notify(issue.citizen, notif_title, notif_msg, notif_type, issue)
+
+            # Notify all admins
+            for admin in User.objects.filter(role='admin'):
+                notify(
+                    admin,
+                    f'Issue {issue.get_status_display()}',
+                    f'Officer {request.user.get_full_name() or request.user.username} '
+                    f'marked "{issue.title}" as {issue.get_status_display()}.',
+                    notif_type,
+                    issue
+                )
 
             messages.success(request, 'Status updated and citizen notified.')
             return redirect('officer_issue_queue')
 
     context = {'issue': issue}
     return render(request, 'officer/officer_update_status.html', context)
-
-#Notifications Views
-
-@login_required
-def notifications(request):
-    notifs = Notification.objects.filter(user=request.user).order_by('-created_at')
-    notifs.update(is_read=True)
-    return render(request, 'issues/notifications.html', {'notifications': notifs})  
-
-
-def landing_page(request):
-    total_issues = Issue.objects.count()
-    resolved_issues = Issue.objects.filter(status='resolved').count()
-
-    if total_issues > 0:
-        resolution_rate = round((resolved_issues / total_issues) * 100)
-    else:
-        resolution_rate = 87  # default display value until data exists
-
-    categories = [
-        {'name': 'Road damage', 'icon': 'construction'},
-        {'name': 'Water supply', 'icon': 'water_drop'},
-        {'name': 'Street lighting', 'icon': 'lightbulb'},
-        {'name': 'Public property', 'icon': 'park'},
-        {'name': 'Other', 'icon': 'more_horiz'},
-    ]
-
-    return render(request, 'landing_page.html', {
-        'total_issues': total_issues,
-        'resolution_rate': resolution_rate,
-        'categories': categories,
-    })
-
-
-
 
 # ── ADMIN VIEWS ─────────────────────────────────────────────────
 
@@ -525,33 +610,43 @@ def admin_all_issues(request):
 
 
 @login_required
-def admin_assign_issue(request, issue_id):
+@login_required
+def admin_assign_issue(request, pk):
     if not request.user.is_admin():
         return redirect('login')
 
-    issue = get_object_or_404(Issue, id=issue_id)
-
+    issue = get_object_or_404(Issue, pk=pk)
     if request.method == 'POST':
         officer_id = request.POST.get('officer')
-        remarks = request.POST.get('remarks', '')
+        remarks    = request.POST.get('remarks', '').strip()
 
-        if officer_id:
-            officer = get_object_or_404(User, id=officer_id, role='officer')
-            issue.assigned_officer = officer
-            issue.assigned_department = officer.department
-            issue.status = 'assigned'
-            if remarks:
-                issue.officer_remarks = remarks
-            issue.save()
+        officer = get_object_or_404(User, pk=officer_id)
+        issue.assigned_officer = officer
+        issue.status = 'assigned'
+        if remarks:
+            issue.officer_remarks = remarks
+        issue.save()
 
-            # Notify citizen
-            Notification.objects.create(
-                user=issue.citizen,
-                issue=issue,
-                message=f'Your issue "{issue.title}" has been assigned and is being processed.'
-            )
-            messages.success(request, f'Issue assigned to {officer.get_full_name()}.')
+        # Notify the citizen
+        notify(
+            issue.citizen,
+            'Issue Assigned',
+            f'Your issue "{issue.title}" has been assigned to an officer and is being reviewed.',
+            'issue_assigned',
+            issue
+        )
 
+        # Notify the assigned officer
+        notify(
+            officer,
+            'New Issue Assigned to You',
+            f'Issue "{issue.title}" has been assigned to you.'
+            + (f' Admin note: {remarks}' if remarks else ''),
+            'issue_assigned',
+            issue
+        )
+
+        messages.success(request, f'Issue assigned to {officer.get_full_name() or officer.username}.')
         return redirect('admin_all_issues')
 
     return redirect('admin_all_issues')
@@ -661,3 +756,4 @@ def refresh_captcha(request):
     request.session['captcha_text'] = captcha_text
     captcha_image = generate_captcha_image(captcha_text)
     return JsonResponse({'image': captcha_image})
+

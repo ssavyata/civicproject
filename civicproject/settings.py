@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     #Our apps
-    'accounts',
+    'accounts.apps.AccountsConfig',
     'issues',
     'notifications',
 
@@ -84,6 +84,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'accounts.context_processors.unread_notifications',
             ],
         },
     },
@@ -135,11 +136,8 @@ AUTHENTICATION_BACKENDS = (
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
 USE_TZ = True
+TIME_ZONE = 'Asia/Kathmandu'
 
 
 # Static files (CSS, JavaScript, Images)

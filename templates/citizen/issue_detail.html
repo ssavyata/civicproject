@@ -64,23 +64,21 @@
             <p class="detail-field__value">{{ issue.location|default:"Not specified" }}</p>
           </div>
           <div>
-            <<div>
-  <p class="detail-field__label">Date Submitted</p>
-  <p class="detail-field__value">{{ issue.submitted_at|date:"M d, Y" }}</p>
-</div>
-<div>
-  <p class="detail-field__label">Report Visibility</p>
-  <p class="detail-field__value" style="display:flex;align-items:center;gap:0.35rem;">
-    <span class="material-symbols-outlined" style="font-size:1rem;color:#059669;">
-      {% if issue.visibility == 'confidential' %}lock{% else %}lock_open{% endif %}
-    </span>
-    {% if issue.visibility == 'confidential' %}
-      Anonymous — your identity is hidden from officers
-    {% else %}
-      Public — your name is visible to officers
-    {% endif %}
-  </p>
-</div>
+            <p class="detail-field__label">Date Submitted</p>
+            <p class="detail-field__value">{{ issue.submitted_at|date:"M d, Y" }}</p>
+          </div>
+          <div>
+            <p class="detail-field__label">Report Visibility</p>
+            <p class="detail-field__value" style="display:flex;align-items:center;gap:0.35rem;">
+              <span class="material-symbols-outlined" style="font-size:1rem;color:#059669;">
+                {% if issue.visibility == 'confidential' %}lock{% else %}lock_open{% endif %}
+              </span>
+              {% if issue.visibility == 'confidential' %}
+                Anonymous — your identity is hidden from officers
+              {% else %}
+                Public — your name is visible to officers
+              {% endif %}
+            </p>
           </div>
         </div>
 
@@ -183,6 +181,14 @@
               </div>
             </div>
           {% endfor %}
+
+          {% if issue.status == 'resolved' and not issue.feedback %}
+            <a href="{% url 'submit_feedback' issue.id %}" class="btn btn--primary">
+              <span class="material-symbols-outlined">rate_review</span>
+              Leave Feedback
+            </a>  
+        {% endif %}
+
         </div>
       </div>
     </div>

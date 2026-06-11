@@ -28,7 +28,4 @@ urlpatterns = [
 
     # CAPTCHA
     path('captcha/refresh/', views.refresh_captcha, name='refresh_captcha'),
-    
-    # Notifications
-    path('notifications/', views.notifications, name='notifications'),
 ]

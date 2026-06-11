@@ -21,6 +21,17 @@ class Issue(models.Model):
         ('other', 'Other'),
     ]
 
+    @property
+    def category_icon(self):
+        icons = {
+        'pothole':     'warning',
+        'streetlight': 'light_mode',
+        'water':       'water_drop',
+        'waste':       'delete',
+        'other':       'help_outline',
+    }
+        return icons.get(self.category, 'report')
+
     STATUS_CHOICES = [
         ('submitted', 'Submitted'),
         ('assigned', 'Assigned'),
@@ -69,7 +80,7 @@ class Issue(models.Model):
         max_length=20,
         choices=VISIBILITY_CHOICES,
         default='public'
-    )
+)
 
     title = models.CharField(max_length=200)
     description = models.TextField()

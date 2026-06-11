@@ -109,13 +109,13 @@
         </label>
       </div>
 
-      {% comment %} <!-- reCAPTCHA -->
+      <!-- reCAPTCHA -->
       <div class="form-group">
         {{ form.captcha }}
         {% if form.captcha.errors %}
           <p class="field-error">{{ form.captcha.errors.0 }}</p>
         {% endif %}
-      </div> {% endcomment %}
+      </div>
 
       <!-- Submit -->
       <button type="submit" class="btn btn-primary" style="margin-top:24px;">Register</button>

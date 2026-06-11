@@ -92,7 +92,7 @@
                                     Assign
                                 </button>
                             {% else %}
-                                <a href="#" class="action-link action-link--muted">
+                                <a href="{% url 'admin_issue_detail' issue.id %}" class="action-link action-link--muted">
                                     <span class="material-symbols-outlined" style="font-size:14px">visibility</span>
                                     View
                                 </a>

@@ -96,20 +96,9 @@ table { border-collapse: collapse; }
   padding: 24px;
 }
 
-.sidebar-brand {
-  margin-bottom: 32px;
-}
-.sidebar-brand-name {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #fff;
-  display: block;
-}
-.sidebar-brand-sub {
-  font-size: 10px;
-  color: var(--emerald-400);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+.sidebar-brand-logo {
+  width: 50px;
+  height: 50px;
 }
 
 .sidebar-nav {
@@ -240,9 +229,15 @@ table { border-collapse: collapse; }
    --------------------------------------------------------- */
 .admin-main {
   margin-left: var(--sidebar-width);
-  padding-top: var(--topbar-height);
-  padding: calc(var(--topbar-height) + 32px) 32px 32px;
+  padding: calc(var(--topbar-height) + 32px) 32px 0;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-footer {
+  margin-top: auto !important;
+  padding-bottom: 24px;
 }
 
 /* ---------------------------------------------------------
@@ -263,11 +258,6 @@ table { border-collapse: collapse; }
    Footer
    --------------------------------------------------------- */
 .admin-footer {
-  position: fixed;
-  bottom: 30px;
-  left: var(--sidebar-width);
-  right: 15px;
-  margin-top: 48px;
   padding-top: 24px;
   border-top: 1px solid var(--slate-200);
   display: flex;

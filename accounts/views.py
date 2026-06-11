@@ -196,4 +196,64 @@ class CustomConfirmEmailView(ConfirmEmailView):
     def get(self, *args, **kwargs):
         response = super().get(*args, **kwargs)
         messages.success(self.request, 'Your email has been confirmed! You can now log in.')
+<<<<<<< Updated upstream
         return redirect('login')
+=======
+        return redirect('login')
+    
+
+from django.utils import timezone
+from django.core.paginator import Paginator
+from accounts.models import UserActivityLog
+
+def activity_log_view(request):
+    username_filter = request.GET.get('username', '').strip()
+    status_filter   = request.GET.get('status', '')
+
+    # Exclude admin users — only citizens and officers
+    logs = (
+        UserActivityLog.objects
+        .select_related('user')
+        .exclude(user__role='admin')
+        .order_by('user', '-login_time')
+        .distinct('user')          # one latest session per user
+    )
+
+    # Re-order after distinct so newest sessions appear first
+    # (distinct('user') forces ordering by user first; we fix that below)
+    from django.db.models import Subquery, OuterRef
+
+    latest_ids = (
+        UserActivityLog.objects
+        .exclude(user__role='admin')
+        .order_by('user_id', '-login_time')
+        .distinct('user_id')
+        .values('id')
+    )
+
+    logs = UserActivityLog.objects.filter(id__in=Subquery(latest_ids)).select_related('user').order_by('-login_time')
+
+    if username_filter:
+        logs = logs.filter(user__username__icontains=username_filter)
+
+    if status_filter == 'active':
+        logs = logs.filter(logout_time__isnull=True)
+    elif status_filter == 'ended':
+        logs = logs.filter(logout_time__isnull=False)
+
+    paginator = Paginator(logs, 20)
+    logs_page = paginator.get_page(request.GET.get('page'))
+
+    # Summary chips — also exclude admins
+    non_admin_logs = UserActivityLog.objects.exclude(user__role='admin')
+
+    context = {
+        'logs':            logs_page,
+        'total_count':     non_admin_logs.values('user').distinct().count(),  # unique users, not sessions
+        'active_now':      non_admin_logs.filter(logout_time__isnull=True).values('user').distinct().count(),
+        'sessions_today':  non_admin_logs.filter(login_time__date=date.today()).values('user').distinct().count(),
+        'username_filter': username_filter,
+        'status_filter':   status_filter,
+    }
+    return render(request, 'admin/activity_log.html', context)
+>>>>>>> Stashed changes

@@ -151,6 +151,32 @@ def submit_feedback(request, issue_id):
             feedback.issue = issue
             feedback.citizen = request.user
             feedback.save()
+<<<<<<< Updated upstream
+=======
+
+            # Notify admin that feedback was received
+            for admin in User.objects.filter(role='admin'):
+                notify(
+                    admin,
+                    'Feedback Received',
+                    f'Citizen {request.user.get_full_name() or request.user.username} '
+                    f'left feedback on resolved issue "{issue.title}".',
+                    'general',
+                    issue
+                )
+
+            # Also notify the assigned officer so they see it in their bell
+            if issue.assigned_officer:
+                notify(
+                    issue.assigned_officer,
+                    'Citizen Feedback Received',
+                    f'A citizen rated your resolution of "{issue.title}" '
+                    f'{feedback.rating}/5 stars.',
+                    'general',
+                    issue
+                )
+
+>>>>>>> Stashed changes
             messages.success(request, 'Thank you for your feedback!')
             return redirect('my_issues')
     else:
@@ -164,9 +190,77 @@ def submit_feedback(request, issue_id):
 def officer_dashboard(request):
     issues = Issue.objects.filter(
         assigned_department=request.user.department
+<<<<<<< Updated upstream
         ).order_by('-submitted_at')
    
     status_filter = request.GET.get('status')
+=======
+    ).order_by('-submitted_at')
+
+    notifications = Notification.objects.filter(
+        user=request.user
+    ).order_by('-created_at')[:15]
+
+    unread_count = Notification.objects.filter(
+        user=request.user, is_read=False
+    ).count()
+
+    context = {
+        'total_assigned':    all_issues.count(),
+        'pending_count':     all_issues.filter(status='submitted').count(),
+        'in_progress_count': all_issues.filter(status='in_progress').count(),
+        'resolved_count':    all_issues.filter(status='resolved').count(),
+        'recent_issues':     all_issues[:5],
+        'notifications':     notifications,
+        'unread_count':      unread_count,
+    }
+    return render(request, 'officer/officer_dashboard.html', context)
+
+@officer_required
+def update_issue_status(request, pk):
+    issue = get_object_or_404(Issue, pk=pk)
+    new_status = request.POST.get('status')
+    issue.status = new_status
+    issue.save()
+
+    # ✅ notify goes HERE
+    if new_status == 'resolved':
+        notify(issue.citizen, 'Issue Resolved',
+               f'Your issue "{issue.title}" has been resolved!',
+               'issue_resolved', issue)
+    elif new_status == 'rejected':
+        notify(issue.citizen, 'Issue Rejected',
+               f'Your issue "{issue.title}" was rejected.',
+               'issue_rejected', issue)
+
+    return redirect('admin_all_issues')
+
+@login_required
+@officer_required
+def officer_issue_queue(request):
+    """
+    Renders a searchable, filterable master list of issues
+    assigned specifically to the logged-in officer's department.
+    """
+    issue_list = Issue.objects.filter(
+        assigned_department=request.user.department
+    ).order_by('-submitted_at')
+
+    # Search Query Filter
+    query = request.GET.get('q', '').strip()
+    if query:
+        if query.isdigit():
+            issue_list = issue_list.filter(
+                Q(id=query) | Q(title__icontains=query) | Q(description__icontains=query)
+            )
+        else:
+            issue_list = issue_list.filter(
+                Q(title__icontains=query) | Q(description__icontains=query)
+            )
+
+    # Dropdown Status and Category Filters
+    status_filter = request.GET.get('status', '').strip()
+>>>>>>> Stashed changes
     if status_filter:
         issues = issues.filter(status=status_filter)
     
@@ -181,6 +275,7 @@ def update_issue_status(request, issue_id):
         if form.is_valid():
             form.save()
 
+<<<<<<< Updated upstream
             # Create notification for the citizen
             Notification.objects.create(
                 user = issue.citizen,
@@ -192,6 +287,23 @@ def update_issue_status(request, issue_id):
     else:
         form = IssueStatusForm(instance=issue)
     return render(request, 'issues/update_issue_status.html', {'form': form, 'issue': issue})
+=======
+    notifications = Notification.objects.filter(
+        user=request.user
+    ).order_by('-created_at')[:15]
+
+    unread_count = Notification.objects.filter(
+        user=request.user, is_read=False
+    ).count()
+
+    context = {
+        'issues':        page_obj,
+        'page_obj':      page_obj,
+        'notifications': notifications,
+        'unread_count':  unread_count,
+    }
+    return render(request, 'officer/officer_issue_queue.html', context)
+>>>>>>> Stashed changes
 
 #Notifications Views
 
@@ -227,6 +339,68 @@ def landing_page(request):
 
 
 
+<<<<<<< Updated upstream
+=======
+            IssueStatusLog.objects.create(
+                issue=issue,
+                updated_by=request.user,
+                status=new_status,
+                remarks=remarks,
+            )
+
+            # Map status → notification type + citizen message
+            status_map = {
+                'in_progress': ('status_changed', 'In Progress',
+                    f'Your issue "{issue.title}" is now being worked on.'),
+                'resolved':    ('issue_resolved', 'Issue Resolved',
+                    f'Your issue "{issue.title}" has been resolved. Thank you for your patience!'),
+                'rejected':    ('issue_rejected', 'Issue Rejected',
+                    f'Your issue "{issue.title}" has been rejected.'
+                    + (f' Reason: {remarks}' if remarks else '')),
+            }
+
+            notif_type, notif_title, notif_msg = status_map.get(
+                new_status,
+                ('status_changed', 'Issue Updated',
+                 f'Your issue "{issue.title}" status changed to "{issue.get_status_display()}".')
+            )
+
+            # Notify citizen
+            notify(issue.citizen, notif_title, notif_msg, notif_type, issue)
+
+            # Notify all admins
+            for admin in User.objects.filter(role='admin'):
+                notify(
+                    admin,
+                    f'Issue {issue.get_status_display()}',
+                    f'Officer {request.user.get_full_name() or request.user.username} '
+                    f'marked "{issue.title}" as {issue.get_status_display()}.',
+                    notif_type,
+                    issue
+                )
+
+            messages.success(request, 'Status updated and citizen notified.')
+            return redirect('officer_issue_queue')
+
+    # Fetch citizen feedback if it exists
+    feedback = getattr(issue, 'feedback', None)
+
+    notifications = Notification.objects.filter(
+        user=request.user
+    ).order_by('-created_at')[:15]
+
+    unread_count = Notification.objects.filter(
+        user=request.user, is_read=False
+    ).count()
+
+    context = {
+        'issue':         issue,
+        'feedback':      feedback,
+        'notifications': notifications,
+        'unread_count':  unread_count,
+    }
+    return render(request, 'officer/officer_update_status.html', context)
+>>>>>>> Stashed changes
 
 # ── ADMIN VIEWS ─────────────────────────────────────────────────
 
@@ -327,6 +501,23 @@ def admin_assign_issue(request, issue_id):
 
 
 @login_required
+def admin_issue_detail(request, pk):
+    if not request.user.is_admin():
+        return redirect('login')
+
+    issue = get_object_or_404(Issue, pk=pk)
+    feedback = getattr(issue, 'feedback', None)
+
+    context = {
+        'issue': issue,
+        'feedback': feedback,
+        'status_logs': issue.status_logs.all().order_by('created_at'),
+        'photos': issue.photos.all(),
+    }
+    return render(request, 'admin/issue_detail.html', context)
+
+
+@login_required
 def admin_manage_departments(request):
     if not request.user.is_admin():
         return redirect('login')
@@ -422,4 +613,15 @@ def admin_manage_users(request):
         'officers': officers,
         'departments': departments,
     }
+<<<<<<< Updated upstream
     return render(request, 'admin/manage_users.html', context)
+=======
+    return render(request, 'admin/manage_users.html', context)
+
+def refresh_captcha(request):
+    from django.http import JsonResponse
+    captcha_text = generate_captcha_text()
+    request.session['captcha_text'] = captcha_text
+    captcha_image = generate_captcha_image(captcha_text)
+    return JsonResponse({'image': captcha_image})
+>>>>>>> Stashed changes

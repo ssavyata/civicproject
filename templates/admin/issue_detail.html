@@ -1,0 +1,330 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Issue Detail — CivicReport Admin{% endblock %}
+{% block page_title %}Issue Detail{% endblock %}
+
+{% block content %}
+<div class="page-container space-y-6">
+
+    <!-- Back + Issue Header -->
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+        <a href="{% url 'admin_all_issues' %}" 
+           style="display:inline-flex; align-items:center; gap:6px; font-size:0.875rem; color:var(--slate-500); text-decoration:none; font-weight:500;">
+            <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+            Back to All Issues
+        </a>
+        <span style="font-size:0.8rem; color:var(--slate-400); font-weight:600; letter-spacing:0.05em;">
+            CR-{{ issue.submitted_at|date:"Y" }}-{{ issue.id|stringformat:"04d" }}
+        </span>
+    </div>
+
+    <!-- Title Row -->
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+        <div>
+            <h2 style="font-size:1.5rem; font-weight:700; color:var(--slate-800); margin:0 0 6px 0;">
+                {{ issue.title }}
+            </h2>
+            {% if issue.visibility == 'confidential' %}
+                <span style="display:inline-flex; align-items:center; gap:4px; font-size:0.8rem; color:#6b7280; font-style:italic;">
+                    <span class="material-symbols-outlined" style="font-size:14px;">lock</span>
+                    Anonymous Report
+                </span>
+            {% else %}
+                <span style="font-size:0.85rem; color:var(--slate-500);">
+                    Reported by <strong>{{ issue.citizen.get_full_name|default:issue.citizen.username }}</strong>
+                </span>
+            {% endif %}
+        </div>
+
+        <!-- Status Badge -->
+        {% if issue.status == 'submitted' %}
+            <span class="badge badge--pending" style="font-size:0.8rem; padding:6px 14px;">Pending</span>
+        {% elif issue.status == 'assigned' %}
+            <span class="badge badge--assigned" style="font-size:0.8rem; padding:6px 14px;">Assigned</span>
+        {% elif issue.status == 'in_progress' %}
+            <span class="badge badge--in-progress" style="font-size:0.8rem; padding:6px 14px;">In Progress</span>
+        {% elif issue.status == 'resolved' %}
+            <span class="badge badge--resolved" style="font-size:0.8rem; padding:6px 14px;">Resolved</span>
+        {% elif issue.status == 'rejected' %}
+            <span class="badge badge--rejected" style="font-size:0.8rem; padding:6px 14px;">Rejected</span>
+        {% endif %}
+    </div>
+
+    <!-- Django Messages -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" style="display:flex; align-items:center; gap:8px;">
+            <span class="material-symbols-outlined" style="font-size:18px;">
+                {% if message.tags == 'success' %}check_circle{% else %}error{% endif %}
+            </span>
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Two-column layout -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;">
+
+        <!-- LEFT column -->
+        <div style="display:flex; flex-direction:column; gap:24px;">
+
+            <!-- Issue Details Card -->
+            <div class="card">
+                <div class="card-body">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+                        <h3 style="font-size:1rem; font-weight:600; color:var(--slate-700); margin:0;">Issue Details</h3>
+                        <span class="material-symbols-outlined" style="color:var(--slate-400); font-size:20px;">info</span>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
+                        <div>
+                            <p style="font-size:0.75rem; color:var(--slate-400); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 4px 0;">Category</p>
+                            <p style="font-size:0.9rem; color:var(--slate-700); font-weight:500; margin:0; display:flex; align-items:center; gap:4px;">
+                                <span class="material-symbols-outlined" style="font-size:16px; color:var(--emerald-500);">label</span>
+                                {{ issue.get_category_display }}
+                            </p>
+                        </div>
+                        <div>
+                            <p style="font-size:0.75rem; color:var(--slate-400); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 4px 0;">Submitted</p>
+                            <p style="font-size:0.9rem; color:var(--slate-700); font-weight:500; margin:0;">
+                                {{ issue.submitted_at|date:"M d, Y" }}
+                            </p>
+                        </div>
+                        <div>
+                            <p style="font-size:0.75rem; color:var(--slate-400); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 4px 0;">Location</p>
+                            <p style="font-size:0.9rem; color:var(--slate-700); font-weight:500; margin:0; display:flex; align-items:center; gap:4px;">
+                                <span class="material-symbols-outlined" style="font-size:16px; color:var(--slate-400);">location_on</span>
+                                {{ issue.location|default:"Not specified" }}
+                            </p>
+                        </div>
+                        <div>
+                            <p style="font-size:0.75rem; color:var(--slate-400); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 4px 0;">Ward</p>
+                            <p style="font-size:0.9rem; color:var(--slate-700); font-weight:500; margin:0;">
+                                Ward {{ issue.ward_number|default:"12" }}
+                            </p>
+                        </div>
+                        <div>
+                            <p style="font-size:0.75rem; color:var(--slate-400); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 4px 0;">Assigned Officer</p>
+                            <p style="font-size:0.9rem; color:var(--slate-700); font-weight:500; margin:0;">
+                                {% if issue.assigned_officer %}
+                                    {{ issue.assigned_officer.get_full_name|default:issue.assigned_officer.username }}
+                                {% elif issue.assigned_department %}
+                                    <span style="color:var(--slate-400); font-style:italic;">{{ issue.assigned_department.name }} (no officer)</span>
+                                {% else %}
+                                    <span style="color:var(--slate-400); font-style:italic;">Not assigned</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div>
+                            <p style="font-size:0.75rem; color:var(--slate-400); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 4px 0;">Visibility</p>
+                            <p style="font-size:0.9rem; color:var(--slate-700); font-weight:500; margin:0; display:flex; align-items:center; gap:4px;">
+                                <span class="material-symbols-outlined" style="font-size:16px; color:var(--slate-400);">
+                                    {% if issue.visibility == 'confidential' %}lock{% else %}public{% endif %}
+                                </span>
+                                {{ issue.visibility|capfirst }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr style="border:none; border-top:1px solid var(--slate-100); margin:0 0 16px 0;">
+
+                    <!-- Description -->
+                    <p style="font-size:0.75rem; color:var(--slate-400); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 8px 0;">Description</p>
+                    <p style="font-size:0.9rem; color:var(--slate-600); line-height:1.7; margin:0;">
+                        {{ issue.description|default:"No description provided." }}
+                    </p>
+
+                    {% if issue.officer_remarks %}
+                    <div style="margin-top:16px; background:var(--slate-50); border-left:3px solid var(--emerald-400); padding:12px 16px; border-radius:0 6px 6px 0;">
+                        <p style="font-size:0.75rem; color:var(--slate-400); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin:0 0 4px 0;">Officer Remarks</p>
+                        <p style="font-size:0.875rem; color:var(--slate-600); margin:0; line-height:1.6;">{{ issue.officer_remarks }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Evidence Photos Card -->
+            <div class="card">
+                <div class="card-body">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                        <h3 style="font-size:1rem; font-weight:600; color:var(--slate-700); margin:0;">Evidence Photos</h3>
+                        <span class="material-symbols-outlined" style="color:var(--slate-400); font-size:20px;">photo_library</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
+                        {% for photo in photos %}
+                            <img src="{{ photo.image.url }}" alt="Evidence photo"
+                                 onclick="openLightbox('{{ photo.image.url }}')"
+                                 style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:8px; cursor:pointer; border:1px solid var(--slate-100); transition:opacity .15s;"
+                                 onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
+                        {% empty %}
+                            <div style="grid-column:1/-1; text-align:center; padding:32px; color:var(--slate-300);">
+                                <span class="material-symbols-outlined" style="font-size:36px; display:block; margin-bottom:8px;">image_not_supported</span>
+                                <p style="font-size:0.85rem; margin:0;">No photos attached</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT column -->
+        <div style="display:flex; flex-direction:column; gap:24px;">
+
+            <!-- Re-assign Card (only if not resolved/rejected) -->
+            {% if issue.status != 'resolved' and issue.status != 'rejected' %}
+            <div class="card">
+                <div class="card-body">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+                        <h3 style="font-size:1rem; font-weight:600; color:var(--slate-700); margin:0;">
+                            {% if issue.assigned_officer %}Re-assign Issue{% else %}Assign Issue{% endif %}
+                        </h3>
+                        <span class="material-symbols-outlined" style="color:var(--slate-400); font-size:20px;">manage_accounts</span>
+                    </div>
+                    <form method="POST" action="{% url 'admin_assign_issue' issue.pk %}" class="space-y-4">
+                        {% csrf_token %}
+                        <div>
+                            <label style="font-size:0.8rem; font-weight:600; color:var(--slate-600); display:block; margin-bottom:6px;">Select Officer</label>
+                            <select name="officer" class="form-select" style="width:100%;">
+                                <option value="">-- Choose an officer --</option>
+                                {% for officer in officers %}
+                                    <option value="{{ officer.id }}"
+                                        {% if issue.assigned_officer and issue.assigned_officer.id == officer.id %}selected{% endif %}>
+                                        {{ officer.get_full_name|default:officer.username }}
+                                        {% if officer.department %}({{ officer.department.name }}){% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:0.8rem; font-weight:600; color:var(--slate-600); display:block; margin-bottom:6px;">Remarks (optional)</label>
+                            <textarea name="remarks" class="form-textarea" rows="3"
+                                      style="width:100%; box-sizing:border-box;"
+                                      placeholder="Instructions for the officer...">{{ issue.officer_remarks|default:'' }}</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">
+                            <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:4px;">person_add</span>
+                            {% if issue.assigned_officer %}Re-assign{% else %}Assign{% endif %} Issue
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Status History Card -->
+            <div class="card">
+                <div class="card-body">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+                        <h3 style="font-size:1rem; font-weight:600; color:var(--slate-700); margin:0;">Status History</h3>
+                        <span class="material-symbols-outlined" style="color:var(--slate-400); font-size:20px;">history</span>
+                    </div>
+                    <ul style="list-style:none; margin:0; padding:0;">
+                        <!-- Submission entry always shown first -->
+                        <li style="display:flex; gap:12px; padding-bottom:20px; position:relative;">
+                            <div style="display:flex; flex-direction:column; align-items:center;">
+                                <div style="width:10px; height:10px; border-radius:50%; background:var(--emerald-500); flex-shrink:0; margin-top:4px;"></div>
+                                {% if status_logs %}<div style="width:2px; flex:1; background:var(--slate-100); margin-top:4px;"></div>{% endif %}
+                            </div>
+                            <div>
+                                <p style="font-size:0.875rem; font-weight:600; color:var(--slate-700); margin:0 0 2px 0;">Submitted</p>
+                                <p style="font-size:0.8rem; color:var(--slate-400); margin:0;">Issue reported by citizen</p>
+                                <p style="font-size:0.75rem; color:var(--slate-300); margin-top:4px;">{{ issue.submitted_at|date:"M d, Y – H:i" }}</p>
+                            </div>
+                        </li>
+                        {% for log in status_logs %}
+                        <li style="display:flex; gap:12px; padding-bottom:{% if not forloop.last %}20px{% else %}0{% endif %}; position:relative;">
+                            <div style="display:flex; flex-direction:column; align-items:center;">
+                                <div style="width:10px; height:10px; border-radius:50%; flex-shrink:0; margin-top:4px;
+                                    background:{% if log.status == 'resolved' %}var(--emerald-500){% elif log.status == 'rejected' %}#ef4444{% elif log.status == 'in_progress' %}#f59e0b{% else %}var(--slate-300){% endif %};">
+                                </div>
+                                {% if not forloop.last %}<div style="width:2px; flex:1; background:var(--slate-100); margin-top:4px;"></div>{% endif %}
+                            </div>
+                            <div>
+                                <p style="font-size:0.875rem; font-weight:600; color:var(--slate-700); margin:0 0 2px 0;">{{ log.get_status_display }}</p>
+                                {% if log.remarks %}
+                                    <p style="font-size:0.8rem; color:var(--slate-500); margin:0 0 2px 0;">{{ log.remarks }}</p>
+                                {% endif %}
+                                <p style="font-size:0.75rem; color:var(--slate-300); margin:4px 0 0 0;">
+                                    {{ log.created_at|date:"M d, Y – H:i" }}
+                                    {% if log.updated_by %}
+                                        · {{ log.updated_by.get_full_name|default:log.updated_by.username }}
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </li>
+                        {% empty %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Citizen Feedback Card -->
+            {% if feedback %}
+            <div class="card">
+                <div class="card-body">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+                        <h3 style="font-size:1rem; font-weight:600; color:var(--slate-700); margin:0;">Citizen Feedback</h3>
+                        <span class="material-symbols-outlined" style="color:var(--slate-400); font-size:20px;">reviews</span>
+                    </div>
+
+                    <!-- Stars -->
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+                        <div style="display:flex; gap:2px;">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= feedback.rating %}
+                                    <span class="material-symbols-outlined" style="color:#f59e0b; font-size:22px;">star</span>
+                                {% else %}
+                                    <span class="material-symbols-outlined" style="color:var(--slate-200); font-size:22px;">star</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span style="font-size:0.85rem; color:var(--slate-500); font-weight:600;">{{ feedback.rating }} / 5</span>
+                    </div>
+
+                    {% if feedback.comment %}
+                        <p style="font-size:0.9rem; color:var(--slate-600); line-height:1.6; background:var(--slate-50); border-left:3px solid var(--emerald-400); padding:12px 16px; border-radius:0 6px 6px 0; margin:0;">
+                            "{{ feedback.comment }}"
+                        </p>
+                    {% else %}
+                        <p style="font-size:0.85rem; color:var(--slate-400); font-style:italic; margin:0;">No written comment provided.</p>
+                    {% endif %}
+
+                    <p style="font-size:0.75rem; color:var(--slate-300); margin-top:12px; margin-bottom:0;">
+                        Submitted on {{ feedback.submitted_at|date:"M d, Y" }}
+                    </p>
+                </div>
+            </div>
+            {% elif issue.status == 'resolved' %}
+            <div class="card">
+                <div class="card-body" style="text-align:center; padding:32px 24px;">
+                    <span class="material-symbols-outlined" style="font-size:36px; color:var(--slate-200);">reviews</span>
+                    <p style="margin:12px 0 0 0; font-size:0.875rem; color:var(--slate-400); font-style:italic;">
+                        No citizen feedback submitted yet.
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()"
+     style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:9999; align-items:center; justify-content:center; cursor:zoom-out;">
+    <img id="lightbox-img" src="" alt="Full photo"
+         style="max-width:90vw; max-height:90vh; border-radius:8px; box-shadow:0 20px 60px rgba(0,0,0,.5);">
+</div>
+
+<script>
+function openLightbox(url) {
+    const lb = document.getElementById('lightbox');
+    document.getElementById('lightbox-img').src = url;
+    lb.style.display = 'flex';
+}
+function closeLightbox() {
+    document.getElementById('lightbox').style.display = 'none';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+{% endblock %}

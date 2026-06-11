@@ -2,11 +2,168 @@
 {% load static %}
 
 {% block title %}Dashboard - CivicReport{% endblock %}
-
 {% block page_title %}CivicReport Ward {{ request.user.ward_number|default:"12" }}{% endblock %}
 
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- Leaflet for map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  /* ── Welcome ── */
+  .dashboard-welcome {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  /* ── Resolution Badge ── */
+  .resolution-banner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 1px solid #bbf7d0;
+    border-radius: 14px;
+    padding: 18px 24px;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .resolution-ring-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+  .resolution-ring-wrap canvas { width: 72px !important; height: 72px !important; }
+  .resolution-ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #16a34a;
+  }
+  .resolution-text__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #14532d;
+    margin-bottom: 2px;
+  }
+  .resolution-text__sub {
+    font-size: 0.82rem;
+    color: #4ade80;
+    color: #166534;
+  }
+  .resolution-stats {
+    display: flex;
+    gap: 24px;
+    margin-left: auto;
+    flex-wrap: wrap;
+  }
+  .resolution-stat { text-align: center; }
+  .resolution-stat__val { font-size: 1.4rem; font-weight: 800; color: #15803d; }
+  .resolution-stat__label { font-size: 0.72rem; color: #166534; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* ── Stats Grid ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── Two col layout ── */
+  .citizen-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── Chart card ── */
+  .chart-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .chart-card__title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    margin-bottom: 16px;
+  }
+  .chart-canvas-wrap { position: relative; height: 200px; }
+
+  /* ── Map ── */
+  .map-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .map-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .map-card__title { font-size: 0.95rem; font-weight: 700; color: #111827; }
+  #issueMap { height: 220px; width: 100%; }
+  .map-legend {
+    display: flex;
+    gap: 16px;
+    padding: 10px 16px;
+    flex-wrap: wrap;
+    border-top: 1px solid #f3f4f6;
+    font-size: 0.78rem;
+    color: #6b7280;
+  }
+  .map-legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+
+  /* ── Recent Issues Table ── */
+  .table-section {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .table-section__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .table-section__title { font-size: 0.95rem; font-weight: 700; color: #111827; }
+  .table-section__link { font-size: 0.82rem; color: #6366f1; font-weight: 600; text-decoration: none; }
+  .table-overflow { overflow-x: auto; }
+
+  @media(max-width:800px) {
+    .citizen-grid { grid-template-columns:1fr; }
+    .stats-grid { grid-template-columns:1fr 1fr; }
+    .resolution-stats { margin-left:0; }
+  }
+  @media(max-width:480px) {
+    .stats-grid { grid-template-columns:1fr 1fr; }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<section class="dashboard-welcome" style="margin-bottom:2rem;">
+
+<!-- ① Welcome -->
+<section class="dashboard-welcome">
   <div>
     <h1 class="dashboard-welcome__heading">
       Welcome back, {{ request.user.get_full_name|default:request.user.username }}
@@ -16,14 +173,42 @@
       Ward {{ request.user.ward_number|default:"12" }}
     </p>
   </div>
-
   <a href="{% url 'report_issue' %}" class="btn btn--primary">
     <span class="material-symbols-outlined">add</span>
     Report New Issue
   </a>
 </section>
 
- <section class="stats-grid" style="gap:1.25rem;margin-bottom:2rem;">
+<!-- ② Resolution Rate Badge -->
+<div class="resolution-banner">
+  <div class="resolution-ring-wrap">
+    <canvas id="resolutionRing"></canvas>
+    <div class="resolution-ring-center">{{ resolution_rate|default:"0" }}%</div>
+  </div>
+  <div>
+    <div class="resolution-text__title">Your Resolution Rate</div>
+    <div class="resolution-text__sub">
+      {{ stats.resolved }} of {{ stats.total }} issue{{ stats.total|pluralize }} resolved
+    </div>
+  </div>
+  <div class="resolution-stats">
+    <div class="resolution-stat">
+      <div class="resolution-stat__val">{{ stats.total }}</div>
+      <div class="resolution-stat__label">Reported</div>
+    </div>
+    <div class="resolution-stat">
+      <div class="resolution-stat__val">{{ stats.in_progress }}</div>
+      <div class="resolution-stat__label">Active</div>
+    </div>
+    <div class="resolution-stat">
+      <div class="resolution-stat__val">{{ stats.resolved }}</div>
+      <div class="resolution-stat__label">Resolved</div>
+    </div>
+  </div>
+</div>
+
+<!-- ③ Summary Stats -->
+<section class="stats-grid">
   <div class="stat-card stat-card--total">
     <p class="stat-card__label">Total Reported</p>
     <div class="stat-card__row">
@@ -31,7 +216,6 @@
       <span class="material-symbols-outlined stat-card__icon">analytics</span>
     </div>
   </div>
-
   <div class="stat-card stat-card--pending">
     <p class="stat-card__label">Pending</p>
     <div class="stat-card__row">
@@ -39,8 +223,6 @@
       <span class="material-symbols-outlined stat-card__icon">pending_actions</span>
     </div>
   </div>
-  
-  
   <div class="stat-card stat-card--progress">
     <p class="stat-card__label">In Progress</p>
     <div class="stat-card__row">
@@ -48,7 +230,6 @@
       <span class="material-symbols-outlined stat-card__icon">sync</span>
     </div>
   </div>
-    
   <div class="stat-card stat-card--resolved">
     <p class="stat-card__label">Resolved</p>
     <div class="stat-card__row">
@@ -58,12 +239,40 @@
   </div>
 </section>
 
-<section class="table-section" style="margin-top:0.5rem;">
+<!-- ④ Chart + Map -->
+<div class="citizen-grid">
+
+  <!-- Monthly Activity Chart -->
+  <div class="chart-card">
+    <div class="chart-card__title">Monthly Activity</div>
+    <div class="chart-canvas-wrap">
+      <canvas id="monthlyChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Map View -->
+  <div class="map-card">
+    <div class="map-card__header">
+      <span class="map-card__title">Your Issues on Map</span>
+      <span style="font-size:0.78rem;color:#9ca3af;">Ward {{ request.user.ward_number|default:"12" }}</span>
+    </div>
+    <div id="issueMap"></div>
+    <div class="map-legend">
+      <span><span class="map-legend-dot" style="background:#f97316;"></span>Pending</span>
+      <span><span class="map-legend-dot" style="background:#3b82f6;"></span>In Progress</span>
+      <span><span class="map-legend-dot" style="background:#22c55e;"></span>Resolved</span>
+      <span><span class="map-legend-dot" style="background:#ef4444;"></span>Rejected</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ⑤ Recent Issues Table -->
+<section class="table-section">
   <div class="table-section__header">
     <h3 class="table-section__title">Recent Issues</h3>
     <a href="{% url 'my_issues' %}" class="table-section__link">View All Issues</a>
   </div>
-
   <div class="table-overflow">
     <table class="data-table">
       <thead>
@@ -76,7 +285,6 @@
           <th>Action</th>
         </tr>
       </thead>
-      
       <tbody>
         {% for issue in recent_issues %}
         <tr>
@@ -85,23 +293,20 @@
           <td>{{ issue.get_category_display }}</td>
           <td style="color:var(--clr-on-surface-variant);">{{ issue.submitted_at|date:"M d, Y" }}</td>
           <td>
-          {% if issue.status == 'submitted' %}
-            <span class="badge badge--submitted">PENDING</span>
+            {% if issue.status == 'submitted' %}
+              <span class="badge badge--submitted">PENDING</span>
             {% elif issue.status == 'assigned' %}
-            <span class="badge badge--assigned">ASSIGNED</span>
+              <span class="badge badge--assigned">ASSIGNED</span>
             {% elif issue.status == 'in_progress' %}
-            <span class="badge badge--progress">IN PROGRESS</span>
+              <span class="badge badge--progress">IN PROGRESS</span>
             {% elif issue.status == 'resolved' %}
-            <span class="badge badge--resolved">RESOLVED</span>
+              <span class="badge badge--resolved">RESOLVED</span>
             {% elif issue.status == 'rejected' %}
-            <span class="badge badge--rejected">REJECTED</span>
-          {% endif %}
+              <span class="badge badge--rejected">REJECTED</span>
+            {% endif %}
           </td>
-            
           <td>
-            <a href="{% url 'issue_detail' issue.pk %}" class="table-action-link">
-              View Details
-            </a>
+            <a href="{% url 'issue_detail' issue.pk %}" class="table-action-link">View Details</a>
           </td>
         </tr>
         {% empty %}
@@ -117,5 +322,118 @@
     </table>
   </div>
 </section>
+
+<!-- ── Scripts ── -->
+<script>
+// ── Resolution Ring ──
+(function() {
+  const rate = {{ resolution_rate|default:"0" }};
+  new Chart(document.getElementById('resolutionRing'), {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [rate, 100 - rate],
+        backgroundColor: ['#22c55e', '#dcfce7'],
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      cutout: '75%',
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      maintainAspectRatio: false,
+    }
+  });
+})();
+
+// ── Monthly Activity Bar ──
+(function() {
+  const labels = [{% for m in monthly_activity %}'{{ m.month }}'{% if not forloop.last %},{% endif %}{% endfor %}];
+  const data   = [{% for m in monthly_activity %}{{ m.count }}{% if not forloop.last %},{% endif %}{% endfor %}];
+  new Chart(document.getElementById('monthlyChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Issues Reported',
+        data,
+        backgroundColor: 'rgba(99,102,241,0.8)',
+        borderRadius: 6,
+        borderSkipped: false,
+        hoverBackgroundColor: '#4f46e5',
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+        y: { grid: { color: '#f3f4f6' }, ticks: { font: { size: 10 }, stepSize: 1 } }
+      },
+      maintainAspectRatio: false,
+    }
+  });
+})();
+
+// ── Leaflet Map ──
+(function() {
+  // Default center: Kathmandu (fallback if no issues have coords)
+  const defaultLat = 27.7172;
+  const defaultLng = 85.3240;
+
+  const map = L.map('issueMap', { zoomControl: true, scrollWheelZoom: false })
+    .setView([defaultLat, defaultLng], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap',
+    maxZoom: 18,
+  }).addTo(map);
+
+  // Issue markers from Django context
+  const issues = [
+    {% for issue in recent_issues %}
+    {% if issue.latitude and issue.longitude %}
+    {
+      lat: {{ issue.latitude }},
+      lng: {{ issue.longitude }},
+      title: "{{ issue.title|escapejs }}",
+      status: "{{ issue.status }}",
+      id: {{ issue.id }},
+      url: "{% url 'issue_detail' issue.pk %}"
+    },
+    {% endif %}
+    {% endfor %}
+  ];
+
+  const statusColors = {
+    submitted: '#f97316',
+    assigned:  '#6366f1',
+    in_progress: '#3b82f6',
+    resolved:  '#22c55e',
+    rejected:  '#ef4444',
+  };
+
+  const bounds = [];
+  issues.forEach(function(issue) {
+    const color = statusColors[issue.status] || '#6b7280';
+    const marker = L.circleMarker([issue.lat, issue.lng], {
+      radius: 8,
+      fillColor: color,
+      color: '#fff',
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.9,
+    }).addTo(map);
+    marker.bindPopup(
+      '<strong>' + issue.title + '</strong><br>' +
+      '<span style="color:' + color + ';font-size:0.8rem;">' + issue.status.replace('_',' ') + '</span><br>' +
+      '<a href="' + issue.url + '" style="font-size:0.8rem;color:#6366f1;">View Details →</a>'
+    );
+    bounds.push([issue.lat, issue.lng]);
+  });
+
+  if (bounds.length > 0) {
+    map.fitBounds(bounds, { padding: [20, 20] });
+  }
+})();
+</script>
 
 {% endblock %}

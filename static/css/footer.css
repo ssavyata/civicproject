@@ -1,47 +1,61 @@
+/* ── Sticky-footer layout on the body ── */
+html {
+  height: 100%;
+}
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+.site-main {
+  flex: 1 0 auto;
+}
 
-  .site-footer {
-    background-color: #F0FDF4;
-    border-top: 1px solid #D1FAE5;
-    width: 100%;
-    margin-top: auto;
-  }
+/* ── Footer always at the bottom ── */
+.site-footer {
+  flex-shrink: 0;
+  background-color: #F0FDF4;
+  border-top: 1px solid #D1FAE5;
+  width: 100%;
+}
+.site-footer__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px;
+  font-family: 'Public Sans', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #475569;
+}
+@media (min-width: 768px) {
   .site-footer__inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 32px;
-    font-family: 'Public Sans', sans-serif;
-    font-size: 12px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: #475569;
+    flex-direction: row;
+    justify-content: space-between;
   }
-  @media (min-width: 768px) {
-    .site-footer__inner {
-      flex-direction: row;
-      justify-content: space-between;
-    }
-  }
-  .site-footer__copy {
-    font-size: 14px;
-    font-weight: 600;
-    color: #065F46;
-    letter-spacing: normal;
-    text-transform: none;
-  }
-  .site-footer__nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 24px;
-    list-style: none;
-  }
-  .site-footer__nav a {
-    color: #64748b;
-    text-decoration: none;
-    transition: color 0.15s;
-  }
-  .site-footer__nav a:hover { color: #065F46; }
+}
+.site-footer__copy {
+  font-size: 14px;
+  font-weight: 600;
+  color: #065F46;
+  letter-spacing: normal;
+  text-transform: none;
+}
+.site-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  list-style: none;
+}
+.site-footer__nav a {
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.site-footer__nav a:hover { color: #065F46; }

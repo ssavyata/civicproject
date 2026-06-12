@@ -17,6 +17,15 @@
     </a>
   </div>
 
+  {# ─── Filter tabs ─────────────────────────────────────────── #}
+  <div class="filter-tabs">
+    {% for label, value in filter_options %}
+      <a href="?status={{ value }}"
+         class="filter-tab {% if current_filter == value %}filter-tab--active{% endif %}">
+        {{ label }}
+      </a>
+    {% endfor %}
+  </div>
   {# ─── Filter Bar ───────────────────────────────────────────── #}
   <form method="GET" style="background:var(--clr-surface-container-lowest);border:1px solid var(--clr-emerald-100);border-radius:var(--radius-xl);padding:1.25rem 1.5rem;margin-bottom:1.5rem;">
     <div style="display:flex;align-items:flex-end;gap:1rem;flex-wrap:wrap;">
@@ -30,6 +39,7 @@
           <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>In Progress</option>
           <option value="resolved"    {% if status_filter == 'resolved'    %}selected{% endif %}>Resolved</option>
           <option value="rejected"    {% if status_filter == 'rejected'    %}selected{% endif %}>Rejected</option>
+          <option value="duplicate" {% if status_filter == 'duplicate' %}selected{% endif %}>Duplicate</option>
         </select>
       </div>
 
@@ -54,6 +64,7 @@
     </div>
   </form>
 
+
   {% if issues %}
     <div class="space-y-4">
       {% for issue in issues %}
@@ -71,6 +82,16 @@
 
           <div class="issue-card__body">
             <div class="issue-card__header">
+              <h3 class="issue-card__title">{{ issue.title }}</h3>
+              <span class="badge
+                {% if issue.status == 'submitted' %}badge--submitted
+                {% elif issue.status == 'in_progress' %}badge--progress
+                {% elif issue.status == 'resolved' %}badge--resolved
+                {% elif issue.status == 'rejected' %}badge--rejected
+                {% else %}badge--pending{% endif %}">
+                {{ issue.get_status_display }}
+              </span>
+            </div>
   <h3 class="issue-card__title">{{ issue.title }}</h3>
   <div style="display:flex;align-items:center;gap:0.5rem;">
     <span class="badge
@@ -78,6 +99,7 @@
       {% elif issue.status == 'in_progress' %}badge--progress
       {% elif issue.status == 'resolved' %}badge--resolved
       {% elif issue.status == 'rejected' %}badge--rejected
+      {% elif issue.status == 'duplicate' %}badge--duplicate
       {% else %}badge--pending{% endif %}">
       {{ issue.get_status_display }}
     </span>
@@ -93,6 +115,7 @@
     {% endif %}
   </div>
 </div>
+
 
             <div class="issue-card__location">
               <span class="material-symbols-outlined">location_on</span>

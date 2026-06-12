@@ -997,6 +997,7 @@ ul, ol { list-style: none; }
 /* Animate spin (locate-me loading) */
 @keyframes spin { to { transform: rotate(360deg); } }
 .animate-spin { animation: spin 1s linear infinite; }
+.animate-spin { animation: spin 1s linear infinite; }
 
 /* ═══════════════════════════════════════════════════════
    RESPONSIVE — MOBILE SIDEBAR
@@ -1106,4 +1107,4 @@ ul, ol { list-style: none; }
 @media (max-width: 640px) {
   .profile-info-row { flex-direction: column; align-items: center; gap: 1.5rem; }
   .profile-fields-grid { grid-template-columns: 1fr; }
-}
+

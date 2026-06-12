@@ -1,3 +1,7 @@
+from importlib.resources import files
+
+from .duplicate_detector import find_duplicate_issue
+
 from .captcha import generate_captcha_text, generate_captcha_image
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -27,6 +31,7 @@ import json
 import os
 from django.conf import settings
 from notifications.utils import notify
+
 
 
 
@@ -163,6 +168,7 @@ def analyze_image(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
+
 #Citizen Views
 
 @citizen_required
@@ -273,11 +279,51 @@ def report_issue(request):
             issue.ward_number = request.user.ward_number
             issue.visibility = request.POST.get('visibility', 'public')
             issue.save()
-
             for photo in files:
-                IssuePhoto.objects.create(issue=issue, image=photo)
+                 IssuePhoto.objects.create(issue=issue, image=photo)
 
+            duplicate = find_duplicate_issue(issue)
+
+            if duplicate:
+                    issue.merged_into = duplicate
+                    issue.is_duplicate = True
+                    issue.status = 'duplicate'
+                    issue.save()
+                    notify(
+                        issue.citizen,
+                        'Issue Merged',
+                        f'Your issue "{issue.title}" is similar to existing report #{duplicate.id}. '
+                        f'It has been merged and will be resolved together.',
+                        'general',
+                        issue
+                    )
+                    issue_id = f"CR-{issue.submitted_at.year}-{issue.id:04d}"
+                    return render(request, 'citizen/report_success.html', {'issue_id': issue_id, 'merged': True, 'merged_into': duplicate.id})
+            else:
+                    assign_issue(issue)
+                    notify(
+                        request.user,
+                        'Issue Submitted',
+                        f'Your issue "{issue.title}" has been submitted successfully.',
+                        'issue_submitted',
+                        issue
+                    )
+                    for admin in User.objects.filter(role='admin'):
+                        notify(
+                            admin,
+                            'New Issue Submitted',
+                            f'A new issue "{issue.title}" was submitted by {request.user.get_full_name() or request.user.username}.',
+                            'issue_submitted',
+                            issue
+                        )
+                    issue_id = f"CR-{issue.submitted_at.year}-{issue.id:04d}"
+                    return render(request, 'citizen/report_success.html', {'issue_id': issue_id})
+        
             assign_issue(issue)
+            messages.success(request, 'Issue reported successfully! We will look into it.')
+            return redirect('my_issues')
+
+             
 
             # Notify citizen confirmation
             notify(
@@ -300,6 +346,7 @@ def report_issue(request):
 
             issue_id = f"CR-{issue.submitted_at.year}-{issue.id:04d}"
             return render(request, 'citizen/report_success.html', {'issue_id': issue_id})
+
 
     else:
         form = IssueReportForm()
@@ -570,6 +617,13 @@ def officer_update_status(request, issue_id):
                  f'Your issue "{issue.title}" status changed to "{issue.get_status_display()}".')
             )
 
+            # Notify duplicate issue citizens too
+            for dup in issue.duplicates.all():
+                    notify(dup.citizen, notif_title, notif_msg, notif_type, dup)
+                    if new_status == 'resolved':
+                                dup.status = 'resolved'
+                                dup.assigned_officer = issue.assigned_officer
+                                dup.save()
             # Notify citizen
             notify(issue.citizen, notif_title, notif_msg, notif_type, issue)
 
@@ -583,6 +637,7 @@ def officer_update_status(request, issue_id):
                     notif_type,
                     issue
                 )
+
 
             messages.success(request, 'Status updated and citizen notified.')
             return redirect('officer_issue_queue')

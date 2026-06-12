@@ -179,6 +179,145 @@
   </div>
   {% endif %}
 
+    <!-- Two Column Layout -->
+    <div class="two-col">
+
+        <!-- Recent Issues Table (60%) -->
+        <div class="two-col__main card">
+            <div class="card-header">
+                <h2 class="section-title">Recent Issues</h2>
+                <a href="{% url 'admin_all_issues' %}" class="section-link">View All</a>
+            </div>
+            <div class="table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Issue ID</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Assigned To</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for issue in recent_issues %}
+                        <tr>
+                            <td class="cell-id">
+                                CR-{{ issue.submitted_at|date:"Y" }}-{{ issue.id|stringformat:"04d" }}
+                            </td>
+                            <td>{{ issue.title }}</td>
+                            <td>
+                                {% if issue.status == 'submitted' %}
+                                    <span class="badge badge--pending">Pending</span>
+                                {% elif issue.status == 'assigned' %}
+                                    <span class="badge badge--assigned">Assigned</span>
+                                {% elif issue.status == 'in_progress' %}
+                                    <span class="badge badge--in-progress">In Progress</span>
+                                {% elif issue.status == 'resolved' %}
+                                    <span class="badge badge--resolved">Resolved</span>
+                                {% elif issue.status == 'rejected' %}
+                                    <span class="badge badge--rejected">Rejected</span>
+                                {% endif %}
+                            </td>
+                             
+                            <td>  
+                                {% if issue.assigned_officer %}
+                                    <span style="font-weight:500;">
+                                        {{ issue.assigned_officer.get_full_name|default:issue.assigned_officer.username }}
+                                    </span>
+                                    {% if issue.assigned_officer.department %}
+                                    <br>
+                                    <span style="font-size:0.75rem; color:#6b7280;">
+                                        🏢 {{ issue.assigned_officer.department.name }}
+                                    </span>
+                                    {% endif %}
+                                {% elif issue.is_duplicate and issue.merged_into and issue.merged_into.assigned_officer %}
+                                    <span style="font-weight:500;">
+                                        {{ issue.merged_into.assigned_officer.get_full_name|default:issue.merged_into.assigned_officer.username }}
+                                    </span>
+                                    {% if issue.merged_into.assigned_officer.department %}
+                                    <br>
+                                    <span style="font-size:0.75rem; color:#6b7280;">
+                                        🏢 {{ issue.merged_into.assigned_officer.department.name }}
+                                    </span>
+                                    {% endif %}
+                                    {% elif issue.assigned_department %}
+                                        <span style="font-size:0.75rem; color:#6b7280; font-style:italic;">
+                                            🏢 {{ issue.assigned_department.name }}
+                                        </span>
+                                    {% else %}
+                                        <span class="cell-italic">Not Assigned</span>
+                                    {% endif %}
+                             </td>
+                        </tr>
+                        {% empty %}
+                        <tr class="empty-row">
+                            <td colspan="4">No issues yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Right Column (40%) -->
+        <div class="two-col__aside space-y-6">
+
+            <!-- Issues by Category -->
+            <div class="card card-body">
+                <h2 class="section-title" style="margin-bottom:24px">Issues by Category</h2>
+                <div class="space-y-4">
+                    {% for cat in categories %}
+                    <div class="space-y-1">
+                        <div class="progress-label-row">
+                            <span>{{ cat.category|capfirst }}</span>
+                            <span>{{ cat.count }} issues</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill progress-fill--green"
+                                 style="width: {% widthratio cat.count max_count 100 %}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Issues by Status -->
+            <div class="card card-body">
+                <h2 class="section-title" style="margin-bottom:24px">Issues by Status</h2>
+                <div class="space-y-4">
+                    {% if total > 0 %}
+                    <div class="space-y-1">
+                        <div class="progress-label-row">
+                            <span>Pending</span><span>{{ pending }}</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill progress-fill--red"
+                                 style="width: {% widthratio pending total 100 %}%"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="progress-label-row">
+                            <span>In Progress</span><span>{{ in_progress }}</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill progress-fill--amber"
+                                 style="width: {% widthratio in_progress total 100 %}%"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="progress-label-row">
+                            <span>Resolved</span><span>{{ resolved }}</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill progress-fill--green"
+                                 style="width: {% widthratio resolved total 100 %}%"></div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="cell-italic">No issues yet.</p>
+                    {% endif %}
+                </div>
+            </div>
   <!-- Summary Cards -->
   <div class="stat-grid">
     <div class="card card-body">

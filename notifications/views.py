@@ -4,6 +4,9 @@ from .models import Notification
 
 @login_required
 def notifications(request):
+     notifs = Notification.objects.filter(user=request.user).order_by('-created_at')
+     notifs.update(is_read=True)
+     return render(request, 'issues/notifications.html', {'notifications': notifs})  
     notifs = Notification.objects.filter(user=request.user).order_by('-created_at')
     notifs.filter(is_read=False).update(is_read=True)
     return render(request, 'citizen/notifications.html', {'notifications': notifs})
@@ -14,6 +17,7 @@ def mark_notification_read(request, pk):
     notif.is_read = True
     notif.save()
     if notif.issue:
+        return redirect('issue_detail', issue_id=notif.issue.pk)
         return redirect('issue_detail', pk=notif.issue.pk)
     return redirect('notifications')
 
@@ -21,4 +25,4 @@ def mark_notification_read(request, pk):
 def mark_all_read(request):
     Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
     next_url = request.GET.get('next', 'notifications')
-    return redirect(next_url)
+

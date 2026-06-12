@@ -18,6 +18,7 @@
     </a>
   </div>
 
+<<<<<<< Updated upstream
   {# ─── Filter tabs ─────────────────────────────────────────── #}
   <div class="filter-tabs">
     {% for label, value in filter_options %}
@@ -27,6 +28,45 @@
       </a>
     {% endfor %}
   </div>
+=======
+  {# ─── Filter Bar ───────────────────────────────────────────── #}
+  <form method="GET" style="background:var(--clr-surface-container-lowest);border:1px solid var(--clr-emerald-100);border-radius:var(--radius-xl);padding:1.25rem 1.5rem;margin-bottom:1.5rem;">
+    <div style="display:flex;align-items:flex-end;gap:1rem;flex-wrap:wrap;">
+
+      <div class="field" style="flex:1;min-width:10rem;">
+        <label class="field__label">Status</label>
+        <select name="status" class="field__select">
+          <option value="">All</option>
+          <option value="submitted"   {% if status_filter == 'submitted'   %}selected{% endif %}>Pending</option>
+          <option value="assigned"    {% if status_filter == 'assigned'    %}selected{% endif %}>Assigned</option>
+          <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>In Progress</option>
+          <option value="resolved"    {% if status_filter == 'resolved'    %}selected{% endif %}>Resolved</option>
+          <option value="rejected"    {% if status_filter == 'rejected'    %}selected{% endif %}>Rejected</option>
+          <option value="duplicate" {% if status_filter == 'duplicate' %}selected{% endif %}>Duplicate</option>
+        </select>
+      </div>
+
+      <div class="field" style="flex:1;min-width:10rem;">
+        <label class="field__label">Category</label>
+        <select name="category" class="field__select">
+          <option value="">All</option>
+          <option value="pothole"     {% if category_filter == 'pothole'     %}selected{% endif %}>Pothole</option>
+          <option value="streetlight" {% if category_filter == 'streetlight' %}selected{% endif %}>Street Lighting</option>
+          <option value="water"       {% if category_filter == 'water'       %}selected{% endif %}>Water Supply</option>
+          <option value="waste"       {% if category_filter == 'waste'       %}selected{% endif %}>Waste</option>
+          <option value="drainage"    {% if category_filter == 'drainage'    %}selected{% endif %}>Drainage</option>
+          <option value="other"       {% if category_filter == 'other'       %}selected{% endif %}>Other</option>
+        </select>
+      </div>
+
+      <div style="display:flex;gap:0.5rem;padding-bottom:1px;">
+        <button type="submit" class="btn btn--primary">Filter</button>
+        <a href="{% url 'my_issues' %}" class="btn btn--outline">Clear</a>
+      </div>
+
+    </div>
+  </form>
+>>>>>>> Stashed changes
 
   {% if issues %}
     <div class="space-y-4">
@@ -43,6 +83,7 @@
 
           <div class="issue-card__body">
             <div class="issue-card__header">
+<<<<<<< Updated upstream
               <h3 class="issue-card__title">{{ issue.title }}</h3>
               <span class="badge
                 {% if issue.status == 'submitted' %}badge--submitted
@@ -53,6 +94,31 @@
                 {{ issue.get_status_display }}
               </span>
             </div>
+=======
+  <h3 class="issue-card__title">{{ issue.title }}</h3>
+  <div style="display:flex;align-items:center;gap:0.5rem;">
+    <span class="badge
+      {% if issue.status == 'submitted' %}badge--submitted
+      {% elif issue.status == 'in_progress' %}badge--progress
+      {% elif issue.status == 'resolved' %}badge--resolved
+      {% elif issue.status == 'rejected' %}badge--rejected
+      {% elif issue.status == 'duplicate' %}badge--duplicate
+      {% else %}badge--pending{% endif %}">
+      {{ issue.get_status_display }}
+    </span>
+    {% if issue.visibility == 'confidential' %}
+      <span style="display:inline-flex;align-items:center;gap:0.25rem;
+                   background:#f0fdf4;border:1px solid #bbf7d0;
+                   color:#059669;border-radius:999px;
+                   font-size:0.7rem;font-weight:600;
+                   padding:0.15rem 0.6rem;">
+        <span class="material-symbols-outlined" style="font-size:0.85rem;">lock</span>
+        Anonymous
+      </span>
+    {% endif %}
+  </div>
+</div>
+>>>>>>> Stashed changes
 
             <div class="issue-card__location">
               <span class="material-symbols-outlined">location_on</span>

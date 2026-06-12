@@ -27,6 +27,7 @@ class Issue(models.Model):
         ('in_progress', 'In Progress'),
         ('resolved', 'Resolved'),
         ('rejected', 'Rejected'),
+        ('duplicate', 'Duplicate'),
     ]
 
     PRIORITY_CHOICES = [
@@ -67,6 +68,8 @@ class Issue(models.Model):
     location = models.CharField(max_length=255)
     ward_number = models.IntegerField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='submitted')
+    merged_into = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='duplicates')
+    is_duplicate = models.BooleanField(default=False)
     officer_remarks = models.TextField(blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

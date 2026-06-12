@@ -18,6 +18,7 @@
                     <option value="in_progress"{% if status_filter == 'in_progress'%}selected{% endif %}>In Progress</option>
                     <option value="resolved"   {% if status_filter == 'resolved'   %}selected{% endif %}>Resolved</option>
                     <option value="rejected"   {% if status_filter == 'rejected'   %}selected{% endif %}>Rejected</option>
+                    <option value="duplicate" {% if status_filter == 'duplicate' %}selected{% endif %}>Duplicate</option>
                 </select>
             </div>
             <div class="filter-field">
@@ -75,15 +76,58 @@
                                 <span class="badge badge--resolved">Resolved</span>
                             {% elif issue.status == 'rejected' %}
                                 <span class="badge badge--rejected">Rejected</span>
+                            {% elif issue.status == 'duplicate' %}
+                                <span class="badge badge--duplicate">Duplicate</span>
                             {% endif %}
                         </td>
                         <td>
+                    
                             {% if issue.assigned_officer %}
+<<<<<<< Updated upstream
                                 {{ issue.assigned_officer.get_full_name|default:issue.assigned_officer.username }}
+=======
+                                <span style="font-weight:500;">
+                                    {{ issue.assigned_officer.get_full_name|default:issue.assigned_officer.username }}
+                                </span>
+                                {% if issue.assigned_officer.department %}
+                                <br>
+                                <span style="font-size:0.75rem; color:#6b7280;">
+                                    🏢 {{ issue.assigned_officer.department.name }}
+                                </span>
+                                {% endif %}
+
+                            {% elif issue.is_duplicate and issue.merged_into %}
+                                {% if issue.merged_into.assigned_officer %}
+                                    <span style="font-weight:500;">
+                                        {{ issue.merged_into.assigned_officer.get_full_name|default:issue.merged_into.assigned_officer.username }}
+                                    </span>
+                                    {% if issue.merged_into.assigned_officer.department %}
+                                    <br>
+                                    <span style="font-size:0.75rem; color:#6b7280;">
+                                        🏢 {{ issue.merged_into.assigned_officer.department.name }}
+                                    </span>
+                                    {% endif %}
+                                {% elif issue.merged_into.assigned_department %}
+                                    <span style="font-size:0.75rem; color:#6b7280;">
+                                        🏢 {{ issue.merged_into.assigned_department.name }}
+                                    </span>
+                                {% else %}
+                                    <span class="cell-italic">Not Assigned</span>
+                                {% endif %}
+                                <br>
+                                <span style="font-size:0.7rem;color:#6b7280;">(via #{{ issue.merged_into.id }})</span>
+
+                            {% elif issue.assigned_department %}
+                                <span style="font-size:0.75rem; color:#6b7280; font-style:italic;">
+                                    🏢 {{ issue.assigned_department.name }}
+                                </span>
+
+>>>>>>> Stashed changes
                             {% else %}
                                 <span class="cell-italic">Not Assigned</span>
                             {% endif %}
                         </td>
+                        
                         <td>
                             {% if issue.status == 'submitted' %}
                                 <button onclick="openAssignModal({{ issue.id }}, '{{ issue.title|escapejs }}')"

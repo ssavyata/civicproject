@@ -65,13 +65,36 @@
                                     <span class="badge badge--rejected">Rejected</span>
                                 {% endif %}
                             </td>
-                            <td>
+                             
+                            <td>  
                                 {% if issue.assigned_officer %}
-                                    {{ issue.assigned_officer.get_full_name|default:issue.assigned_officer.username }}
-                                {% else %}
-                                    <span class="cell-italic">Not Assigned</span>
-                                {% endif %}
-                            </td>
+                                    <span style="font-weight:500;">
+                                        {{ issue.assigned_officer.get_full_name|default:issue.assigned_officer.username }}
+                                    </span>
+                                    {% if issue.assigned_officer.department %}
+                                    <br>
+                                    <span style="font-size:0.75rem; color:#6b7280;">
+                                        🏢 {{ issue.assigned_officer.department.name }}
+                                    </span>
+                                    {% endif %}
+                                {% elif issue.is_duplicate and issue.merged_into and issue.merged_into.assigned_officer %}
+                                    <span style="font-weight:500;">
+                                        {{ issue.merged_into.assigned_officer.get_full_name|default:issue.merged_into.assigned_officer.username }}
+                                    </span>
+                                    {% if issue.merged_into.assigned_officer.department %}
+                                    <br>
+                                    <span style="font-size:0.75rem; color:#6b7280;">
+                                        🏢 {{ issue.merged_into.assigned_officer.department.name }}
+                                    </span>
+                                    {% endif %}
+                                    {% elif issue.assigned_department %}
+                                        <span style="font-size:0.75rem; color:#6b7280; font-style:italic;">
+                                            🏢 {{ issue.assigned_department.name }}
+                                        </span>
+                                    {% else %}
+                                        <span class="cell-italic">Not Assigned</span>
+                                    {% endif %}
+                             </td>
                         </tr>
                         {% empty %}
                         <tr class="empty-row">

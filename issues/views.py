@@ -1,3 +1,7 @@
+from importlib.resources import files
+
+from .duplicate_detector import find_duplicate_issue
+
 from .captcha import generate_captcha_text, generate_captcha_image
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -15,6 +19,153 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Q
 
 # Create your views here.
+<<<<<<< Updated upstream
+=======
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+# from .services.image_ai import generate_image_description
+import json
+import os
+from django.conf import settings
+from notifications.utils import notify
+
+
+
+
+# Map category choice values → Material Symbol icon names
+CATEGORY_ICONS = {
+    'pothole':     'warning',
+    'streetlight': 'light_mode',
+    'water':       'water_drop',
+    'waste':       'delete',
+    'other':       'help_outline',
+}
+
+def landing_page(request):
+    status_filter = request.GET.get('status', '')
+
+    # Public issues feed
+    issues_qs = Issue.objects.filter(visibility='public').order_by('-submitted_at')
+    if status_filter:
+        issues_qs = issues_qs.filter(status=status_filter)
+
+    # Status counts (all issues, not just public)
+    status_counts = Issue.objects.aggregate(
+        submitted=Count('id', filter=Q(status='submitted')),
+        assigned=Count('id',   filter=Q(status='assigned')),
+        in_progress=Count('id',filter=Q(status='in_progress')),
+        resolved=Count('id',   filter=Q(status='resolved')),
+        rejected=Count('id',   filter=Q(status='rejected')),
+    )
+
+    # Category stats with icons + percentages
+    total = Issue.objects.count() or 1
+    cat_qs = (
+        Issue.objects
+        .values('category')
+        .annotate(count=Count('id'))
+        .order_by('-count')
+    )
+    category_stats = [
+        {
+            'value':   row['category'],
+            'label':   dict(Issue.CATEGORY_CHOICES).get(row['category'], row['category']),
+            'icon':    CATEGORY_ICONS.get(row['category'], 'report'),
+            'count':   row['count'],
+            'percent': round(row['count'] / total * 100),
+        }
+        for row in cat_qs
+    ]
+
+    # Categories list for the "Issue categories" cards section
+    categories = [
+        {'value': value, 'label': label, 'icon': CATEGORY_ICONS.get(value, 'report')}
+        for value, label in Issue.CATEGORY_CHOICES
+    ]
+
+    # Resolution rate for stats bar
+    resolved_count = status_counts['resolved']
+    resolution_rate = round(resolved_count / total * 100) if total > 1 else 0
+
+    context = {
+        'public_issues':      issues_qs[:9],
+        'submitted_count':    status_counts['submitted'],
+        'assigned_count':     status_counts['assigned'],
+        'in_progress_count':  status_counts['in_progress'],
+        'resolved_count':     resolved_count,
+        'rejected_count':     status_counts['rejected'],
+        'category_stats':     category_stats,
+        'categories':         categories,
+        'status_filter':      status_filter,
+        'total_issues':       Issue.objects.count(),
+        'resolution_rate':    resolution_rate,
+    }
+    return render(request, 'landing_page.html', context)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def upload_issue_photo(request):
+    """Temporarily saves uploaded photo and returns filename for AI analysis."""
+    try:
+        photo = request.FILES.get('photo')
+        if not photo:
+            return JsonResponse({"success": False, "error": "No photo provided"}, status=400)
+
+        # Save to MEDIA_ROOT/issue_photos/
+        from django.core.files.storage import default_storage
+        from django.core.files.base import ContentFile
+
+        filename = photo.name
+        save_path = os.path.join(settings.MEDIA_PHOTOS_ROOT, filename)
+        os.makedirs(settings.MEDIA_PHOTOS_ROOT, exist_ok=True)
+        saved_path = default_storage.save(save_path, ContentFile(photo.read()))
+        
+        # Get just the filename
+        actual_filename = os.path.basename(saved_path)
+        image_url = f"{settings.MEDIA_URL}{saved_path}"
+
+        return JsonResponse({
+            "success": True,
+            "filename": actual_filename,
+            "image_url": image_url
+        })
+
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=500)
+    
+@csrf_exempt
+@require_http_methods(["POST"])
+# views.py
+
+def analyze_image(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST required'})
+    
+    try:
+        body = json.loads(request.body)
+        filename = body.get('filename')
+        
+        # Build your image path
+        import base64, os
+        image_path = os.path.join(settings.MEDIA_PHOTOS_ROOT, filename)
+        with open(image_path, 'rb') as f:
+            image_b64 = base64.b64encode(f.read()).decode('utf-8')
+        
+        response = requests.post('http://localhost:11434/api/generate', json={
+            "model": "llava",
+            "prompt": "Describe this civic issue briefly for a report.",
+            "images": [image_b64],
+            "stream": False
+        }, timeout=60)
+        
+        result = response.json()
+        return JsonResponse({'success': True, 'description': result['response']})
+    
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+>>>>>>> Stashed changes
 
 #Citizen Views
 
@@ -104,13 +255,66 @@ def report_issue(request):
             issue.citizen = request.user
             issue.ward_number = request.user.ward_number
             issue.save()
-
             for photo in files:
-                IssuePhoto.objects.create(issue=issue, image=photo)
+                 IssuePhoto.objects.create(issue=issue, image=photo)
 
+            duplicate = find_duplicate_issue(issue)
+
+            if duplicate:
+                    issue.merged_into = duplicate
+                    issue.is_duplicate = True
+                    issue.status = 'duplicate'
+                    issue.save()
+                    notify(
+                        issue.citizen,
+                        'Issue Merged',
+                        f'Your issue "{issue.title}" is similar to existing report #{duplicate.id}. '
+                        f'It has been merged and will be resolved together.',
+                        'general',
+                        issue
+                    )
+                    issue_id = f"CR-{issue.submitted_at.year}-{issue.id:04d}"
+                    return render(request, 'citizen/report_success.html', {'issue_id': issue_id, 'merged': True, 'merged_into': duplicate.id})
+            else:
+                    assign_issue(issue)
+                    notify(
+                        request.user,
+                        'Issue Submitted',
+                        f'Your issue "{issue.title}" has been submitted successfully.',
+                        'issue_submitted',
+                        issue
+                    )
+                    for admin in User.objects.filter(role='admin'):
+                        notify(
+                            admin,
+                            'New Issue Submitted',
+                            f'A new issue "{issue.title}" was submitted by {request.user.get_full_name() or request.user.username}.',
+                            'issue_submitted',
+                            issue
+                        )
+                    issue_id = f"CR-{issue.submitted_at.year}-{issue.id:04d}"
+                    return render(request, 'citizen/report_success.html', {'issue_id': issue_id})
+        
             assign_issue(issue)
+<<<<<<< Updated upstream
             messages.success(request, 'Issue reported successfully! We will look into it.')
             return redirect('my_issues')
+=======
+
+             
+            # Notify all admins
+            for admin in User.objects.filter(role='admin'):
+                notify(
+                    admin,
+                    'New Issue Submitted',
+                    f'A new issue "{issue.title}" was submitted by {request.user.get_full_name() or request.user.username}.',
+                    'issue_submitted',
+                    issue
+                )
+
+            issue_id = f"CR-{issue.submitted_at.year}-{issue.id:04d}"
+            return render(request, 'citizen/report_success.html', {'issue_id': issue_id})
+>>>>>>> Stashed changes
 
     else:
         form = IssueReportForm()
@@ -319,6 +523,27 @@ def landing_page(request):
         'categories': categories,
     })
 
+<<<<<<< Updated upstream
+=======
+            # Notify duplicate issue citizens too
+            for dup in issue.duplicates.all():
+                    notify(dup.citizen, notif_title, notif_msg, notif_type, dup)
+                    if new_status == 'resolved':
+                                dup.status = 'resolved'
+                                dup.assigned_officer = issue.assigned_officer
+                                dup.save()
+
+            # Notify all admins
+            for admin in User.objects.filter(role='admin'):
+                notify(
+                    admin,
+                    f'Issue {issue.get_status_display()}',
+                    f'Officer {request.user.get_full_name() or request.user.username} '
+                    f'marked "{issue.title}" as {issue.get_status_display()}.',
+                    notif_type,
+                    issue
+                )
+>>>>>>> Stashed changes
 
 
 

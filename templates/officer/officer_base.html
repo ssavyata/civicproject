@@ -102,8 +102,28 @@
             <li style="padding:0.75rem 1.25rem;
                        border-bottom:1px solid #f0fdf4;
                        {% if not notif.is_read %}background:#f0fdf4;{% endif %}">
-              <p style="font-size:0.8rem; color:#1c2623; margin:0 0 3px;">{{ notif.message }}</p>
-              <p style="font-size:0.7rem; color:#6f7973; margin:0;">{{ notif.created_at|timesince }} ago</p>
+              <div style="display:flex; align-items:flex-start; gap:8px;">
+                {% if notif.notif_type == 'general' %}
+                  <span class="material-symbols-outlined" style="font-size:16px; color:#059669; flex-shrink:0; margin-top:1px;">reviews</span>
+                {% elif notif.notif_type == 'issue_assigned' %}
+                  <span class="material-symbols-outlined" style="font-size:16px; color:#2563eb; flex-shrink:0; margin-top:1px;">assignment_ind</span>
+                {% elif notif.notif_type == 'issue_resolved' %}
+                  <span class="material-symbols-outlined" style="font-size:16px; color:#16a34a; flex-shrink:0; margin-top:1px;">check_circle</span>
+                {% else %}
+                  <span class="material-symbols-outlined" style="font-size:16px; color:#6b7280; flex-shrink:0; margin-top:1px;">info</span>
+                {% endif %}
+                <div style="flex:1; min-width:0;">
+                  <p style="font-size:0.8rem; font-weight:600; color:#065f46; margin:0 0 2px;">{{ notif.title }}</p>
+                  <p style="font-size:0.78rem; color:#1c2623; margin:0 0 3px; line-height:1.4;">{{ notif.message }}</p>
+                  {% if notif.issue %}
+                    <a href="{% url 'officer_update_status' notif.issue.id %}"
+                       style="font-size:0.72rem; color:#059669; font-weight:600; text-decoration:none;">
+                      View Issue →
+                    </a>
+                  {% endif %}
+                  <p style="font-size:0.7rem; color:#9ca3af; margin:3px 0 0;">{{ notif.created_at|timesince }} ago</p>
+                </div>
+              </div>
             </li>
           {% empty %}
             <li style="padding:1.25rem; text-align:center; font-size:0.85rem; color:#6f7973;">

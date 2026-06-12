@@ -60,14 +60,7 @@
                         </td>
                         <td>
                             <p class="cell-title">{{ issue.title }}</p>
-                            {% if issue.visibility == 'confidential' %}
-                                <p class="cell-sub" style="color:#6b7280;font-style:italic;">
-                                <span class="material-symbols-outlined" style="font-size:0.85rem;vertical-align:middle;">lock</span>
-                                     Anonymous
-                                 </p>
-                            {% else %}
-                                <p class="cell-sub">{{ issue.citizen.get_full_name|default:issue.citizen.username }}</p>
-                            {% endif %}
+                            <p class="cell-sub">{{ issue.citizen.get_full_name|default:issue.citizen.username }}</p>
                         </td>
                         <td>{{ issue.get_category_display }}</td>
                         <td class="cell-muted">{{ issue.submitted_at|date:"M d, Y" }}</td>
@@ -86,13 +79,7 @@
                         </td>
                         <td>
                             {% if issue.assigned_officer %}
-                                {# Officer is known — show name #}
                                 {{ issue.assigned_officer.get_full_name|default:issue.assigned_officer.username }}
-                            {% elif issue.assigned_department %}
-                                {# Assigned to a dept but no specific officer yet #}
-                                <span style="color:var(--slate-500); font-style:italic;">
-                                    {{ issue.assigned_department.name }}
-                                </span>
                             {% else %}
                                 <span class="cell-italic">Not Assigned</span>
                             {% endif %}
@@ -105,7 +92,7 @@
                                     Assign
                                 </button>
                             {% else %}
-                                <a href="#" class="action-link action-link--muted">
+                                <a href="{% url 'admin_issue_detail' issue.id %}" class="action-link action-link--muted">
                                     <span class="material-symbols-outlined" style="font-size:14px">visibility</span>
                                     View
                                 </a>

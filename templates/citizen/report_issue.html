@@ -9,6 +9,23 @@
 {% block extra_head %}
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+ 
+<script type="module">
+  import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js';
+
+  window._aiDescribeImages = async function(filesToSend) {
+    const captioner = await pipeline('image-to-text', 'Xenova/vit-gpt2-image-captioning');
+    const descriptions = [];
+
+    for (const file of filesToSend) {
+      const url = URL.createObjectURL(file);
+      const result = await captioner(url);
+      descriptions.push(result[0].generated_text);
+      URL.revokeObjectURL(url);
+    }
+    return descriptions.join('. ');
+  };
+</script>
 {% endblock %}
 
 {% block content %}
@@ -92,19 +109,6 @@
         {% endif %}
       </div>
 
-      {# Description #}
-      <div class="field">
-        <label class="field__label" for="{{ form.description.id_for_label }}">Detailed Description</label>
-        <textarea id="{{ form.description.id_for_label }}"
-                  name="{{ form.description.html_name }}"
-                  rows="4"
-                  placeholder="Provide as much detail as possible to help our crews locate and fix the issue."
-                  class="field__textarea {% if form.description.errors %}field__textarea--error{% endif %}">{{ form.description.value|default_if_none:'' }}</textarea>
-        {% if form.description.errors %}
-          <p class="field__error">{{ form.description.errors.0 }}</p>
-        {% endif %}
-      </div>
-
       {# Photo upload #}
       <div class="field">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.375rem;">
@@ -167,6 +171,43 @@
           <p class="field__error">{{ form.photos.errors.0 }}</p>
         {% endif %}
         <div id="image-preview" style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:0.75rem;"></div>
+      </div>
+      
+      {# Description #}
+      <div class="field">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.375rem;">
+          <label class="field__label" for="{{ form.description.id_for_label }}" style="margin-bottom:0;">Detailed Description</label>
+          <button type="button" id="ai-describe-btn"
+                  onclick="aiDescribeImages()"
+                  title="Analyze uploaded photos and generate a description"
+                  style="display:none;align-items:center;gap:0.35rem;padding:0.3rem 0.75rem;
+                         background:linear-gradient(135deg,#059669,#0284c7);color:#fff;
+                         border:none;border-radius:20px;font-size:0.78rem;font-weight:600;
+                         cursor:pointer;transition:opacity 0.2s;white-space:nowrap;">
+            <span class="material-symbols-outlined" style="font-size:0.95rem;">auto_awesome</span>
+            AI Describe
+          </button>
+        </div>
+
+        {# AI status banner — hidden until analysis runs #}
+        <div id="ai-status" style="display:none;align-items:center;gap:0.5rem;
+             padding:0.55rem 0.85rem;border-radius:8px;font-size:0.8rem;font-weight:500;
+             margin-bottom:0.5rem;background:#ecfdf5;border:1px solid #6ee7b7;color:#065f46;">
+          <span id="ai-status-icon" class="material-symbols-outlined" style="font-size:1rem;">auto_awesome</span>
+          <span id="ai-status-text">Analyzing your photo(s)…</span>
+        </div>
+
+        <textarea id="{{ form.description.id_for_label }}"
+                  name="{{ form.description.html_name }}"
+                  rows="4"
+                  placeholder="Provide as much detail as possible to help our crews locate and fix the issue."
+                  class="field__textarea {% if form.description.errors %}field__textarea--error{% endif %}">{{ form.description.value|default_if_none:'' }}</textarea>
+        <p style="font-size:0.72rem;color:#9ca3af;margin-top:0.3rem;">
+          Upload a photo above, then click <strong>AI Describe</strong> to auto-generate a description.
+        </p>
+        {% if form.description.errors %}
+          <p class="field__error">{{ form.description.errors.0 }}</p>
+        {% endif %}
       </div>
 
       {# Visibility #}
@@ -258,7 +299,180 @@
           });
       }
 
-      /* ── Live camera via getUserMedia ── */
+      /* ══════════════════════════════════════════════════════
+         AI IMAGE DESCRIPTION  — uses Claude vision via the
+         Anthropic Messages API to analyse uploaded photos and
+         generate a relevant civic-issue description.
+         ══════════════════════════════════════════════════════ */
+
+      /* Show/hide the "AI Describe" button whenever photos change.
+         Uses DOM thumbnail count as source of truth — works regardless
+         of what the base template names its internal array. */
+      function _updateAiBtn() {
+        var btn = document.getElementById('ai-describe-btn');
+        if (!btn) return;
+        var previewEl = document.getElementById('image-preview');
+        var domCount  = previewEl ? previewEl.querySelectorAll('img').length : 0;
+        var arrCount  = (typeof _photoFiles !== 'undefined') ? _photoFiles.length : 0;
+        btn.style.display = (domCount > 0 || arrCount > 0) ? 'inline-flex' : 'none';
+      }
+
+      /* Convert a File object → base64 data string (no prefix) */
+      function _fileToBase64(file) {
+        return new Promise(function(resolve, reject) {
+          var reader = new FileReader();
+          reader.onload  = function(e) { resolve(e.target.result.split(',')[1]); };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      /* Set the AI status banner */
+      function _setAiStatus(state, text) {
+        var banner = document.getElementById('ai-status');
+        var icon   = document.getElementById('ai-status-icon');
+        var label  = document.getElementById('ai-status-text');
+        banner.style.display = 'flex';
+        label.textContent = text;
+
+        var styles = {
+          loading: { bg:'#ecfdf5', border:'#6ee7b7', color:'#065f46', iconAnim:'spin 1.2s linear infinite', iconText:'progress_activity' },
+          success: { bg:'#f0fdf4', border:'#86efac', color:'#166534', iconAnim:'none', iconText:'check_circle' },
+          error:   { bg:'#fef2f2', border:'#fca5a5', color:'#991b1b', iconAnim:'none', iconText:'error' },
+        };
+        var s = styles[state] || styles.loading;
+        banner.style.background   = s.bg;
+        banner.style.borderColor  = s.border;
+        banner.style.color        = s.color;
+        icon.textContent          = s.iconText;
+        icon.style.animation      = s.iconAnim;
+      }
+
+      /* Inject keyframes for spinner once */
+      (function() {
+        if (!document.getElementById('ai-spin-style')) {
+          var st = document.createElement('style');
+          st.id = 'ai-spin-style';
+          st.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+          document.head.appendChild(st);
+        }
+      })();
+
+      /* ── Main AI describe function ── */
+      async function aiDescribeImages() {
+        /* Resolve which files to send — prefer _photoFiles array, fall back to
+           reading the actual <input> files if the base template uses a different var. */
+        var filesToSend = [];
+        if (typeof _photoFiles !== 'undefined' && _photoFiles.length > 0) {
+          filesToSend = Array.from(_photoFiles);
+        } else {
+          var inp = document.getElementById('id_images');
+          if (inp && inp.files && inp.files.length > 0) {
+            filesToSend = Array.from(inp.files);
+          }
+        }
+
+        if (filesToSend.length === 0) {
+          alert('Please upload at least one photo first.');
+          return;
+        }
+
+        var btn = document.getElementById('ai-describe-btn');
+        btn.disabled = true;
+        btn.style.opacity = '0.6';
+        _setAiStatus('loading', 'Analyzing your photo(s) with AI…');
+
+        try {
+          /* 1. Convert all photos to base64 */
+          var imageContents = [];
+          for (var i = 0; i < filesToSend.length; i++) {
+            var b64 = await _fileToBase64(filesToSend[i]);
+            imageContents.push({
+              type: 'image',
+              source: { type: 'base64', media_type: filesToSend[i].type || 'image/jpeg', data: b64 }
+            });
+          }
+
+          /* 2. Build the prompt — include category if selected */
+          var categoryEl = document.querySelector('[name="{{ form.category.html_name }}"]');
+          var categoryHint = '';
+          if (categoryEl && categoryEl.value) {
+            categoryHint = ' The citizen has categorised this issue as: "' + categoryEl.options[categoryEl.selectedIndex].text + '".';
+          }
+
+          imageContents.push({
+            type: 'text',
+            text:
+              'You are an assistant helping citizens report civic infrastructure issues.' +
+              categoryHint +
+              ' Analyse the photo(s) of the reported problem and write a clear, factual description ' +
+              '(3–5 sentences) that a municipal officer can act on. Focus on: what the problem is, ' +
+              'visible severity, any safety concerns, and any materials or infrastructure involved. ' +
+              'Do NOT mention camera quality or framing. Respond with ONLY the description text.'
+          });
+
+          /* 3. Call Claude API via Django proxy (avoids CORS) */
+          const rawDesc = await window._aiDescribeImages(filesToSend);
+// Wrap it into a civic-sounding sentence
+const description = 'The submitted photo shows: ' + rawDesc + 
+  '. Please inspect and take necessary action to address this civic issue.';
+
+          /* 4. Populate the textarea */
+          var textarea = document.getElementById('{{ form.description.id_for_label }}');
+          textarea.value = description;
+          textarea.style.transition = 'background 0.4s';
+          textarea.style.background = '#f0fdf4';
+          setTimeout(function() { textarea.style.background = ''; }, 1200);
+
+          _setAiStatus('success', 'Description generated — review and edit as needed.');
+
+        } catch (err) {
+          console.error('[AI Describe]', err);
+          _setAiStatus('error', 'Analysis failed: ' + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        }
+      }
+
+
+      /* ── Watch photo list changes to show/hide AI button ── */
+      document.addEventListener('DOMContentLoaded', function() {
+        /* 1. MutationObserver on #image-preview — fires when thumbnails are added/removed */
+        var previewEl = document.getElementById('image-preview');
+        if (previewEl) {
+          new MutationObserver(_updateAiBtn).observe(previewEl, { childList: true, subtree: true });
+        }
+
+        /* 2. Direct file input change — catches uploads even if previewImages isn't patched yet */
+        var fileInp = document.getElementById('id_images');
+        if (fileInp) {
+          fileInp.addEventListener('change', function() {
+            /* Small delay so previewImages() can run first and populate _photoFiles */
+            setTimeout(_updateAiBtn, 100);
+          });
+        }
+
+        /* 3. Patch previewImages() so every call (including camera) updates the button */
+        function _patchPreviewImages() {
+          if (typeof window.previewImages === 'function' && !window.previewImages._aiPatched) {
+            var orig = window.previewImages;
+            window.previewImages = function(e) { orig(e); setTimeout(_updateAiBtn, 50); };
+            window.previewImages._aiPatched = true;
+            return true;
+          }
+          return false;
+        }
+
+        /* Try immediately, then retry a few times for late-loading base scripts */
+        if (!_patchPreviewImages()) {
+          var attempts = 0;
+          var retryId = setInterval(function() {
+            if (_patchPreviewImages() || ++attempts >= 10) clearInterval(retryId);
+          }, 200);
+        }
+      });
+
       var _cameraStream = null;
 
       function openCamera() {

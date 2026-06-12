@@ -10,4 +10,5 @@ urlpatterns = [
     path('accounts/verify-otp/', views.verify_login_otp, name='verify_login_otp'),
     path('accounts/confirm-email/', views.CustomConfirmEmailView.as_view(), name='account_confirm_email'),
     path('activity-log/', views.activity_log_view, name='activity_log'),
+    path("ai-describe/", views.ai_describe_proxy, name="ai_describe_proxy"),
 ]

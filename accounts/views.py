@@ -1,10 +1,6 @@
-from datetime import date
-from urllib import request
-
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib import messages
-from httpx import request
 from .models import User, LoginOTP
 from django.contrib.auth.decorators import login_required
 from .decorators import user_not_authenticated
@@ -18,11 +14,9 @@ from .tokens import account_activation_token
 from allauth.account.models import EmailAddress
 from allauth.account.views import ConfirmEmailView
 import random
-
-# Core configuration utilities
+from datetime import date
+import requests
 from django.conf import settings
-from django.urls import reverse
-from django.contrib.sites.models import Site
 
 
 @user_not_authenticated
@@ -35,10 +29,8 @@ def register(request):
             user.ward_number = 12
             user.is_active = False
             user.save()
-            
-            # ✅ Sends token correctly to matching snake_case utility
-            activate_email(request, user, form.cleaned_data.get('email'))
-            
+            activateEmail(request, user, form.cleaned_data.get('email'))
+            # ✅ FIX 1: Don't redirect to login yet — user needs to verify email first
             return render(request, 'register.html', {'form': form, 'email_sent': True})
         else:
             for error in form.errors.values():
@@ -49,17 +41,24 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 
-def activate_email(request, user, to_email):
-    mail_subject = 'Activate your account'
+def activateEmail(request, user, to_email):
+    mail_subject = 'Activate your account.'
     message = render_to_string('activate_account.html', {
-        'user': user,
+        'user': user.username,
         'domain': get_current_site(request).domain,
         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': account_activation_token.make_token(user),
-        'protocol': 'http' if settings.DEBUG else 'https',
+        'protocol': 'https' if request.is_secure() else 'http',
     })
     email = EmailMessage(mail_subject, message, to=[to_email])
-    email.send()
+    if email.send():
+        messages.success(request, f'Dear {user.username}, please check your email {to_email} '
+                                   f'and click the activation link to complete registration. '
+                                   f'Check your spam folder too.')
+    else:
+        messages.error(request, f'Problem sending confirmation email to {to_email}. '
+                                  f'Please check if you typed it correctly.')
+
 
 def activate(request, uidb64, token):
     User = get_user_model()
@@ -81,7 +80,6 @@ def activate(request, uidb64, token):
     else:
         messages.error(request, 'Activation link is invalid or has expired.')
         return redirect('register')  # ✅ FIX 3: Send back to register, not login, on failure
-
 
 
 def user_login(request):
@@ -201,6 +199,7 @@ class CustomConfirmEmailView(ConfirmEmailView):
     def get(self, *args, **kwargs):
         response = super().get(*args, **kwargs)
         messages.success(self.request, 'Your email has been confirmed! You can now log in.')
+        
         return redirect('login')
     
 
@@ -258,3 +257,35 @@ def activity_log_view(request):
         'status_filter':   status_filter,
     }
     return render(request, 'admin/activity_log.html', context)
+
+import json
+import requests
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+
+@login_required
+@csrf_exempt  # CSRF is handled via the session; exempt only because body is raw JSON
+def ai_describe_proxy(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST only"}, status=405)
+
+    try:
+        payload = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    ANTHROPIC_API_KEY = settings.ANTHROPIC_API_KEY  # store in settings/env
+
+    response = requests.post(
+        "https://api.anthropic.com/v1/messages",
+        headers={
+            "x-api-key": ANTHROPIC_API_KEY,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+        },
+        json=payload,
+        timeout=30,
+    )
+
+    return JsonResponse(response.json(), status=response.status_code)

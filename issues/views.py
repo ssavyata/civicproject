@@ -842,6 +842,22 @@ def admin_manage_users(request):
     }
     return render(request, 'admin/manage_users.html', context)
 
+@login_required
+def admin_issue_detail(request, pk):
+    if not request.user.is_admin():
+        return redirect('login')
+
+    issue = get_object_or_404(Issue, pk=pk)
+    feedback = getattr(issue, 'feedback', None)
+
+    context = {
+        'issue': issue,
+        'feedback': feedback,
+        'status_logs': issue.status_logs.all().order_by('created_at'),
+        'photos': issue.photos.all(),
+    }
+    return render(request, 'admin/issue_detail.html', context)
+
 def refresh_captcha(request):
     from django.http import JsonResponse
     captcha_text = generate_captcha_text()

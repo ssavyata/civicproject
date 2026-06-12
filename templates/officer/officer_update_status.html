@@ -1,19 +1,22 @@
-{% extends "base.html" %}
+{% extends "officer/officer_base.html" %}
+{% load static %}
 
 {% block title %}Update Issue Status - CivicReport{% endblock %}
 
 {% block nav_queue %}active{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/update_status.css' %}"/>
+{% endblock %}
+
 {% block topbar_content %}
 <div style="display:flex; align-items:center; gap:16px;">
-  <a href="{% url 'officer_issue_queue' %}" style="display:flex; align-items:center; color:#10B981; font-weight:700; font-size:14px; transition:opacity 0.15s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">
+  <a href="{% url 'officer_issue_queue' %}" class="topbar-back-link">
     <span class="material-symbols-outlined" style="font-size:20px; margin-right:4px;">arrow_back</span>
     Issue Queue
   </a>
-  <span style="width:1px; height:16px; background:#e2e8f0;"></span>
-  <span style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:#64748b;">
-    ISSUE ID: {{ issue.issue_id|default:"CR-2024-0051" }}
-  </span>
+  <span class="topbar-divider"></span>
+  <span class="topbar-issue-id">ISSUE ID: {{ issue.issue_id }}</span>
 </div>
 <div class="notif-btn" id="notifBtn" onclick="toggleNotif()">
   <span class="material-symbols-outlined">notifications</span>
@@ -21,196 +24,23 @@
 </div>
 {% endblock %}
 
-{% block extra_head %}
-<style>
-  /* ============================
-     UPDATE STATUS PAGE STYLES
-  ============================ */
-  .issue-page-header {
-    margin-bottom: 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-  .issue-page-header .issue-id-label {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-slate-500);
-    margin-bottom: 4px;
-  }
-  .issue-page-header h1 {
-    font-size: 36px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    color: var(--color-primary-darker);
-    line-height: 1.2;
-  }
-
-  /* Two-column layout */
-  .update-grid {
-    display: grid;
-    grid-template-columns: 7fr 5fr;
-    gap: 24px;
-    align-items: start;
-  }
-
-  /* Detail section */
-  .detail-meta-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px 16px;
-    margin-bottom: 32px;
-  }
-  .detail-meta-group .meta-label {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-slate-400);
-    margin-bottom: 4px;
-  }
-  .detail-meta-group .meta-value {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--color-on-surface);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .meta-value-green { color: var(--color-secondary); }
-  .col-span-2 { grid-column: span 2; }
-  .meta-divider {
-    grid-column: span 2;
-    border: none;
-    border-top: 1px solid var(--color-slate-100);
-    margin: 0;
-  }
-
-  /* Description block */
-  .desc-label {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-slate-400);
-    margin-bottom: 8px;
-  }
-  .desc-text {
-    font-size: 16px;
-    color: var(--color-on-surface-variant);
-    line-height: 1.7;
-    margin-bottom: 32px;
-  }
-
-  /* Evidence photos */
-  .photo-placeholder {
-    width: 140px; height: 100px;
-    background: #f3f4f6;
-    border-radius: var(--radius-md);
-    display: flex; align-items: center; justify-content: center;
-    border: 1px solid var(--color-slate-200);
-  }
-  .photos-grid { display: flex; gap: 16px; flex-wrap: wrap; }
-
-  /* Actual uploaded image */
-  .photo-thumb {
-    width: 140px; height: 100px;
-    border-radius: var(--radius-md);
-    object-fit: cover;
-    border: 1px solid var(--color-slate-200);
-    cursor: pointer;
-    transition: transform 0.15s;
-  }
-  .photo-thumb:hover { transform: scale(1.03); }
-
-  /* Status timeline */
-  .timeline { list-style: none; position: relative; padding-left: 24px; }
-  .timeline::before {
-    content: '';
-    position: absolute;
-    left: 8px; top: 8px; bottom: 8px;
-    width: 2px;
-    background: var(--color-slate-200);
-  }
-  .timeline-item { position: relative; margin-bottom: 20px; }
-  .timeline-dot {
-    position: absolute;
-    left: -24px; top: 4px;
-    width: 16px; height: 16px;
-    border-radius: var(--radius-full);
-    border: 2px solid var(--color-white);
-    box-shadow: 0 0 0 2px var(--color-slate-300);
-    background: var(--color-slate-300);
-  }
-  .timeline-dot.dot-green { background: #10b981; box-shadow: 0 0 0 2px #10b981; }
-  .timeline-dot.dot-amber { background: #f59e0b; box-shadow: 0 0 0 2px #f59e0b; }
-  .timeline-item-status {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--color-on-surface);
-  }
-  .timeline-item-note {
-    font-size: 13px;
-    color: var(--color-on-surface-variant);
-    margin-top: 2px;
-    line-height: 1.5;
-  }
-  .timeline-item-date {
-    font-size: 11px;
-    color: var(--color-slate-400);
-    margin-top: 2px;
-  }
-
-  /* Card section header */
-  .card-section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 16px;
-    margin-bottom: 24px;
-    border-bottom: 1px solid var(--color-slate-100);
-  }
-  .card-section-header h3 {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--color-on-surface);
-  }
-
-  /* Status select colors */
-  select.form-select option[value="Resolved"] { color: #065F46; }
-  select.form-select option[value="Rejected"] { color: #991b1b; }
-</style>
-{% endblock %}
-
 {% block content %}
 <!-- Issue Page Header -->
 <div class="issue-page-header">
   <div>
-    <p class="issue-id-label">Issue ID: {{ issue.issue_id|default:"CR-2024-0051" }}</p>
-    <h1>{{ issue.title|default:"Leaking Main Pipeline" }}</h1>
+    <p class="issue-id-label">Issue ID: {{ issue.issue_id }}</p>
+    <h1>{{ issue.title }}</h1>
   </div>
-  {% if issue.status == 'pending' %}
-    <span class="badge badge-pending">Pending</span>
-  {% elif issue.status == 'in_progress' %}
-    <span class="badge badge-progress">In Progress</span>
-  {% elif issue.status == 'resolved' %}
-    <span class="badge badge-resolved">Resolved</span>
-  {% elif issue.status == 'rejected' %}
-    <span class="badge badge-rejected">Rejected</span>
-  {% elif issue.status == 'acknowledged' %}
-    <span class="badge badge-acknowledge">Acknowledged</span>
-  {% else %}
-    <span class="badge badge-pending">Pending</span>
-  {% endif %}
+  {% include "partials/badge_status.html" with status=issue.status %}
 </div>
 
 <!-- Django messages -->
 {% if messages %}
   {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}" style="padding:12px 16px; border-radius:8px; font-size:14px; margin-bottom:24px; display:flex; align-items:center; gap:8px; background:{% if message.tags == 'success' %}#d1fae5; color:#065F46; border:1px solid #6ee7b7{% else %}#fee2e2; color:#991b1b; border:1px solid #fca5a5{% endif %};">
-      <span class="material-symbols-outlined" style="font-size:18px;">{% if message.tags == 'success' %}check_circle{% else %}error{% endif %}</span>
+    <div class="alert alert-{{ message.tags }}">
+      <span class="material-symbols-outlined icon-sm">
+        {% if message.tags == 'success' %}check_circle{% else %}error{% endif %}
+      </span>
       {{ message }}
     </div>
   {% endfor %}
@@ -232,7 +62,7 @@
           <p class="meta-label">Category</p>
           <p class="meta-value meta-value-green">
             <span class="material-symbols-outlined" style="font-size:18px;">water_drop</span>
-            {{ issue.get_category_display|default:"Water supply" }}
+            {{ issue.get_category_display }}
           </p>
         </div>
 
@@ -242,26 +72,24 @@
           <p class="meta-label">Location</p>
           <p class="meta-value">
             <span class="material-symbols-outlined" style="font-size:18px;">location_on</span>
-            {{ issue.location|default:"Ward 12, Near Ward 12 Community Tap" }}
+            {{ issue.location }}
           </p>
         </div>
 
         <div class="detail-meta-group">
           <p class="meta-label">Submitted Date</p>
-          <p class="meta-value">{{ issue.submitted_date|date:"M d, Y"|default:"Dec 10, 2024" }}</p>
+          <p class="meta-value">{{ issue.submitted_date|date:"M d, Y" }}</p>
         </div>
 
         <div class="detail-meta-group">
           <p class="meta-label">Reported By</p>
-          <p class="meta-value">{{ issue.reported_by|default:"Savyata Shrestha (Citizen)" }}</p>
+          <p class="meta-value">{{ issue.reported_by.get_full_name }} (Citizen)</p>
         </div>
       </div>
 
       <!-- Description -->
       <p class="desc-label">Description</p>
-      <p class="desc-text">
-        {{ issue.description|default:"The main pipeline supplying water to the Ward 12 community tap has developed a significant crack. Water has been leaking for over 4 hours, causing flooding on the nearby pedestrian path. Immediate repair is required to prevent water wastage and damage to the road surface." }}
-      </p>
+      <p class="desc-text">{{ issue.description }}</p>
 
       <!-- Evidence Photos -->
       <p class="desc-label">Evidence Photos</p>
@@ -273,31 +101,29 @@
           <div class="photo-placeholder">
             <span class="material-symbols-outlined" style="color:var(--color-slate-300); font-size:32px;">image</span>
           </div>
-          <div class="photo-placeholder">
-            <span class="material-symbols-outlined" style="color:var(--color-slate-300); font-size:32px;">image</span>
-          </div>
         {% endfor %}
       </div>
     </div>
   </section>
 
-  <!-- RIGHT column: Update Status + History -->
+  <!-- RIGHT: Update Status + History -->
   <div style="display:flex; flex-direction:column; gap:24px;">
 
     <!-- Update Status Card -->
     <section class="card">
       <div class="card-body">
         <h3 style="font-size:20px; font-weight:600; margin-bottom:24px;">Update Status</h3>
-        <form method="post" action="{% url 'officer_update_status' issue.id|default:1 %}" class="space-y-6">
+        <form method="post" action="{% url 'officer_update_status' issue.id %}"
+              class="space-y-6" data-status-form>
           {% csrf_token %}
 
           <div class="form-group">
             <label class="form-label">New Status</label>
             <select name="status" class="form-select">
               <option value="acknowledged" {% if issue.status == 'acknowledged' %}selected{% endif %}>Acknowledge</option>
-              <option value="in_progress"  {% if issue.status == 'in_progress' %}selected{% endif %}>In Progress</option>
-              <option value="resolved"     {% if issue.status == 'resolved' %}selected{% endif %}>Resolved</option>
-              <option value="rejected"     {% if issue.status == 'rejected' %}selected{% endif %}>Rejected</option>
+              <option value="in_progress"  {% if issue.status == 'in_progress'  %}selected{% endif %}>In Progress</option>
+              <option value="resolved"     {% if issue.status == 'resolved'     %}selected{% endif %}>Resolved</option>
+              <option value="rejected"     {% if issue.status == 'rejected'     %}selected{% endif %}>Rejected</option>
             </select>
           </div>
 
@@ -319,7 +145,9 @@
         <ul class="timeline">
           {% for log in issue.status_logs.all %}
           <li class="timeline-item">
-            <div class="timeline-dot {% if log.status == 'resolved' %}dot-green{% elif log.status == 'in_progress' %}dot-amber{% endif %}"></div>
+            <div class="timeline-dot
+              {% if log.status == 'resolved' %}dot-green
+              {% elif log.status == 'in_progress' %}dot-amber{% endif %}"></div>
             <p class="timeline-item-status">{{ log.get_status_display }}</p>
             {% if log.remarks %}
               <p class="timeline-item-note">{{ log.remarks }}</p>
@@ -327,12 +155,11 @@
             <p class="timeline-item-date">{{ log.created_at|date:"M d, Y – H:i" }}</p>
           </li>
           {% empty %}
-          <!-- Static fallback for design preview -->
           <li class="timeline-item">
             <div class="timeline-dot dot-green"></div>
             <p class="timeline-item-status">Submitted</p>
             <p class="timeline-item-note">Issue reported by citizen.</p>
-            <p class="timeline-item-date">Dec 10, 2024 – 09:14</p>
+            <p class="timeline-item-date">{{ issue.submitted_date|date:"M d, Y" }}</p>
           </li>
           {% endfor %}
         </ul>
@@ -344,33 +171,5 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script>
-  // Open photo in a lightbox overlay
-  function openPhoto(url) {
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:zoom-out;';
-    const img = document.createElement('img');
-    img.src = url;
-    img.style.cssText = 'max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 25px 50px rgba(0,0,0,0.5);';
-    overlay.appendChild(img);
-    overlay.onclick = () => document.body.removeChild(overlay);
-    document.body.appendChild(overlay);
-  }
-
-  // Confirm before submitting Rejected status
-  document.querySelector('form').addEventListener('submit', function(e) {
-    const status = this.querySelector('[name="status"]').value;
-    if (status === 'rejected') {
-      const remarks = this.querySelector('[name="remarks"]').value.trim();
-      if (!remarks) {
-        e.preventDefault();
-        alert('Please provide a reason in the Remarks field when rejecting an issue.');
-        return;
-      }
-      if (!confirm('Are you sure you want to reject this issue?')) {
-        e.preventDefault();
-      }
-    }
-  });
-</script>
+<script src="{% static 'js/update_status.js' %}"></script>
 {% endblock %}

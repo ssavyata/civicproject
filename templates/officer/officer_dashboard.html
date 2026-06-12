@@ -1,277 +1,311 @@
-{% extends "base.html" %}
+{% extends "officer/officer_base.html" %}
+{% load static %}
 
 {% block title %}Officer Dashboard - CivicReport{% endblock %}
-
 {% block nav_dashboard %}active{% endblock %}
-
 {% block topbar_title %}Dashboard{% endblock %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-  /* ============================
-     DASHBOARD-SPECIFIC STYLES
-  ============================ */
-  .summary-grid {
+  /* ── Workload Summary Strip ── */
+  .workload-strip {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-    margin-bottom: 40px;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
   }
-
-  .stat-card {
+  .workload-card {
     background: #fff;
-    border: 1px solid #d1fae5;
-    border-radius: 8px;
-    padding: 24px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 18px 20px;
     display: flex;
     flex-direction: column;
-    border-left-width: 4px;
-    border-left-style: solid;
+    gap: 6px;
   }
-  .stat-card .stat-label {
-    font-size: 11px;
+  .workload-card__icon {
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+  }
+  .workload-card__label {
+    font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-on-surface-variant);
-    margin-bottom: 8px;
+    letter-spacing: 0.06em;
+    color: #6b7280;
   }
-  .stat-card .stat-value {
-    font-size: 32px;
+  .workload-card__value {
+    font-size: 2rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
+    line-height: 1;
+    color: #111827;
   }
-  .stat-total  { border-left-color: #006b2c; }
-  .stat-total .stat-value  { color: var(--color-primary-darker); }
-  .stat-pending { border-left-color: #ba1a1a; }
-  .stat-pending .stat-value { color: #ba1a1a; }
-  .stat-progress { border-left-color: #f59e0b; }
-  .stat-progress .stat-label { color: #f59e0b; }
-  .stat-progress .stat-value { color: #f59e0b; }
-  .stat-resolved { border-left-color: #006d30; }
-  .stat-resolved .stat-label { color: #006d30; }
-  .stat-resolved .stat-value { color: #006d30; }
+  .workload-card__sub {
+    font-size: 0.78rem;
+    color: #9ca3af;
+  }
+  .workload-card--overdue { border-left: 4px solid #ef4444; }
+  .workload-card--overdue .workload-card__value { color: #dc2626; }
+  .workload-card--progress { border-left: 4px solid #3b82f6; }
+  .workload-card--resolved { border-left: 4px solid #22c55e; }
+  .workload-card--total { border-left: 4px solid #8b5cf6; }
 
-  .section-card {
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid #d1fae5;
-    overflow: hidden;
-  }
-  .section-card-header {
-    padding: 20px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .section-card-header h3 {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-primary-darker);
-  }
-  .section-card-header a {
-    color: var(--color-accent);
-    font-size: 13px;
-    font-weight: 700;
-  }
-  .section-card-header a:hover { text-decoration: underline; }
-
-  .welcome-header { margin-bottom: 32px; }
-  .welcome-header h1 {
-    font-size: 32px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--color-primary-darker);
-    line-height: 1.2;
-  }
-  .welcome-header p {
-    font-size: 16px;
-    color: var(--color-on-surface-variant);
-    margin-top: 4px;
+  /* ── Two-col layout ── */
+  .dash-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
   }
 
-  /* Notification dropdown */
-  .notif-wrapper { position: relative; }
-  .notif-panel {
-    display: none;
-    position: absolute;
-    right: 0; top: calc(100% + 8px);
-    width: 320px;
-    background: #fff;
-    border: 1px solid var(--color-slate-200);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-xl);
-    z-index: 999;
-  }
-  .notif-panel-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--color-slate-200);
+  /* ── Priority Queue ── */
+  .priority-queue { background:#fff; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; }
+  .priority-queue__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f3f4f6;
   }
-  .notif-panel-header span:first-child { font-size: 14px; font-weight: 700; }
-  .notif-panel-header span:last-child {
-    font-size: 10px;
+  .priority-queue__title { font-size:0.95rem; font-weight:700; color:#111827; }
+  .priority-queue__link { font-size:0.82rem; color:#6366f1; font-weight:600; text-decoration:none; }
+  .priority-table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+  .priority-table thead th {
+    background:#f9fafb;
+    padding:9px 16px;
+    text-align:left;
+    font-size:0.72rem;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color:#6b7280;
+    border-bottom:1px solid #e5e7eb;
+  }
+  .priority-table tbody td {
+    padding:12px 16px;
+    border-bottom:1px solid #f9fafb;
+    color:#374151;
+    vertical-align:middle;
+  }
+  .priority-table tbody tr:last-child td { border-bottom:none; }
+  .priority-table tbody tr:hover td { background:#fafafa; }
+
+  /* Priority indicator */
+  .prio-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .prio-dot--high { background:#ef4444; }
+  .prio-dot--med  { background:#f59e0b; }
+  .prio-dot--low  { background:#22c55e; }
+
+  .days-badge {
+    font-size: 0.72rem;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-primary);
-    cursor: pointer;
+    padding: 2px 7px;
+    border-radius: 99px;
+    background: #fee2e2;
+    color: #dc2626;
   }
-  .notif-scroll { max-height: 260px; overflow-y: auto; }
-  .notif-item {
-    padding: 14px 16px;
-    border-bottom: 1px solid rgba(189,202,186,0.3);
-    transition: background 0.1s;
+  .days-badge--warn { background:#fef9c3; color:#ca8a04; }
+  .days-badge--ok   { background:#dcfce7; color:#16a34a; }
+
+  /* ── Dept Stats card ── */
+  .dept-card { background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:20px; }
+  .dept-card__title {
+    font-size:0.8rem; font-weight:600; text-transform:uppercase;
+    letter-spacing:0.06em; color:#6b7280; margin-bottom:16px;
   }
-  .notif-item:hover { background: var(--color-slate-50); }
-  .notif-item.unread { background: #d1fae5; }
-  .notif-item.unread:hover { background: #bbf7d0; }
-  .notif-item p:first-child { font-size: 14px; font-weight: 500; }
-  .notif-item p:last-child { font-size: 11px; color: var(--color-on-surface-variant); margin-top: 2px; }
+  .dept-stat-row {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 0; border-bottom:1px solid #f3f4f6; font-size:0.875rem;
+  }
+  .dept-stat-row:last-child { border-bottom:none; }
+  .dept-stat-row__label { color:#374151; }
+  .dept-stat-row__val { font-weight:700; color:#111827; }
+  .dept-chart-wrap { position:relative; height:160px; margin-top:16px; }
+  .resolution-ring {
+    display:flex;flex-direction:column;align-items:center;margin-top:16px;
+  }
+  .resolution-ring__label { font-size:0.75rem; color:#6b7280; margin-top:6px; }
+
+  @media(max-width:900px) {
+    .workload-strip { grid-template-columns:1fr 1fr; }
+    .dash-grid { grid-template-columns:1fr; }
+  }
+  @media(max-width:500px) {
+    .workload-strip { grid-template-columns:1fr 1fr; }
+  }
 </style>
 {% endblock %}
 
-{% block topbar_content %}
-<div>
-  <div class="topbar-title">Dashboard</div>
-  <div class="topbar-sub">Water Supply Department · Ward 12</div>
-</div>
-<div class="notif-wrapper">
-  <div class="notif-btn" id="notifBtn" onclick="toggleNotif()">
-    <span class="material-symbols-outlined">notifications</span>
-    <span class="notif-dot"></span>
-  </div>
-  <div class="notif-panel" id="notifPanel">
-    <div class="notif-panel-header">
-      <span>Notifications</span>
-      <span>Mark all as read</span>
-    </div>
-    <div class="notif-scroll">
-      <div class="notif-item unread">
-        <p>New pipe leak reported - Ward 12</p>
-        <p>2 mins ago</p>
-      </div>
-      <div class="notif-item unread">
-        <p>Urgent: Main line maintenance required</p>
-        <p>1 hour ago</p>
-      </div>
-      <div class="notif-item">
-        <p>Issue #WS-451 was resolved</p>
-        <p>4 hours ago</p>
-      </div>
-    </div>
-  </div>
-</div>
-{% endblock %}
-
 {% block content %}
-<!-- Welcome Header -->
-<header class="welcome-header">
-  <h1>Welcome, {{ request.user.get_full_name }}</h1>
-  <p>Water Supply Department · Ward 12</p>
-</header>
 
-<!-- Summary Stats -->
-<div class="summary-grid">
-  <div class="stat-card stat-total">
-    <span class="stat-label">Total Assigned</span>
-    <span class="stat-value">{{ total_assigned|default:"18" }}</span>
+<!-- ① Workload Summary Strip -->
+<div class="workload-strip">
+  <div class="workload-card workload-card--overdue">
+    <span class="material-symbols-outlined workload-card__icon" style="color:#ef4444;">schedule</span>
+    <span class="workload-card__label">Overdue</span>
+    <span class="workload-card__value">{{ overdue_count|default:"0" }}</span>
+    <span class="workload-card__sub">Pending &gt; 7 days</span>
   </div>
-  <div class="stat-card stat-pending">
-    <span class="stat-label">Pending</span>
-    <span class="stat-value">{{ pending_count|default:"6" }}</span>
+  <div class="workload-card workload-card--progress">
+    <span class="material-symbols-outlined workload-card__icon" style="color:#3b82f6;">sync</span>
+    <span class="workload-card__label">In Progress</span>
+    <span class="workload-card__value">{{ in_progress_count }}</span>
+    <span class="workload-card__sub">Active right now</span>
   </div>
-  <div class="stat-card stat-progress">
-    <span class="stat-label">In Progress</span>
-    <span class="stat-value">{{ in_progress_count|default:"8" }}</span>
+  <div class="workload-card workload-card--resolved">
+    <span class="material-symbols-outlined workload-card__icon" style="color:#22c55e;">check_circle</span>
+    <span class="workload-card__label">Resolved This Week</span>
+    <span class="workload-card__value">{{ resolved_this_week|default:"0" }}</span>
+    <span class="workload-card__sub">Last 7 days</span>
   </div>
-  <div class="stat-card stat-resolved">
-    <span class="stat-label">Resolved</span>
-    <span class="stat-value">{{ resolved_count|default:"4" }}</span>
+  <div class="workload-card workload-card--total">
+    <span class="material-symbols-outlined workload-card__icon" style="color:#8b5cf6;">inbox</span>
+    <span class="workload-card__label">Total Assigned</span>
+    <span class="workload-card__value">{{ total_assigned }}</span>
+    <span class="workload-card__sub">All time</span>
   </div>
 </div>
 
-<!-- Assigned Issues Table -->
-<section class="section-card">
-  <div class="section-card-header">
-    <h3>Assigned Issues</h3>
-    <a href="{% url 'officer_issue_queue' %}">View All →</a>
-  </div>
-  <div class="overflow-x-auto">
-    <table class="data-table">
+<!-- ② Priority Queue + Dept Stats -->
+<div class="dash-grid">
+
+  <!-- Priority Queue -->
+  <div class="priority-queue">
+    <div class="priority-queue__header">
+      <span class="priority-queue__title">Priority Queue</span>
+      <a href="{% url 'officer_issue_queue' %}" class="priority-queue__link">View All →</a>
+    </div>
+    <table class="priority-table">
       <thead>
         <tr>
-          <th>Issue ID</th>
-          <th>Title</th>
-          <th>Date</th>
+          <th>Priority</th>
+          <th>Issue</th>
           <th>Status</th>
+          <th>Age</th>
           <th>Action</th>
         </tr>
       </thead>
       <tbody>
         {% for issue in recent_issues %}
         <tr>
-          <td class="td-mono">{{ issue.issue_id }}</td>
-          <td><a href="{% url 'officer_update_status' issue.id %}" class="td-link">{{ issue.title }}</a></td>
-          <td class="td-date">{{ issue.submitted_date|date:"M d, Y" }}</td>
           <td>
-            {% if issue.status == 'pending' %}
-              <span class="badge badge-pending">Pending</span>
-            {% elif issue.status == 'in_progress' %}
-              <span class="badge badge-progress">In Progress</span>
-            {% elif issue.status == 'resolved' %}
-              <span class="badge badge-resolved">Resolved</span>
-            {% elif issue.status == 'rejected' %}
-              <span class="badge badge-rejected">Rejected</span>
+            {% if issue.days_old > 7 %}
+              <span class="prio-dot prio-dot--high"></span> High
+            {% elif issue.days_old > 3 %}
+              <span class="prio-dot prio-dot--med"></span> Medium
+            {% else %}
+              <span class="prio-dot prio-dot--low"></span> Normal
             {% endif %}
           </td>
-          <td><a href="{% url 'officer_update_status' issue.id %}" class="td-action">Manage</a></td>
+          <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+            {{ issue.title }}
+          </td>
+          <td>
+            {% if issue.status == 'submitted' %}
+              <span class="badge badge--submitted">Pending</span>
+            {% elif issue.status == 'assigned' %}
+              <span class="badge badge--assigned">Assigned</span>
+            {% elif issue.status == 'in_progress' %}
+              <span class="badge badge--progress">In Progress</span>
+            {% elif issue.status == 'resolved' %}
+              <span class="badge badge--resolved">Resolved</span>
+            {% elif issue.status == 'rejected' %}
+              <span class="badge badge--rejected">Rejected</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if issue.days_old > 7 %}
+              <span class="days-badge">{{ issue.days_old }}d</span>
+            {% elif issue.days_old > 3 %}
+              <span class="days-badge days-badge--warn">{{ issue.days_old }}d</span>
+            {% else %}
+              <span class="days-badge days-badge--ok">{{ issue.days_old }}d</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'officer_update_status' issue.id %}" style="color:#6366f1;font-weight:600;font-size:0.82rem;text-decoration:none;">
+              Manage
+            </a>
+          </td>
         </tr>
         {% empty %}
-        <!-- Static fallback for design preview -->
         <tr>
-          <td class="td-mono">CR-2024-0051</td>
-          <td><a href="#" class="td-link">Leaking Main Pipeline</a></td>
-          <td class="td-date">Dec 10, 2024</td>
-          <td><span class="badge badge-pending">Pending</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
-        </tr>
-        <tr>
-          <td class="td-mono">CR-2024-0049</td>
-          <td><a href="#" class="td-link">No Water Supply for 3 Days</a></td>
-          <td class="td-date">Dec 09, 2024</td>
-          <td><span class="badge badge-progress">In Progress</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
-        </tr>
-        <tr>
-          <td class="td-mono">CR-2024-0047</td>
-          <td><a href="#" class="td-link">Burst Pipe near School</a></td>
-          <td class="td-date">Dec 08, 2024</td>
-          <td><span class="badge badge-progress">In Progress</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
-        </tr>
-        <tr>
-          <td class="td-mono">CR-2024-0044</td>
-          <td><a href="#" class="td-link">Contaminated Water Report</a></td>
-          <td class="td-date">Dec 06, 2024</td>
-          <td><span class="badge badge-pending">Pending</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
-        </tr>
-        <tr>
-          <td class="td-mono">CR-2024-0040</td>
-          <td><a href="#" class="td-link">Water Meter Damage</a></td>
-          <td class="td-date">Dec 03, 2024</td>
-          <td><span class="badge badge-resolved">Resolved</span></td>
-          <td><a href="#" class="td-action">Manage</a></td>
+          <td colspan="5" style="text-align:center;color:#9ca3af;padding:32px;">
+            No issues assigned to your department yet.
+          </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
-</section>
+
+  <!-- Department Stats -->
+  <div style="display:flex;flex-direction:column;gap:1.25rem;">
+
+    <div class="dept-card">
+      <div class="dept-card__title">Department Status</div>
+      <div class="dept-stat-row">
+        <span class="dept-stat-row__label">Department</span>
+        <span class="dept-stat-row__val">{{ request.user.department.name|default:"—" }}</span>
+      </div>
+      <div class="dept-stat-row">
+        <span class="dept-stat-row__label">Total Issues</span>
+        <span class="dept-stat-row__val">{{ total_assigned }}</span>
+      </div>
+      <div class="dept-stat-row">
+        <span class="dept-stat-row__label">Pending</span>
+        <span class="dept-stat-row__val" style="color:#f97316;">{{ pending_count }}</span>
+      </div>
+      <div class="dept-stat-row">
+        <span class="dept-stat-row__label">In Progress</span>
+        <span class="dept-stat-row__val" style="color:#3b82f6;">{{ in_progress_count }}</span>
+      </div>
+      <div class="dept-stat-row">
+        <span class="dept-stat-row__label">Resolved</span>
+        <span class="dept-stat-row__val" style="color:#22c55e;">{{ resolved_count }}</span>
+      </div>
+    </div>
+
+    <!-- Dept Donut Chart -->
+    <div class="dept-card">
+      <div class="dept-card__title">Workload Breakdown</div>
+      <div class="dept-chart-wrap">
+        <canvas id="deptDonut"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- end dash-grid -->
+
+<script>
+  new Chart(document.getElementById('deptDonut'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Pending', 'In Progress', 'Resolved'],
+      datasets: [{
+        data: [{{ pending_count }}, {{ in_progress_count }}, {{ resolved_count }}],
+        backgroundColor: ['#f97316', '#3b82f6', '#22c55e'],
+        borderWidth: 2,
+        borderColor: '#fff',
+      }]
+    },
+    options: {
+      cutout: '65%',
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 8 } }
+      },
+      maintainAspectRatio: false,
+    }
+  });
+</script>
+
 {% endblock %}

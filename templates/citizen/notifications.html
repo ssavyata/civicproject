@@ -1,0 +1,161 @@
+{% extends "citizen/citizen_base.html" %}
+{% load static %}
+
+{% block title %}Notifications — CivicReport{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+
+{% block extra_css %}
+<style>
+  .notif-page { max-width: 720px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+  .notif-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .notif-header h2 { font-size: 1.1rem; font-weight: 700; color: #111827; margin: 0; }
+  .notif-header-meta { font-size: .78rem; color: #9ca3af; }
+  .notif-list { display: flex; flex-direction: column; gap: .6rem; }
+  .notif-item {
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: 1rem 1.2rem; border-radius: 12px;
+    border: 1px solid #e5e7eb; background: #fff;
+    text-decoration: none; color: inherit;
+    transition: box-shadow .15s, border-color .15s;
+  }
+  .notif-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,.07); border-color: #d1d5db; }
+  .notif-item--unread { background: #f0fdf4; border-color: #bbf7d0; }
+  .notif-icon {
+    width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .notif-icon .material-symbols-outlined { font-size: 1.1rem; }
+  .ni-submitted { background:#eff6ff; color:#3b82f6; }
+  .ni-assigned  { background:#faf5ff; color:#8b5cf6; }
+  .ni-changed   { background:#fff7ed; color:#f59e0b; }
+  .ni-resolved  { background:#f0fdf4; color:#22c55e; }
+  .ni-rejected  { background:#fef2f2; color:#ef4444; }
+  .ni-remark    { background:#f0f9ff; color:#06b6d4; }
+  .ni-general   { background:#f9fafb; color:#6b7280; }
+  .notif-body { flex: 1; min-width: 0; }
+  .notif-title { font-size: .875rem; font-weight: 600; color: #111827; margin: 0 0 .2rem; line-height: 1.3; }
+  .notif-msg   { font-size: .8rem; color: #6b7280; margin: 0 0 .35rem; line-height: 1.5; }
+  .notif-time  { font-size: .72rem; color: #9ca3af; }
+  .notif-dot   { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; flex-shrink: 0; margin-top: .45rem; }
+  .notif-empty { text-align: center; padding: 4rem 2rem; color: #9ca3af; }
+  .notif-empty .material-symbols-outlined { font-size: 3rem; display: block; margin-bottom: .75rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="notif-page">
+
+  <div class="notif-header">
+    <h2>Notifications</h2>
+    <span class="notif-header-meta">{{ notifications|length }} total</span>
+  </div>
+
+  {% if notifications %}
+  <div class="notif-list">
+    {% for notif in notifications %}
+
+    {# Determine icon and colour from notif_type #}
+    {% if notif.notif_type == 'issue_submitted' %}
+      {% with icon="upload_file" cls="ni-submitted" %}
+      <a href="{% url 'mark_notification_read' notif.pk %}" class="notif-item {% if not notif.is_read %}notif-item--unread{% endif %}">
+        <div class="notif-icon {{ cls }}"><span class="material-symbols-outlined">{{ icon }}</span></div>
+        <div class="notif-body">
+          <p class="notif-title">{{ notif.title }}</p>
+          <p class="notif-msg">{{ notif.message }}</p>
+          <span class="notif-time">{{ notif.created_at|timesince }} ago</span>
+        </div>
+        {% if not notif.is_read %}<div class="notif-dot"></div>{% endif %}
+      </a>
+      {% endwith %}
+
+    {% elif notif.notif_type == 'issue_assigned' %}
+      {% with icon="person_add" cls="ni-assigned" %}
+      <a href="{% url 'mark_notification_read' notif.pk %}" class="notif-item {% if not notif.is_read %}notif-item--unread{% endif %}">
+        <div class="notif-icon {{ cls }}"><span class="material-symbols-outlined">{{ icon }}</span></div>
+        <div class="notif-body">
+          <p class="notif-title">{{ notif.title }}</p>
+          <p class="notif-msg">{{ notif.message }}</p>
+          <span class="notif-time">{{ notif.created_at|timesince }} ago</span>
+        </div>
+        {% if not notif.is_read %}<div class="notif-dot"></div>{% endif %}
+      </a>
+      {% endwith %}
+
+    {% elif notif.notif_type == 'status_changed' %}
+      {% with icon="autorenew" cls="ni-changed" %}
+      <a href="{% url 'mark_notification_read' notif.pk %}" class="notif-item {% if not notif.is_read %}notif-item--unread{% endif %}">
+        <div class="notif-icon {{ cls }}"><span class="material-symbols-outlined">{{ icon }}</span></div>
+        <div class="notif-body">
+          <p class="notif-title">{{ notif.title }}</p>
+          <p class="notif-msg">{{ notif.message }}</p>
+          <span class="notif-time">{{ notif.created_at|timesince }} ago</span>
+        </div>
+        {% if not notif.is_read %}<div class="notif-dot"></div>{% endif %}
+      </a>
+      {% endwith %}
+
+    {% elif notif.notif_type == 'issue_resolved' %}
+      {% with icon="check_circle" cls="ni-resolved" %}
+      <a href="{% url 'mark_notification_read' notif.pk %}" class="notif-item {% if not notif.is_read %}notif-item--unread{% endif %}">
+        <div class="notif-icon {{ cls }}"><span class="material-symbols-outlined">{{ icon }}</span></div>
+        <div class="notif-body">
+          <p class="notif-title">{{ notif.title }}</p>
+          <p class="notif-msg">{{ notif.message }}</p>
+          <span class="notif-time">{{ notif.created_at|timesince }} ago</span>
+        </div>
+        {% if not notif.is_read %}<div class="notif-dot"></div>{% endif %}
+      </a>
+      {% endwith %}
+
+    {% elif notif.notif_type == 'issue_rejected' %}
+      {% with icon="cancel" cls="ni-rejected" %}
+      <a href="{% url 'mark_notification_read' notif.pk %}" class="notif-item {% if not notif.is_read %}notif-item--unread{% endif %}">
+        <div class="notif-icon {{ cls }}"><span class="material-symbols-outlined">{{ icon }}</span></div>
+        <div class="notif-body">
+          <p class="notif-title">{{ notif.title }}</p>
+          <p class="notif-msg">{{ notif.message }}</p>
+          <span class="notif-time">{{ notif.created_at|timesince }} ago</span>
+        </div>
+        {% if not notif.is_read %}<div class="notif-dot"></div>{% endif %}
+      </a>
+      {% endwith %}
+
+    {% elif notif.notif_type == 'remark_added' %}
+      {% with icon="chat_bubble" cls="ni-remark" %}
+      <a href="{% url 'mark_notification_read' notif.pk %}" class="notif-item {% if not notif.is_read %}notif-item--unread{% endif %}">
+        <div class="notif-icon {{ cls }}"><span class="material-symbols-outlined">{{ icon }}</span></div>
+        <div class="notif-body">
+          <p class="notif-title">{{ notif.title }}</p>
+          <p class="notif-msg">{{ notif.message }}</p>
+          <span class="notif-time">{{ notif.created_at|timesince }} ago</span>
+        </div>
+        {% if not notif.is_read %}<div class="notif-dot"></div>{% endif %}
+      </a>
+      {% endwith %}
+
+    {% else %}
+      {% with icon="notifications" cls="ni-general" %}
+      <a href="{% url 'mark_notification_read' notif.pk %}" class="notif-item {% if not notif.is_read %}notif-item--unread{% endif %}">
+        <div class="notif-icon {{ cls }}"><span class="material-symbols-outlined">{{ icon }}</span></div>
+        <div class="notif-body">
+          <p class="notif-title">{{ notif.title }}</p>
+          <p class="notif-msg">{{ notif.message }}</p>
+          <span class="notif-time">{{ notif.created_at|timesince }} ago</span>
+        </div>
+        {% if not notif.is_read %}<div class="notif-dot"></div>{% endif %}
+      </a>
+      {% endwith %}
+    {% endif %}
+
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="notif-empty">
+    <span class="material-symbols-outlined">notifications_off</span>
+    <p>You're all caught up — no notifications yet.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

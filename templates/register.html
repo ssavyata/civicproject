@@ -4,141 +4,191 @@
 {% block title %}Register - CivicReport{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/register.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/register.css' %}"/>
+  <style>
+    /* ── Layout shell: page fills viewport, footer pinned to bottom ── */
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background-color: #F0FDF4;
+    }
+
+    /* The main content area grows to push the footer down */
+    .page-main {
+      flex: 1 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px 32px;
+    }
+
+    /* Footer never shrinks */
+    .site-footer {
+      flex-shrink: 0;
+    }
+
+    /* ── Register-specific ── */
+    .reg-header { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .reg-logo   { height: 90px; width: auto; display: block; mix-blend-mode: multiply; }
+
+    .reg-wrap {
+      width: 100%;
+      max-width: 480px;
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
-<div class="reg-wrap">
+<main class="page-main">
+  <div class="reg-wrap">
 
-  <div class="card-xl">
+    <div class="card-xl">
 
-    <!-- Header -->
-    <div class="reg-header">
-      <span class="material-symbols-outlined icon">account_balance</span>
-      <h1>Create Account</h1>
-    </div>
+      <!-- Header -->
+      <div class="reg-header">
+        <a href="/">
+          <img src="{% static 'images/logo.png' %}" alt="CivicReport" class="reg-logo" />
+        </a>
+        <h1>Create Account</h1>
+      </div>
 
-    <!-- Flash messages -->
-    {% if messages %}
-      {% for message in messages %}
-        <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
-          {{ message }}
+      {% if email_sent %}
+
+        <div style="text-align:center; padding:24px 8px 16px;">
+          <span class="material-symbols-outlined"
+            style="font-size:56px; color:#065F46; font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48;">
+            mark_email_read
+          </span>
+          <h2 style="margin:16px 0 8px; font-size:20px; font-weight:700; color:#065F46;">
+            Check your inbox!
+          </h2>
+          <p style="color:#475569; font-size:15px; line-height:1.6; margin:0 0 8px;">
+            We've sent an activation link to your email address.
+          </p>
+          <p style="color:#64748b; font-size:13px; line-height:1.6;">
+            Click the link in the email to activate your account.<br/>
+            Didn't receive it? Check your spam or junk folder.
+          </p>
         </div>
-      {% endfor %}
-    {% endif %}
 
-    <!-- Form errors -->
-    {% if form.errors %}
-      <div class="alert alert-error">
-        {% for field, errors in form.errors.items %}
-          {% for error in errors %}<p>• {{ error }}</p>{% endfor %}
+      {% else %}
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+            {{ message }}
+          </div>
         {% endfor %}
-      </div>
-    {% endif %}
+      {% endif %}
 
-    <form method="POST" action="{% url 'register' %}">
-      {% csrf_token %}
-
-      <!-- Username -->
-      <div class="form-group">
-        <label class="form-label">Username</label>
-        <input class="form-input is-mint" name="username" type="text"
-          placeholder="Choose a username"
-          value="{{ form.username.value|default:'' }}" required/>
-      </div>
-
-      <!-- Full Name -->
-      <div class="form-group">
-        <label class="form-label">Full Name</label>
-        <input class="form-input is-mint" name="first_name" type="text"
-          placeholder="Enter your full name"
-          value="{{ form.first_name.value|default:'' }}"/>
-      </div>
-
-      <!-- Email -->
-      <div class="form-group">
-        <label class="form-label">Email Address</label>
-        <input class="form-input is-mint" name="email" type="email"
-          placeholder="email@example.com"
-          value="{{ form.email.value|default:'' }}"/>
-      </div>
-
-      <!-- Phone -->
-      <div class="form-group">
-        <label class="form-label">Phone Number</label>
-        <input class="form-input is-mint" name="phone_number" type="tel"
-          placeholder="+977-98XXXXXXXX"
-          value="{{ form.phone_number.value|default:'' }}"/>
-      </div>
-
-      <!-- Password -->
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <div class="input-wrap">
-          <input class="form-input is-mint" name="password1" id="password1"
-            type="password" placeholder="••••••••" required/>
-          <button type="button" class="pwd-toggle" onclick="togglePassword('password1','icon1')" aria-label="Show password">
-            <span class="material-symbols-outlined" id="icon1">visibility</span>
-          </button>
+      {% if form.errors %}
+        <div class="alert alert-error">
+          {% for field, errors in form.errors.items %}
+            {% for error in errors %}<p>• {{ error }}</p>{% endfor %}
+          {% endfor %}
         </div>
-      </div>
+      {% endif %}
 
-      <!-- Confirm Password -->
-      <div class="form-group">
-        <label class="form-label">Confirm Password</label>
-        <div class="input-wrap">
-          <input class="form-input is-mint" name="password2" id="password2"
-            type="password" placeholder="••••••••" required/>
-          <button type="button" class="pwd-toggle" onclick="togglePassword('password2','icon2')" aria-label="Show password">
-            <span class="material-symbols-outlined" id="icon2">visibility</span>
-          </button>
+      <form method="POST" action="{% url 'register' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input class="form-input is-mint" name="username" type="text"
+            placeholder="Choose a username"
+            value="{{ form.username.value|default:'' }}" required/>
         </div>
+
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-input is-mint" name="first_name" type="text"
+            placeholder="Enter your full name"
+            value="{{ form.first_name.value|default:'' }}"/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="form-input is-mint" name="email" type="email"
+            placeholder="email@example.com"
+            value="{{ form.email.value|default:'' }}"/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input class="form-input is-mint" name="phone_number" type="tel"
+            placeholder="+977-98XXXXXXXX"
+            value="{{ form.phone_number.value|default:'' }}"/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-wrap">
+            <input class="form-input is-mint" name="password1" id="password1"
+              type="password" placeholder="••••••••" required/>
+            <button type="button" class="pwd-toggle" onclick="togglePassword('password1','icon1')" aria-label="Show password">
+              <span class="material-symbols-outlined" id="icon1">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <div class="input-wrap">
+            <input class="form-input is-mint" name="password2" id="password2"
+              type="password" placeholder="••••••••" required/>
+            <button type="button" class="pwd-toggle" onclick="togglePassword('password2','icon2')" aria-label="Show password">
+              <span class="material-symbols-outlined" id="icon2">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="checkbox-row">
+          <input id="terms" type="checkbox" required/>
+          <label for="terms">
+            I agree to the Terms of Service and Privacy Policy for digital data handling.
+          </label>
+        </div>
+
+        <div class="form-group">
+          {{ form.captcha }}
+          {% if form.captcha.errors %}
+            <p class="field-error">{{ form.captcha.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top:24px;">Register</button>
+      </form>
+
+      {% endif %}{# end email_sent #}
+
+      <hr class="card-divider"/>
+      <div class="reg-footer">
+        <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
       </div>
 
-      <!-- Terms -->
-      <div class="checkbox-row">
-        <input id="terms" type="checkbox" required/>
-        <label for="terms">
-          I agree to the Terms of Service and Privacy Policy for digital data handling.
-        </label>
+    </div>
+    <!-- End card -->
+
+    <!-- City banner -->
+    <div class="city-banner">
+      <img
+        alt="Pokhara city landscape"
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDniFrYrTX9eHavAzdmE3Cl4LNTjMPe8ABcGR6ccUjPv1LBbNyeerYozVKtpFzeIB2wERFaQmr894Q1R6LkOX2F_4nffWlUpL9qrGuMryZAzoKl40Jcq4hlLYqtHcMr62GM7zVJrg9IlDzIePmza_qrCnQAyztsrjuWM2rZXpY5mNzOWt-KGrI-F9Re50eOLMCQDl_GWmeV0OMAOJAwVGIbedapVARRNkFx2jlgaNRQ-8A7h0y6wa-IeupXsxw2a_a_ii7y1Zqgei0"
+      />
+      <div class="overlay">
+        <p>Building a sustainable, smart city through citizen participation.</p>
       </div>
-
-      <!-- reCAPTCHA -->
-      <div class="form-group">
-        {{ form.captcha }}
-        {% if form.captcha.errors %}
-          <p class="field-error">{{ form.captcha.errors.0 }}</p>
-        {% endif %}
-      </div>
-
-      <!-- Submit -->
-      <button type="submit" class="btn btn-primary" style="margin-top:24px;">Register</button>
-    </form>
-
-    <!-- Login link -->
-    <hr class="card-divider"/>
-    <div class="reg-footer">
-      <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
     </div>
 
   </div>
-  <!-- End card -->
-
-  <!-- City banner -->
-  <div class="city-banner">
-    <img
-      alt="Pokhara city landscape"
-      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDniFrYrTX9eHavAzdmE3Cl4LNTjMPe8ABcGR6ccUjPv1LBbNyeerYozVKtpFzeIB2wERFaQmr894Q1R6LkOX2F_4nffWlUpL9qrGuMryZAzoKl40Jcq4hlLYqtHcMr62GM7zVJrg9IlDzIePmza_qrCnQAyztsrjuWM2rZXpY5mNzOWt-KGrI-F9Re50eOLMCQDl_GWmeV0OMAOJAwVGIbedapVARRNkFx2jlgaNRQ-8A7h0y6wa-IeupXsxw2a_a_ii7y1Zqgei0"
-    />
-    <div class="overlay">
-      <p>Building a sustainable, smart city through citizen participation.</p>
-    </div>
-  </div>
-
-</div>
+</main>
 {% endblock %}
 
 {% block extra_scripts %}
-    <script src="{% static 'js/register.js' %}"></script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script src="{% static 'js/register.js' %}"></script>
 {% endblock %}

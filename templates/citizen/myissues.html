@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block title %}My Issues - CivicReport{% endblock %}
-
 {% block page_title %}My Issues{% endblock %}
 
 {% block content %}
@@ -18,7 +17,6 @@
     </a>
   </div>
 
-<<<<<<< Updated upstream
   {# ─── Filter tabs ─────────────────────────────────────────── #}
   <div class="filter-tabs">
     {% for label, value in filter_options %}
@@ -28,7 +26,6 @@
       </a>
     {% endfor %}
   </div>
-=======
   {# ─── Filter Bar ───────────────────────────────────────────── #}
   <form method="GET" style="background:var(--clr-surface-container-lowest);border:1px solid var(--clr-emerald-100);border-radius:var(--radius-xl);padding:1.25rem 1.5rem;margin-bottom:1.5rem;">
     <div style="display:flex;align-items:flex-end;gap:1rem;flex-wrap:wrap;">
@@ -66,24 +63,25 @@
 
     </div>
   </form>
->>>>>>> Stashed changes
+
 
   {% if issues %}
     <div class="space-y-4">
       {% for issue in issues %}
         <div class="issue-card">
 
-          <div class="issue-card__thumb {% if not issue.image %}issue-card__thumb-empty{% endif %}">
-            {% if issue.image %}
-              <img src="{{ issue.image.url }}" alt="Issue photo"/>
+          {% with photo=issue.primary_photo %}
+          <div class="issue-card__thumb {% if not photo %}issue-card__thumb-empty{% endif %}">
+            {% if photo %}
+              <img src="{{ photo.image.url }}" alt="Issue photo"/>
             {% else %}
               <span class="material-symbols-outlined">image_not_supported</span>
             {% endif %}
           </div>
+          {% endwith %}
 
           <div class="issue-card__body">
             <div class="issue-card__header">
-<<<<<<< Updated upstream
               <h3 class="issue-card__title">{{ issue.title }}</h3>
               <span class="badge
                 {% if issue.status == 'submitted' %}badge--submitted
@@ -94,7 +92,6 @@
                 {{ issue.get_status_display }}
               </span>
             </div>
-=======
   <h3 class="issue-card__title">{{ issue.title }}</h3>
   <div style="display:flex;align-items:center;gap:0.5rem;">
     <span class="badge
@@ -118,7 +115,7 @@
     {% endif %}
   </div>
 </div>
->>>>>>> Stashed changes
+
 
             <div class="issue-card__location">
               <span class="material-symbols-outlined">location_on</span>
@@ -128,16 +125,22 @@
             <p class="issue-card__desc line-clamp-2">{{ issue.description }}</p>
 
             <div class="issue-card__footer">
-              <div class="issue-card__meta">
-                <span>
-                  <span class="material-symbols-outlined">category</span>
-                  {{ issue.get_category_display|default:issue.category }}
-                </span>
-                <span>
-                  <span class="material-symbols-outlined">schedule</span>
-                  {{ issue.created_at|date:"M d, Y" }}
-                </span>
-              </div>
+             <div class="issue-card__meta">
+  <span>
+    <span class="material-symbols-outlined">category</span>
+    {{ issue.get_category_display|default:issue.category }}
+  </span>
+  <span>
+    <span class="material-symbols-outlined">schedule</span>
+    {{ issue.submitted_at|date:"M d, Y" }}
+  </span>
+  <span>
+    <span class="material-symbols-outlined">
+      {% if issue.visibility == 'confidential' %}lock{% else %}lock_open{% endif %}
+    </span>
+    {% if issue.visibility == 'confidential' %}Anonymous{% else %}Public{% endif %}
+  </span>
+</div>
               <a href="{% url 'issue_detail' issue.id %}" class="issue-card__detail-link">
                 View Details
                 <span class="material-symbols-outlined">arrow_forward</span>
@@ -156,8 +159,8 @@
       </div>
       <h3 class="empty-state__title">No issues yet</h3>
       <p class="empty-state__desc">
-        {% if current_filter and current_filter != 'all' %}
-          No issues match this filter. Try a different status or
+        {% if status_filter or category_filter %}
+          No issues match this filter. Try a different combination or
         {% else %}
           You haven't reported any issues yet.
         {% endif %}

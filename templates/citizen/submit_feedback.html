@@ -1,0 +1,106 @@
+{% extends "citizen/citizen_base.html" %}
+{% load static %}
+
+{% block title %}Submit Feedback — CivicReport{% endblock %}
+{% block page_title %}Submit Feedback{% endblock %}
+
+{% block content %}
+<div style="max-width:560px; margin:2rem auto; padding:0 1rem;">
+
+  <div class="card" style="border-radius:16px; padding:2rem;">
+
+    <div style="margin-bottom:1.5rem;">
+      <h2 style="font-size:1.1rem; font-weight:700; color:#111827; margin:0 0 .35rem;">
+        Rate your experience
+      </h2>
+      <p style="font-size:.85rem; color:#6b7280; margin:0;">
+        Issue: <strong>{{ issue.title }}</strong>
+      </p>
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div style="padding:.75rem 1rem; border-radius:8px; margin-bottom:1rem;
+                    background:{% if message.tags == 'error' %}#fef2f2{% else %}#f0fdf4{% endif %};
+                    color:{% if message.tags == 'error' %}#991b1b{% else %}#166534{% endif %};
+                    font-size:.85rem;">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <div style="margin-bottom:1.25rem;">
+        <label style="display:block; font-size:.78rem; font-weight:600; color:#374151;
+                      text-transform:uppercase; letter-spacing:.05em; margin-bottom:.5rem;">
+          Rating
+        </label>
+        <div style="display:flex; gap:.5rem;">
+          {% for i in "12345" %}
+          <label style="cursor:pointer;">
+            <input type="radio" name="rating" value="{{ i }}"
+                   style="display:none;"
+                   {% if forloop.counter == 5 %}checked{% endif %}>
+            <span class="star-btn" data-val="{{ i }}"
+                  style="font-size:1.8rem; color:#d1d5db; cursor:pointer;
+                         transition:color .15s;">★</span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div style="margin-bottom:1.5rem;">
+        <label style="display:block; font-size:.78rem; font-weight:600; color:#374151;
+                      text-transform:uppercase; letter-spacing:.05em; margin-bottom:.5rem;">
+          Comments
+        </label>
+        <textarea name="comment" rows="4"
+                  placeholder="Share your experience with how this issue was handled…"
+                  style="width:100%; padding:.65rem .85rem; border:1px solid #e5e7eb;
+                         border-radius:8px; font-size:.875rem; resize:vertical;
+                         font-family:inherit; box-sizing:border-box;">{{ form.comment.value|default:'' }}</textarea>
+        {% if form.comment.errors %}
+          <p style="font-size:.75rem; color:#ef4444; margin:.25rem 0 0;">{{ form.comment.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <div style="display:flex; gap:.75rem;">
+        <a href="{% url 'my_issues' %}"
+           style="flex:1; text-align:center; padding:.65rem; border-radius:8px;
+                  border:1px solid #e5e7eb; color:#374151; text-decoration:none;
+                  font-size:.875rem; font-weight:500;">
+          Cancel
+        </a>
+        <button type="submit"
+                style="flex:2; padding:.65rem; border-radius:8px; border:none;
+                       background:#004532; color:#fff; font-size:.875rem;
+                       font-weight:600; cursor:pointer;">
+          Submit Feedback
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const stars = document.querySelectorAll('.star-btn');
+  function highlight(val) {
+    stars.forEach(s => s.style.color = parseInt(s.dataset.val) <= val ? '#f59e0b' : '#d1d5db');
+  }
+  // Init
+  highlight(5);
+  stars.forEach(s => {
+    s.addEventListener('mouseover', () => highlight(parseInt(s.dataset.val)));
+    s.addEventListener('click', () => {
+      s.closest('label').querySelector('input').checked = true;
+      highlight(parseInt(s.dataset.val));
+    });
+  });
+  document.querySelector('.card').addEventListener('mouseleave', () => {
+    const checked = document.querySelector('input[name="rating"]:checked');
+    highlight(checked ? parseInt(checked.value) : 0);
+  });
+</script>
+{% endblock %}

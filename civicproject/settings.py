@@ -25,6 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
+# settings.py
+import os
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -44,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     #Our apps
-    'accounts',
+    'accounts.apps.AccountsConfig',
     'issues',
     'notifications',
 
@@ -52,12 +55,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-
-    'django_recaptcha',
 ]
-# reCAPTCHA
-RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
-RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')
 
 SITE_ID = 2
 
@@ -84,6 +82,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'accounts.context_processors.unread_notifications',
             ],
         },
     },
@@ -135,11 +134,8 @@ AUTHENTICATION_BACKENDS = (
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
 USE_TZ = True
+TIME_ZONE = 'Asia/Kathmandu'
 
 
 # Static files (CSS, JavaScript, Images)

@@ -21,6 +21,17 @@ class Issue(models.Model):
         ('other', 'Other'),
     ]
 
+    @property
+    def category_icon(self):
+        icons = {
+        'pothole':     'warning',
+        'streetlight': 'light_mode',
+        'water':       'water_drop',
+        'waste':       'delete',
+        'other':       'help_outline',
+    }
+        return icons.get(self.category, 'report')
+
     STATUS_CHOICES = [
         ('submitted', 'Submitted'),
         ('assigned', 'Assigned'),
@@ -61,6 +72,17 @@ class Issue(models.Model):
         related_name='handled_issues'
     )
 
+    VISIBILITY_CHOICES = [
+    ('public', 'Public'),
+    ('confidential', 'Confidential'),
+    ]
+
+    visibility = models.CharField(
+        max_length=20,
+        choices=VISIBILITY_CHOICES,
+        default='public'
+)
+
     title = models.CharField(max_length=200)
     description = models.TextField()
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
@@ -77,11 +99,25 @@ class Issue(models.Model):
     def __str__(self):
         return self.title
 
-    # ✅ Helper to get first photo (useful in templates/admin)
+    # ── Properties so templates can use issue.issue_id / .submitted_date / .reported_by ──
+
+    @property
+    def issue_id(self):
+        return f"CR-{self.submitted_at.year}-{self.id:04d}"
+
+    @property
+    def submitted_date(self):
+        return self.submitted_at
+
+    @property
+    def reported_by(self):
+        return self.citizen
+
+    # ── Photo helpers ────────────────────────────────────────────────────────────
+
     def primary_photo(self):
         return self.photos.first()
 
-    # ✅ Helper to get all photos (useful in templates)
     def all_photos(self):
         return self.photos.all()
 
@@ -108,3 +144,29 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"Feedback for Issue #{self.issue.id} by {self.citizen}"
+
+
+class IssueStatusLog(models.Model):
+    """Tracks every status change made by an officer on an issue."""
+    issue = models.ForeignKey(
+        Issue,
+        on_delete=models.CASCADE,
+        related_name='status_logs'
+    )
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    status = models.CharField(max_length=30, choices=Issue.STATUS_CHOICES)
+    remarks = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Issue #{self.issue.id} → {self.status} by {self.updated_by}"
+
+    def get_status_display_label(self):
+        return dict(Issue.STATUS_CHOICES).get(self.status, self.status)

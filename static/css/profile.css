@@ -1,0 +1,62 @@
+/* ============================
+   PROFILE PAGE STYLES
+============================ */
+.profile-avatar {
+  width: 56px; height: 56px;
+  border-radius: 9999px;
+  background: var(--color-primary-dark);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.profile-meta h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-on-surface);
+  line-height: 1.2;
+}
+.profile-meta p {
+  font-size: 14px;
+  color: var(--color-on-surface-variant);
+  margin-top: 2px;
+}
+.profile-user-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+/* Password strength indicator */
+.pw-strength {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-slate-200);
+  margin-top: 8px;
+  overflow: hidden;
+}
+.pw-strength-bar {
+  height: 100%;
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.3s, background 0.3s;
+}
+.pw-hint {
+  font-size: 11px;
+  color: var(--color-slate-500);
+  margin-top: 4px;
+}
+
+/* Save feedback */
+.save-feedback {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  color: #065F46;
+  font-size: 14px;
+  font-weight: 600;
+  margin-left: 16px;
+}
+.save-feedback.visible { display: flex; }

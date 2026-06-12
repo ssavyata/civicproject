@@ -18,16 +18,15 @@ urlpatterns = [
     path('admin-panel/assign/<int:issue_id>/', views.admin_assign_issue, name='admin_assign_issue'),
     path('admin-panel/departments/', views.admin_manage_departments, name='admin_manage_departments'),
     path('admin-panel/users/', views.admin_manage_users, name='admin_manage_users'),
+    path('admin-panel/issues/<int:pk>/', views.admin_issue_detail, name='admin_issue_detail'),
 
-    # Officer (ADDED THIS SECTION)
+    # Officer 
     path('officer/dashboard/', views.officer_dashboard, name='officer_dashboard'),
     path('officer/issue/<int:issue_id>/update/', views.update_issue_status, name='update_issue_status'),
     path('officer/queue/', views.officer_issue_queue, name='officer_issue_queue'),
     path('officer/profile/', views.officer_profile, name='officer_profile'),
+    path('officer/issues/<int:issue_id>/update/', views.officer_update_status, name='officer_update_status'),
 
     # CAPTCHA
     path('captcha/refresh/', views.refresh_captcha, name='refresh_captcha'),
-    
-    # Notifications
-    path('notifications/', views.notifications, name='notifications'),
 ]

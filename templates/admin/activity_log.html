@@ -1,0 +1,273 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+{% load tz %}
+
+{% block title %}Activity Log — CivicReport Admin{% endblock %}
+{% block page_title %}Activity Log{% endblock %}
+
+{% block content %}
+<style>
+  .log-chips {
+    display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;
+  }
+  .log-chip {
+    display: flex; align-items: center; gap: .75rem;
+    padding: 1rem 1.4rem; border-radius: 12px;
+    border: 1px solid #e5e7eb; background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05); min-width: 160px;
+  }
+  .log-chip .material-symbols-outlined { font-size: 1.6rem; }
+  .log-chip__val   { font-size: 1.5rem; font-weight: 800; display: block; line-height: 1; }
+  .log-chip__label { font-size: .7rem; color: #9ca3af; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-top: .2rem; display: block; }
+  .log-chip--total   .material-symbols-outlined { color: #6366f1; }
+  .log-chip--active  .material-symbols-outlined { color: #22c55e; }
+  .log-chip--today   .material-symbols-outlined { color: #f59e0b; }
+
+  /* Status dot */
+  .status-dot {
+    display: inline-block; width: 8px; height: 8px;
+    border-radius: 50%; margin-right: .35rem; vertical-align: middle;
+  }
+  .status-dot--active  { background: #22c55e; box-shadow: 0 0 0 3px #dcfce7; }
+  .status-dot--ended   { background: #d1d5db; }
+
+  /* Duration badge */
+  .duration-badge {
+    display: inline-block; padding: .18rem .6rem;
+    border-radius: 99px; font-size: .72rem; font-weight: 600;
+    background: #f3f4f6; color: #374151;
+  }
+  .duration-badge--active { background: #dcfce7; color: #166534; }
+
+  /* User cell */
+  .user-cell { display: flex; align-items: center; gap: .55rem; }
+  .user-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #004532; color: #fff; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 700;
+  }
+  .user-name  { font-weight: 600; font-size: .875rem; line-height: 1.2; }
+  .user-uname { font-size: .72rem; color: #9ca3af; }
+
+  /* Time cell */
+  .time-cell { display: flex; flex-direction: column; gap: .1rem; }
+  .time-cell__time { font-weight: 600; font-size: .875rem; }
+  .time-cell__date { font-size: .72rem; color: #9ca3af; }
+  .time-cell--empty { color: #d1d5db; font-size: .82rem; font-style: italic; }
+
+  /* Pagination */
+  .log-pagination {
+    display: flex; justify-content: center; align-items: center;
+    gap: .4rem; padding: 1.25rem 1.5rem;
+    border-top: 1px solid #f3f4f6;
+  }
+  .page-btn {
+    padding: .38rem .85rem; border-radius: 8px; font-size: .82rem;
+    font-weight: 500; border: 1px solid #e5e7eb; color: #374151;
+    text-decoration: none; background: #fff; transition: background .15s;
+  }
+  .page-btn:hover { background: #f3f4f6; }
+  .page-btn--active  { background: #004532; color: #fff; border-color: #004532; }
+  .page-btn--disabled { opacity: .4; pointer-events: none; }
+
+  .filter-bar  { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem 1.25rem; }
+  .filter-row  { display: flex; align-items: flex-end; gap: .75rem; flex-wrap: wrap; }
+  .filter-field { display: flex; flex-direction: column; gap: .25rem; }
+  .filter-label { font-size: .7rem; font-weight: 500; color: #9ca3af; text-transform: uppercase; letter-spacing: .05em; }
+  .form-input  { padding: .42rem .65rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: .82rem; min-width: 200px; }
+</style>
+
+<div class="page-container space-y-8" style="padding-bottom:4rem;">
+
+  <!-- Filter Bar -->
+  <form method="GET" class="filter-bar">
+    <div class="filter-row">
+      <div class="filter-field">
+        <label class="filter-label">Username</label>
+        <input type="text" name="username" class="form-input"
+               placeholder="Search by username…"
+               value="{{ username_filter|default:'' }}">
+      </div>
+      <div class="filter-field">
+        <label class="filter-label">Status</label>
+        <select name="status" class="form-select">
+          <option value="">All</option>
+          <option value="active"  {% if status_filter == 'active'  %}selected{% endif %}>Active</option>
+          <option value="ended"   {% if status_filter == 'ended'   %}selected{% endif %}>Ended</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Filter</button>
+      <a href="{% url 'activity_log' %}" class="btn btn-outline">Clear</a>
+    </div>
+  </form>
+
+  <!-- Summary chips -->
+  <div class="log-chips">
+    <div class="log-chip log-chip--total">
+      <span class="material-symbols-outlined">history</span>
+      <div>
+        <span class="log-chip__val">{{ total_count }}</span>
+        <span class="log-chip__label">Total Users</span>   
+      </div>
+    </div>
+    <div class="log-chip log-chip--active">
+      <span class="material-symbols-outlined">sensors</span>
+      <div>
+        <span class="log-chip__val">{{ active_now }}</span>
+        <span class="log-chip__label">Active Now</span>
+      </div>
+    </div>
+    <div class="log-chip log-chip--today">
+      <span class="material-symbols-outlined">today</span>
+      <div>
+        <span class="log-chip__val">{{ sessions_today }}</span>
+        <span class="log-chip__label">Active Today</span> 
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="section-title">
+        Session Records
+        <span style="font-size:.8rem;font-weight:400;color:#9ca3af;margin-left:.5rem;">{{ logs.paginator.count }} users</span>
+      </h2>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Status</th>
+            <th>Login Time</th>
+            <th>Logout Time</th>
+            <th>Duration</th>
+            <th>IP Address</th>
+            <th>Device</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+          <tr>
+
+            <!-- # -->
+            <td class="cell-id">{{ logs.start_index|add:forloop.counter0 }}</td>
+
+            <!-- User -->
+            <td>
+              <div class="user-cell">
+                <div class="user-avatar">
+                  {{ log.user.get_full_name|default:log.user.username|first|upper }}
+                </div>
+                <div>
+                  <div class="user-name">{{ log.user.get_full_name|default:log.user.username }}</div>
+                  <div class="user-uname">@{{ log.user.username }}</div>
+                </div>
+              </div>
+            </td>
+
+            <!-- Status -->
+            <td>
+              {% if log.logout_time %}
+                <span class="status-dot status-dot--ended"></span>
+                <span style="font-size:.82rem;color:#6b7280;font-weight:500;">Ended</span>
+              {% else %}
+                <span class="status-dot status-dot--active"></span>
+                <span style="font-size:.82rem;color:#166534;font-weight:600;">Active</span>
+              {% endif %}
+            </td>
+
+            <!-- Login Time -->
+            <td>
+              {% if log.login_time %}
+              <div class="time-cell">
+                <span class="time-cell__time">{{ log.login_time|localtime|date:"h:i A" }}</span>
+                <span class="time-cell__date">{{ log.login_time|localtime|date:"M d, Y" }}</span>
+              </div>
+              {% else %}
+              <span class="time-cell--empty">—</span>
+              {% endif %}
+            </td>
+
+            <!-- Logout Time -->
+            <td>
+              {% if log.logout_time %}
+              <div class="time-cell">
+                <span class="time-cell__time">{{ log.logout_time|localtime|date:"h:i A" }}</span>
+                <span class="time-cell__date">{{ log.logout_time|localtime|date:"M d, Y" }}</span>
+              </div>
+              {% else %}
+              <span class="time-cell--empty">Still active</span>
+              {% endif %}
+            </td>
+
+            <!-- Duration -->
+            <td>
+              {% if log.logout_time %}
+                <span class="duration-badge">{{ log.duration }}</span>
+              {% else %}
+                <span class="duration-badge duration-badge--active">● Active</span>
+              {% endif %}
+            </td>
+
+            <!-- IP -->
+            <td style="font-family:monospace;font-size:.8rem;color:#374151;">
+              {{ log.ip_address|default:"—" }}
+            </td>
+
+            <!-- Device -->
+            <td>
+              <div style="display:flex;align-items:center;gap:.35rem;font-size:.82rem;">
+                {% if 'Mobile' in log.device %}
+                  <span class="material-symbols-outlined" style="font-size:1rem;color:#6366f1;">smartphone</span>
+                {% elif 'Tablet' in log.device %}
+                  <span class="material-symbols-outlined" style="font-size:1rem;color:#f59e0b;">tablet</span>
+                {% else %}
+                  <span class="material-symbols-outlined" style="font-size:1rem;color:#22c55e;">computer</span>
+                {% endif %}
+                {{ log.device|truncatechars:35 }}
+              </div>
+            </td>
+
+          </tr>
+          {% empty %}
+          <tr class="empty-row">
+            <td colspan="8">No sessions recorded yet.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if logs.has_other_pages %}
+    <div class="log-pagination">
+      {% if logs.has_previous %}
+        <a href="?page={{ logs.previous_page_number }}" class="page-btn">← Prev</a>
+      {% else %}
+        <span class="page-btn page-btn--disabled">← Prev</span>
+      {% endif %}
+
+      {% for num in logs.paginator.page_range %}
+        {% if logs.number == num %}
+          <span class="page-btn page-btn--active">{{ num }}</span>
+        {% elif num > logs.number|add:"-3" and num < logs.number|add:"3" %}
+          <a href="?page={{ num }}" class="page-btn">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if logs.has_next %}
+        <a href="?page={{ logs.next_page_number }}" class="page-btn">Next →</a>
+      {% else %}
+        <span class="page-btn page-btn--disabled">Next →</span>
+      {% endif %}
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

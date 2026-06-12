@@ -17,17 +17,29 @@
   <div style="margin-bottom:2.5rem;">
     <p class="issue-id-label">ISSUE ID: CR-{{ issue.submitted_at|date:"Y" }}-{{ issue.id|stringformat:"04d" }}</p>
     <div class="issue-detail-header">
-      <h2 class="issue-detail-title">{{ issue.title }}</h2>
-      <span class="badge
-        {% if issue.status == 'submitted' %}badge--submitted
-        {% elif issue.status == 'in_progress' %}badge--progress
-        {% elif issue.status == 'resolved' %}badge--resolved
-        {% elif issue.status == 'rejected' %}badge--rejected
-        {% elif issue.status == 'assigned' %}badge--assigned
-        {% else %}badge--pending{% endif %}">
-        {{ issue.get_status_display }}
+  <h2 class="issue-detail-title">{{ issue.title }}</h2>
+  <div style="display:flex;align-items:center;gap:0.5rem;">
+    <span class="badge
+      {% if issue.status == 'submitted' %}badge--submitted
+      {% elif issue.status == 'in_progress' %}badge--progress
+      {% elif issue.status == 'resolved' %}badge--resolved
+      {% elif issue.status == 'rejected' %}badge--rejected
+      {% elif issue.status == 'assigned' %}badge--assigned
+      {% else %}badge--pending{% endif %}">
+      {{ issue.get_status_display }}
+    </span>
+    {% if issue.visibility == 'confidential' %}
+      <span style="display:inline-flex;align-items:center;gap:0.25rem;
+                   background:#f0fdf4;border:1px solid #bbf7d0;
+                   color:#059669;border-radius:999px;
+                   font-size:0.7rem;font-weight:600;
+                   padding:0.15rem 0.6rem;">
+        <span class="material-symbols-outlined" style="font-size:0.85rem;">lock</span>
+        Anonymous
       </span>
-    </div>
+    {% endif %}
+  </div>
+</div>
   </div>
 
   {# ─── Bento grid ──────────────────────────────────────────── #}
@@ -54,6 +66,19 @@
           <div>
             <p class="detail-field__label">Date Submitted</p>
             <p class="detail-field__value">{{ issue.submitted_at|date:"M d, Y" }}</p>
+          </div>
+          <div>
+            <p class="detail-field__label">Report Visibility</p>
+            <p class="detail-field__value" style="display:flex;align-items:center;gap:0.35rem;">
+              <span class="material-symbols-outlined" style="font-size:1rem;color:#059669;">
+                {% if issue.visibility == 'confidential' %}lock{% else %}lock_open{% endif %}
+              </span>
+              {% if issue.visibility == 'confidential' %}
+                Anonymous — your identity is hidden from officers
+              {% else %}
+                Public — your name is visible to officers
+              {% endif %}
+            </p>
           </div>
         </div>
 
@@ -156,6 +181,14 @@
               </div>
             </div>
           {% endfor %}
+
+          {% if issue.status == 'resolved' and not issue.feedback %}
+            <a href="{% url 'submit_feedback' issue.id %}" class="btn btn--primary">
+              <span class="material-symbols-outlined">rate_review</span>
+              Leave Feedback
+            </a>  
+        {% endif %}
+
         </div>
       </div>
     </div>

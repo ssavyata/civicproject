@@ -22,13 +22,13 @@
       <input type="hidden" name="form_type" value="profile"/>
 
       <div style="display:flex;flex-direction:column;gap:3rem;">
-        <div style="display:flex;flex-direction:row;gap:3rem;align-items:flex-start;">
+        <div class="profile-info-row">
 
           <div class="profile-avatar" style="flex-shrink:0;">
             {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
           </div>
 
-          <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+          <div class="profile-fields-grid">
 
             <div class="field">
               <label class="field__label" for="{{ profile_form.first_name.id_for_label }}">First Name</label>

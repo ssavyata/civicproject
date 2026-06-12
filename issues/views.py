@@ -7,9 +7,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+import requests
 
 from accounts.models import User
-from .models import Issue, Feedback, Department, IssuePhoto
+from .models import Issue, Feedback, Department, IssuePhoto, IssueStatusLog
 from .decorators import citizen_required, officer_required
 from .forms import IssueReportForm, FeedbackForm, IssueStatusForm, ProfileUpdateForm
 from django.contrib import messages
@@ -17,10 +18,11 @@ from notifications.models import Notification
 from .utils import assign_issue 
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models.functions import TruncMonth
 
 # Create your views here.
-<<<<<<< Updated upstream
-=======
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -165,7 +167,7 @@ def analyze_image(request):
     
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
->>>>>>> Stashed changes
+
 
 #Citizen Views
 
@@ -174,20 +176,40 @@ def citizen_dashboard(request):
     if not request.user.is_citizen():
         return redirect('login')
 
-    all_issues = Issue.objects.filter(
-        citizen=request.user
-    ).order_by('-submitted_at')
+    all_issues = Issue.objects.filter(citizen=request.user).order_by('-submitted_at')
+
+    # ── Resolution rate ──────────────────────────────────────────
+    total_issues   = all_issues.count()
+    resolved_count = all_issues.filter(status='resolved').count()
+    resolution_rate = round((resolved_count / total_issues) * 100) if total_issues > 0 else 0
+
+    # ── Monthly activity (last 6 months) ────────────────────────
+    monthly_qs = (
+        all_issues
+        .annotate(month=TruncMonth('submitted_at'))
+        .values('month')
+        .annotate(count=Count('id'))
+        .order_by('month')
+    )
+    today = timezone.now()
+    month_map = {entry['month'].strftime('%b %Y'): entry['count'] for entry in monthly_qs}
+    monthly_activity = []
+    for i in range(5, -1, -1):
+        d = today - timedelta(days=30 * i)
+        label = d.strftime('%b %Y')
+        monthly_activity.append({'month': label, 'count': month_map.get(label, 0)})
 
     context = {
         'stats': {
-            'total': all_issues.count(),
-            'pending': all_issues.filter(status='submitted').count(),
+            'total':       total_issues,
+            'pending':     all_issues.filter(status='submitted').count(),
             'in_progress': all_issues.filter(status='in_progress').count(),
-            'resolved': all_issues.filter(status='resolved').count(),
+            'resolved':    resolved_count,
         },
-        'recent_issues': all_issues[:5],
+        'recent_issues':    all_issues[:5],
+        'resolution_rate':  resolution_rate,
+        'monthly_activity': monthly_activity,
     }
-
     return render(request, 'citizen/citizen_dashboard.html', context)
 
 @citizen_required
@@ -229,6 +251,7 @@ def profile(request):
     })
 
 @login_required
+@login_required
 def report_issue(request):
     captcha_text = generate_captcha_text()
     captcha_image = generate_captcha_image(captcha_text)
@@ -254,6 +277,7 @@ def report_issue(request):
             issue = form.save(commit=False)
             issue.citizen = request.user
             issue.ward_number = request.user.ward_number
+            issue.visibility = request.POST.get('visibility', 'public')
             issue.save()
             for photo in files:
                  IssuePhoto.objects.create(issue=issue, image=photo)
@@ -296,12 +320,20 @@ def report_issue(request):
                     return render(request, 'citizen/report_success.html', {'issue_id': issue_id})
         
             assign_issue(issue)
-<<<<<<< Updated upstream
             messages.success(request, 'Issue reported successfully! We will look into it.')
             return redirect('my_issues')
-=======
 
              
+
+            # Notify citizen confirmation
+            notify(
+                request.user,
+                'Issue Submitted',
+                f'Your issue "{issue.title}" has been submitted successfully.',
+                'issue_submitted',
+                issue
+            )
+
             # Notify all admins
             for admin in User.objects.filter(role='admin'):
                 notify(
@@ -314,7 +346,7 @@ def report_issue(request):
 
             issue_id = f"CR-{issue.submitted_at.year}-{issue.id:04d}"
             return render(request, 'citizen/report_success.html', {'issue_id': issue_id})
->>>>>>> Stashed changes
+
 
     else:
         form = IssueReportForm()
@@ -329,10 +361,10 @@ def report_issue(request):
 
 @citizen_required
 def my_issues(request):
-    issues = Issue.objects.filter(citizen=request.user).order_by("-submitted_at")
-
     status = request.GET.get("status", "").strip()
     category = request.GET.get("category", "").strip()
+
+    issues = Issue.objects.filter(citizen=request.user).order_by("-submitted_at")
 
     if status:
         issues = issues.filter(status=status)
@@ -345,6 +377,8 @@ def my_issues(request):
     return render(request, 'citizen/myissues.html', {
         "issues": page_obj,
         "page_obj": page_obj,
+        "status_filter": status,        # ← added
+        "category_filter": category,    # ← added
         "category_choices": Issue.CATEGORY_CHOICES,
     })
 
@@ -354,17 +388,19 @@ def issue_detail(request, issue_id):
     return render(request, 'citizen/issue_detail.html', {'issue': issue})
 
 @citizen_required
+@citizen_required
 def submit_feedback(request, issue_id):
     issue = get_object_or_404(Issue, id=issue_id, citizen=request.user)
 
-    if issue.status != 'Resolved':
+    # ← was 'Resolved' (wrong), status value is 'resolved'
+    if issue.status != 'resolved':
         messages.error(request, 'You can only give feedback on resolved issues.')
         return redirect('my_issues')
-    
+
     if hasattr(issue, 'feedback'):
         messages.error(request, 'You have already submitted feedback for this issue.')
         return redirect('my_issues')
-    
+
     if request.method == 'POST':
         form = FeedbackForm(request.POST)
         if form.is_valid():
@@ -372,64 +408,110 @@ def submit_feedback(request, issue_id):
             feedback.issue = issue
             feedback.citizen = request.user
             feedback.save()
+
+            # Notify admin that feedback was received
+            for admin in User.objects.filter(role='admin'):
+                notify(
+                    admin,
+                    'Feedback Received',
+                    f'Citizen {request.user.get_full_name() or request.user.username} '
+                    f'left feedback on resolved issue "{issue.title}".',
+                    'general',
+                    issue
+                )
+
             messages.success(request, 'Thank you for your feedback!')
             return redirect('my_issues')
     else:
         form = FeedbackForm()
-    return render(request, 'issues/submit_feedback.html', {'form': form, 'issue': issue})
+
+    return render(request, 'citizen/submit_feedback.html', {'form': form, 'issue': issue})
 
 
 # Officer Views
 
 @officer_required
 def officer_dashboard(request):
-    issues = Issue.objects.filter(
+    all_issues = Issue.objects.filter(
         assigned_department=request.user.department
-        ).order_by('-submitted_at')
-   
-    status_filter = request.GET.get('status')
-    if status_filter:
-        issues = issues.filter(status=status_filter)
-    
-    return render(request, 'officer/officer_dashboard.html', {'issues': issues})
+    ).order_by('-submitted_at')
+
+    now = timezone.now()
+    seven_days_ago = now - timedelta(days=7)
+
+    # Annotate each issue with days_old for priority queue
+    issues_with_age = []
+    for issue in all_issues[:10]:
+        issue.days_old = (now - issue.submitted_at).days
+        issues_with_age.append(issue)
+
+    # Overdue = submitted status + older than 7 days
+    overdue_count = all_issues.filter(
+        status='submitted',
+        submitted_at__lt=seven_days_ago
+    ).count()
+
+    # Resolved this week
+    resolved_this_week = all_issues.filter(
+        status='resolved',
+        submitted_at__gte=seven_days_ago
+    ).count()
+
+    context = {
+        'total_assigned':     all_issues.count(),
+        'pending_count':      all_issues.filter(status='submitted').count(),
+        'in_progress_count':  all_issues.filter(status='in_progress').count(),
+        'resolved_count':     all_issues.filter(status='resolved').count(),
+        'recent_issues':      issues_with_age,
+        'overdue_count':      overdue_count,
+        'resolved_this_week': resolved_this_week,
+        'notifications':      Notification.objects.filter(
+                                  user=request.user, is_read=False
+                              ).order_by('-created_at')[:10],
+    }
+    return render(request, 'officer/officer_dashboard.html', context)
 
 @officer_required
-def update_issue_status(request, issue_id):
-    issue = get_object_or_404(Issue, id=issue_id, assigned_department=request.user.department)
+def update_issue_status(request, pk):
+    issue = get_object_or_404(Issue, pk=pk)
+    new_status = request.POST.get('status')
+    issue.status = new_status
+    issue.save()
 
-    if request.method == 'POST':
-        form = IssueStatusForm(request.POST, instance=issue)
-        if form.is_valid():
-            form.save()
+    # ✅ notify goes HERE
+    if new_status == 'resolved':
+        notify(issue.citizen, 'Issue Resolved',
+               f'Your issue "{issue.title}" has been resolved!',
+               'issue_resolved', issue)
+    elif new_status == 'rejected':
+        notify(issue.citizen, 'Issue Rejected',
+               f'Your issue "{issue.title}" was rejected.',
+               'issue_rejected', issue)
 
-            # Create notification for the citizen
-            Notification.objects.create(
-                user = issue.citizen,
-                issue = issue,
-                message=f'Your issue "{issue.title}" has been updated to: {issue.get_status_display()}. {issue.officer_remarks}'
-            )
-            messages.success(request, 'Issue status updated and citizen notified!')
-            return redirect('officer_dashboard')
-    else:
-        form = IssueStatusForm(instance=issue)
-    return render(request, 'officer/update_issue_status.html', {'form': form, 'issue': issue})
+    return redirect('admin_all_issues')
 
 @login_required
-@officer_required  # <-- Fixed: Added the missing '@' symbol here!
+@officer_required
 def officer_issue_queue(request):
     """
-    Renders a searchable, filterable master list of issues 
+    Renders a searchable, filterable master list of issues
     assigned specifically to the logged-in officer's department.
     """
-    issue_list = Issue.objects.filter(department=request.user.department).order_by('-submitted_at')
+    issue_list = Issue.objects.filter(
+        assigned_department=request.user.department
+    ).order_by('-submitted_at')
 
     # Search Query Filter
     query = request.GET.get('q', '').strip()
     if query:
         if query.isdigit():
-            issue_list = issue_list.filter(Q(id=query) | Q(title__icontains=query) | Q(description__icontains=query))
+            issue_list = issue_list.filter(
+                Q(id=query) | Q(title__icontains=query) | Q(description__icontains=query)
+            )
         else:
-            issue_list = issue_list.filter(Q(title__icontains=query) | Q(description__icontains=query))
+            issue_list = issue_list.filter(
+                Q(title__icontains=query) | Q(description__icontains=query)
+            )
 
     # Dropdown Status and Category Filters
     status_filter = request.GET.get('status', '').strip()
@@ -446,9 +528,9 @@ def officer_issue_queue(request):
     page_obj = paginator.get_page(page_number)
 
     context = {
-        'page_obj': page_obj,
+        'issues':   page_obj,   # template iterates {% for issue in issues %}
+        'page_obj': page_obj,   # template uses page_obj for pagination controls
     }
-    # Fixed: Points explicitly inside your 'officer' folder structure
     return render(request, 'officer/officer_issue_queue.html', context)
 
 
@@ -456,29 +538,29 @@ def officer_issue_queue(request):
 @officer_required
 def officer_profile(request):
     """
-    Handles updating basic officer profile fields along with a secure 
+    Handles updating basic officer profile fields along with a secure
     password mutation form on the same page.
     """
     profile_form = ProfileUpdateForm(instance=request.user)
     password_form = PasswordChangeForm(user=request.user)
 
     if request.method == 'POST':
-        action = request.POST.get('action')
+        form_type = request.POST.get('form_type')  # matches hidden input in template
 
-        if action == 'update_profile':
+        if form_type == 'profile':
             profile_form = ProfileUpdateForm(request.POST, instance=request.user)
             if profile_form.is_valid():
                 profile_form.save()
-                messages.success(request, "Your profile parameters have been updated successfully.")
+                messages.success(request, "Your profile has been updated successfully.")
                 return redirect('officer_profile')
             else:
                 messages.error(request, "Please correct the errors in your profile information.")
 
-        elif action == 'change_password':
+        elif form_type == 'password':
             password_form = PasswordChangeForm(user=request.user, data=request.POST)
             if password_form.is_valid():
                 user = password_form.save()
-                update_session_auth_hash(request, user)  # Keeps the officer logged in
+                update_session_auth_hash(request, user)  # keeps the officer logged in
                 messages.success(request, "Your password has been securely updated.")
                 return redirect('officer_profile')
             else:
@@ -491,40 +573,50 @@ def officer_profile(request):
     # Fixed: Points explicitly inside your 'officer' folder structure
     return render(request, 'officer/officer_profile.html', context)
 
-#Notifications Views
+@officer_required
+@officer_required
+def officer_update_status(request, issue_id):
+    issue = get_object_or_404(
+        Issue,
+        id=issue_id,
+        assigned_department=request.user.department
+    )
 
-@login_required
-def notifications(request):
-    notifs = Notification.objects.filter(user=request.user).order_by('-created_at')
-    notifs.update(is_read=True)
-    return render(request, 'issues/notifications.html', {'notifications': notifs})  
+    if request.method == 'POST':
+        new_status = request.POST.get('status', '').strip()
+        remarks    = request.POST.get('remarks', '').strip()
 
+        if new_status:
+            issue.status = new_status
+            issue.assigned_officer = request.user
+            if remarks:
+                issue.officer_remarks = remarks
+            issue.save()
 
-def landing_page(request):
-    total_issues = Issue.objects.count()
-    resolved_issues = Issue.objects.filter(status='resolved').count()
+            IssueStatusLog.objects.create(
+                issue=issue,
+                updated_by=request.user,
+                status=new_status,
+                remarks=remarks,
+            )
 
-    if total_issues > 0:
-        resolution_rate = round((resolved_issues / total_issues) * 100)
-    else:
-        resolution_rate = 87  # default display value until data exists
+            # Map status → notification type + citizen message
+            status_map = {
+                'in_progress': ('status_changed', 'In Progress',
+                    f'Your issue "{issue.title}" is now being worked on.'),
+                'resolved':    ('issue_resolved', 'Issue Resolved',
+                    f'Your issue "{issue.title}" has been resolved. Thank you for your patience!'),
+                'rejected':    ('issue_rejected', 'Issue Rejected',
+                    f'Your issue "{issue.title}" has been rejected.'
+                    + (f' Reason: {remarks}' if remarks else '')),
+            }
 
-    categories = [
-        {'name': 'Road damage', 'icon': 'construction'},
-        {'name': 'Water supply', 'icon': 'water_drop'},
-        {'name': 'Street lighting', 'icon': 'lightbulb'},
-        {'name': 'Public property', 'icon': 'park'},
-        {'name': 'Other', 'icon': 'more_horiz'},
-    ]
+            notif_type, notif_title, notif_msg = status_map.get(
+                new_status,
+                ('status_changed', 'Issue Updated',
+                 f'Your issue "{issue.title}" status changed to "{issue.get_status_display()}".')
+            )
 
-    return render(request, 'landing_page.html', {
-        'total_issues': total_issues,
-        'resolution_rate': resolution_rate,
-        'categories': categories,
-    })
-
-<<<<<<< Updated upstream
-=======
             # Notify duplicate issue citizens too
             for dup in issue.duplicates.all():
                     notify(dup.citizen, notif_title, notif_msg, notif_type, dup)
@@ -532,6 +624,8 @@ def landing_page(request):
                                 dup.status = 'resolved'
                                 dup.assigned_officer = issue.assigned_officer
                                 dup.save()
+            # Notify citizen
+            notify(issue.citizen, notif_title, notif_msg, notif_type, issue)
 
             # Notify all admins
             for admin in User.objects.filter(role='admin'):
@@ -543,9 +637,13 @@ def landing_page(request):
                     notif_type,
                     issue
                 )
->>>>>>> Stashed changes
 
 
+            messages.success(request, 'Status updated and citizen notified.')
+            return redirect('officer_issue_queue')
+
+    context = {'issue': issue}
+    return render(request, 'officer/officer_update_status.html', context)
 
 # ── ADMIN VIEWS ─────────────────────────────────────────────────
 
@@ -554,31 +652,77 @@ def admin_dashboard(request):
     if not request.user.is_admin():
         return redirect('login')
 
-    total = Issue.objects.count()
-    pending = Issue.objects.filter(status='submitted').count()
+    now = timezone.now()
+    seven_days_ago = now - timedelta(days=7)
+
+    total       = Issue.objects.count()
+    pending     = Issue.objects.filter(status='submitted').count()
     in_progress = Issue.objects.filter(status='in_progress').count()
-    resolved = Issue.objects.filter(status='resolved').count()
-    assigned = Issue.objects.filter(status='assigned').count()
+    resolved    = Issue.objects.filter(status='resolved').count()
+    assigned    = Issue.objects.filter(status='assigned').count()
+    rejected    = Issue.objects.filter(status='rejected').count()
 
-    recent_issues = Issue.objects.order_by('-submitted_at')[:8]
+    # Overdue issues (submitted > 7 days, unassigned)
+    overdue_count = Issue.objects.filter(
+        status='submitted',
+        submitted_at__lt=seven_days_ago
+    ).count()
 
-    # Issues by category for bar chart
+    # Recent issues with days_old + overdue flag
+    recent_issues_qs = Issue.objects.order_by('-submitted_at')[:8]
+    recent_issues = []
+    for issue in recent_issues_qs:
+        issue.days_old  = (now - issue.submitted_at).days
+        issue.is_overdue = (issue.status == 'submitted' and issue.days_old > 7)
+        recent_issues.append(issue)
+
+    # Issues by category
     categories = Issue.objects.values('category').annotate(
         count=Count('id')
     ).order_by('-count')
-
-    # Calculate max for percentage bars
     max_count = categories[0]['count'] if categories else 1
 
+    # Monthly trend (last 6 months)
+    monthly_qs = (
+        Issue.objects
+        .annotate(month=TruncMonth('submitted_at'))
+        .values('month')
+        .annotate(count=Count('id'))
+        .order_by('month')
+    )
+    month_map = {entry['month'].strftime('%b'): entry['count'] for entry in monthly_qs}
+    monthly_trend = []
+    for i in range(5, -1, -1):
+        d = now - timedelta(days=30 * i)
+        label = d.strftime('%b')
+        monthly_trend.append({'month': label, 'count': month_map.get(label, 0)})
+
+    # Officer performance
+    officers = User.objects.filter(role='officer')
+    officer_performance = []
+    for officer in officers:
+        assigned_count     = Issue.objects.filter(assigned_officer=officer).count()
+        resolved_count_off = Issue.objects.filter(assigned_officer=officer, status='resolved').count()
+        rate = round((resolved_count_off / assigned_count) * 100) if assigned_count > 0 else 0
+        officer.assigned_count  = assigned_count
+        officer.resolved_count  = resolved_count_off
+        officer.resolution_rate = rate
+        officer_performance.append(officer)
+    officer_performance.sort(key=lambda o: o.resolution_rate, reverse=True)
+
     context = {
-        'total': total,
-        'pending': pending,
-        'in_progress': in_progress,
-        'resolved': resolved,
-        'assigned': assigned,
-        'recent_issues': recent_issues,
-        'categories': categories,
-        'max_count': max_count,
+        'total':               total,
+        'pending':             pending,
+        'in_progress':         in_progress,
+        'resolved':            resolved,
+        'assigned':            assigned,
+        'rejected':            rejected,
+        'overdue_count':       overdue_count,
+        'recent_issues':       recent_issues,
+        'categories':          categories,
+        'max_count':           max_count,
+        'monthly_trend':       monthly_trend,
+        'officer_performance': officer_performance,
     }
     return render(request, 'admin/admin_dashboard.html', context)
 
@@ -613,33 +757,43 @@ def admin_all_issues(request):
 
 
 @login_required
+@login_required
 def admin_assign_issue(request, issue_id):
     if not request.user.is_admin():
         return redirect('login')
 
-    issue = get_object_or_404(Issue, id=issue_id)
-
+    issue = get_object_or_404(Issue, pk=issue_id)
     if request.method == 'POST':
         officer_id = request.POST.get('officer')
-        remarks = request.POST.get('remarks', '')
+        remarks    = request.POST.get('remarks', '').strip()
 
-        if officer_id:
-            officer = get_object_or_404(User, id=officer_id, role='officer')
-            issue.assigned_officer = officer
-            issue.assigned_department = officer.department
-            issue.status = 'assigned'
-            if remarks:
-                issue.officer_remarks = remarks
-            issue.save()
+        officer = get_object_or_404(User, pk=officer_id)
+        issue.assigned_officer = officer
+        issue.status = 'assigned'
+        if remarks:
+            issue.officer_remarks = remarks
+        issue.save()
 
-            # Notify citizen
-            Notification.objects.create(
-                user=issue.citizen,
-                issue=issue,
-                message=f'Your issue "{issue.title}" has been assigned and is being processed.'
-            )
-            messages.success(request, f'Issue assigned to {officer.get_full_name()}.')
+        # Notify the citizen
+        notify(
+            issue.citizen,
+            'Issue Assigned',
+            f'Your issue "{issue.title}" has been assigned to an officer and is being reviewed.',
+            'issue_assigned',
+            issue
+        )
 
+        # Notify the assigned officer
+        notify(
+            officer,
+            'New Issue Assigned to You',
+            f'Issue "{issue.title}" has been assigned to you.'
+            + (f' Admin note: {remarks}' if remarks else ''),
+            'issue_assigned',
+            issue
+        )
+
+        messages.success(request, f'Issue assigned to {officer.get_full_name() or officer.username}.')
         return redirect('admin_all_issues')
 
     return redirect('admin_all_issues')
@@ -742,6 +896,22 @@ def admin_manage_users(request):
         'departments': departments,
     }
     return render(request, 'admin/manage_users.html', context)
+
+@login_required
+def admin_issue_detail(request, pk):
+    if not request.user.is_admin():
+        return redirect('login')
+
+    issue = get_object_or_404(Issue, pk=pk)
+    feedback = getattr(issue, 'feedback', None)
+
+    context = {
+        'issue': issue,
+        'feedback': feedback,
+        'status_logs': issue.status_logs.all().order_by('created_at'),
+        'photos': issue.photos.all(),
+    }
+    return render(request, 'admin/issue_detail.html', context)
 
 def refresh_captcha(request):
     from django.http import JsonResponse

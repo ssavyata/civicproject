@@ -1,18 +1,4 @@
-/* ── Sticky-footer layout on the body ── */
-html {
-  height: 100%;
-}
-body {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-}
-.site-main {
-  flex: 1 0 auto;
-}
-
-/* ── Footer always at the bottom ── */
+/* ── Footer always at the bottom (handled by .main-content flex layout) ── */
 .site-footer {
   flex-shrink: 0;
   background-color: #F0FDF4;
@@ -32,6 +18,7 @@ body {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: #475569;
+  justify-content: center;
 }
 @media (min-width: 768px) {
   .site-footer__inner {

@@ -1,0 +1,23 @@
+.site-footer {
+  flex-shrink: 0;
+  width: 100%;
+  padding: 0.875rem var(--sp-page-padding-x);
+  border-top: 1px solid var(--clr-border-light);
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 1rem;
+  background: var(--clr-app-bg);
+}
+.site-footer p,
+.site-footer a {
+  font-size: 0.75rem; color: rgba(6, 73, 40, 0.6);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.site-footer a:hover { color: var(--clr-emerald-900); }
+.site-footer__links { display: flex; gap: 1.5rem; }
+
+/* Simple centered footer (my issues, report issue) */
+.footer-simple {
+  width: 100%; padding: 2rem;
+  text-align: center; font-size: 0.75rem;
+  color: var(--clr-outline); margin-top: auto;
+}

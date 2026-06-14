@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User
+from .models import User, UserActivityLog
 
 # Register your models here.
 
@@ -11,9 +11,6 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
         ('Extra Info' , {'fields': ('role', 'phone_number', 'ward_number', 'department')}),
     )
-
-from django.contrib import admin
-from .models import UserActivityLog
 
 @admin.register(UserActivityLog)
 class UserActivityLogAdmin(admin.ModelAdmin):

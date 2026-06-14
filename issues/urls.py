@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
@@ -29,4 +30,10 @@ urlpatterns = [
 
     # CAPTCHA
     path('captcha/refresh/', views.refresh_captcha, name='refresh_captcha'),
+
+    # Password Reset
+    path('password-reset/', views.password_reset_view, name='password_reset'),
+    path('password-reset/done/', views.password_reset_done_view, name='password_reset_done'),
+    path('password-reset/confirm/<uidb64>/<token>/', views.password_reset_confirm_view, name='password_reset_confirm'),
+    path('password-reset/complete/', views.password_reset_complete_view, name='password_reset_complete'),
 ]

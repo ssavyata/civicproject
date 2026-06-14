@@ -86,7 +86,6 @@ class Issue(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
-    # ✅ Removed single 'photo' field — replaced by IssuePhoto below
     location = models.CharField(max_length=255)
     ward_number = models.IntegerField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='submitted')
@@ -98,8 +97,6 @@ class Issue(models.Model):
 
     def __str__(self):
         return self.title
-
-    # ── Properties so templates can use issue.issue_id / .submitted_date / .reported_by ──
 
     @property
     def issue_id(self):
@@ -113,16 +110,12 @@ class Issue(models.Model):
     def reported_by(self):
         return self.citizen
 
-    # ── Photo helpers ────────────────────────────────────────────────────────────
-
     def primary_photo(self):
         return self.photos.first()
 
     def all_photos(self):
         return self.photos.all()
 
-
-# ✅ New model — one row per uploaded photo
 class IssuePhoto(models.Model):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='photos')
     image = models.ImageField(upload_to='issue_photos/')
@@ -130,7 +123,6 @@ class IssuePhoto(models.Model):
 
     def __str__(self):
         return f"Photo for Issue #{self.issue.id} — {self.issue.title}"
-
 
 class Feedback(models.Model):
     issue = models.OneToOneField(Issue, on_delete=models.CASCADE)

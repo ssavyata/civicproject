@@ -39,13 +39,12 @@ def get_ip(request):
 
 @receiver(user_logged_in)
 def log_login(sender, request, user, **kwargs):
-    # Close any previously open sessions for this user first
+    
     UserActivityLog.objects.filter(
         user=user,
         logout_time__isnull=True
     ).update(logout_time=timezone.now())
 
-    # Create a fresh session record
     UserActivityLog.objects.create(
         user=user,
         login_time=timezone.now(),

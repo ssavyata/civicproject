@@ -1,41 +1,41 @@
-from importlib.resources import files
-
-from .duplicate_detector import find_duplicate_issue
-
+from accounts.models import User
 from .captcha import generate_captcha_text, generate_captcha_image
+from collections import Counter
+from .duplicate_detector import find_duplicate_issue
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.forms import PasswordChangeForm
-import requests
-
-from accounts.models import User
-from .models import Issue, Feedback, Department, IssuePhoto, IssueStatusLog
-from .decorators import citizen_required, officer_required
-from .forms import IssueReportForm, FeedbackForm, IssueStatusForm, ProfileUpdateForm
-from django.contrib import messages
-from notifications.models import Notification
-from .utils import assign_issue 
+from django.contrib.auth import update_session_auth_hash, get_user_model
+from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models.functions import TruncMonth
-
-# Create your views here.
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-# from .services.image_ai import generate_image_description
+from django.contrib import messages
+from django.conf import settings
+from .decorators import citizen_required, officer_required
+from .forms import IssueReportForm, FeedbackForm, IssueStatusForm, ProfileUpdateForm
+from importlib.resources import files
+import issues
+from .models import Issue, Feedback, Department, IssuePhoto, IssueStatusLog
+from notifications.models import Notification
+from notifications.utils import notify
+from .utils import assign_issue 
 import json
 import os
-from django.conf import settings
-from notifications.utils import notify
+import requests
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib import messages
 
+# Create your views here.
 
-
-
-# Map category choice values → Material Symbol icon names
 CATEGORY_ICONS = {
     'pothole':     'warning',
     'streetlight': 'light_mode',
@@ -47,12 +47,10 @@ CATEGORY_ICONS = {
 def landing_page(request):
     status_filter = request.GET.get('status', '')
 
-    # Public issues feed
     issues_qs = Issue.objects.filter(visibility='public').order_by('-submitted_at')
     if status_filter:
         issues_qs = issues_qs.filter(status=status_filter)
 
-    # Status counts (all issues, not just public)
     status_counts = Issue.objects.aggregate(
         submitted=Count('id', filter=Q(status='submitted')),
         assigned=Count('id',   filter=Q(status='assigned')),
@@ -61,7 +59,6 @@ def landing_page(request):
         rejected=Count('id',   filter=Q(status='rejected')),
     )
 
-    # Category stats with icons + percentages
     total = Issue.objects.count() or 1
     cat_qs = (
         Issue.objects
@@ -80,13 +77,11 @@ def landing_page(request):
         for row in cat_qs
     ]
 
-    # Categories list for the "Issue categories" cards section
     categories = [
         {'value': value, 'label': label, 'icon': CATEGORY_ICONS.get(value, 'report')}
         for value, label in Issue.CATEGORY_CHOICES
     ]
 
-    # Resolution rate for stats bar
     resolved_count = status_counts['resolved']
     resolution_rate = round(resolved_count / total * 100) if total > 1 else 0
 
@@ -105,17 +100,14 @@ def landing_page(request):
     }
     return render(request, 'landing_page.html', context)
 
-
 @csrf_exempt
 @require_http_methods(["POST"])
 def upload_issue_photo(request):
-    """Temporarily saves uploaded photo and returns filename for AI analysis."""
     try:
         photo = request.FILES.get('photo')
         if not photo:
             return JsonResponse({"success": False, "error": "No photo provided"}, status=400)
 
-        # Save to MEDIA_ROOT/issue_photos/
         from django.core.files.storage import default_storage
         from django.core.files.base import ContentFile
 
@@ -124,7 +116,6 @@ def upload_issue_photo(request):
         os.makedirs(settings.MEDIA_PHOTOS_ROOT, exist_ok=True)
         saved_path = default_storage.save(save_path, ContentFile(photo.read()))
         
-        # Get just the filename
         actual_filename = os.path.basename(saved_path)
         image_url = f"{settings.MEDIA_URL}{saved_path}"
 
@@ -139,17 +130,13 @@ def upload_issue_photo(request):
     
 @csrf_exempt
 @require_http_methods(["POST"])
-# views.py
-
 def analyze_image(request):
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'POST required'})
-    
     try:
         body = json.loads(request.body)
         filename = body.get('filename')
         
-        # Build your image path
         import base64, os
         image_path = os.path.join(settings.MEDIA_PHOTOS_ROOT, filename)
         with open(image_path, 'rb') as f:
@@ -170,20 +157,16 @@ def analyze_image(request):
 
 
 #Citizen Views
-
 @citizen_required
 def citizen_dashboard(request):
     if not request.user.is_citizen():
         return redirect('login')
 
     all_issues = Issue.objects.filter(citizen=request.user).order_by('-submitted_at')
-
-    # ── Resolution rate ──────────────────────────────────────────
     total_issues   = all_issues.count()
     resolved_count = all_issues.filter(status='resolved').count()
     resolution_rate = round((resolved_count / total_issues) * 100) if total_issues > 0 else 0
 
-    # ── Monthly activity (last 6 months) ────────────────────────
     monthly_qs = (
         all_issues
         .annotate(month=TruncMonth('submitted_at'))
@@ -198,6 +181,19 @@ def citizen_dashboard(request):
         d = today - timedelta(days=30 * i)
         label = d.strftime('%b %Y')
         monthly_activity.append({'month': label, 'count': month_map.get(label, 0)})
+    cat_qs = (
+    all_issues
+    .values('category')
+    .annotate(count=Count('id'))
+    .order_by('-count')
+    )
+    category_stats = [
+    {
+        'label': dict(Issue.CATEGORY_CHOICES).get(row['category'], row['category']),
+        'count': row['count'],
+    }
+    for row in cat_qs
+    ]
 
     context = {
         'stats': {
@@ -205,10 +201,12 @@ def citizen_dashboard(request):
             'pending':     all_issues.filter(status='submitted').count(),
             'in_progress': all_issues.filter(status='in_progress').count(),
             'resolved':    resolved_count,
+
         },
         'recent_issues':    all_issues[:5],
         'resolution_rate':  resolution_rate,
         'monthly_activity': monthly_activity,
+        'category_stats':   category_stats,
     }
     return render(request, 'citizen/citizen_dashboard.html', context)
 
@@ -223,7 +221,6 @@ def profile(request):
     if request.method == "POST":
         form_type = request.POST.get("form_type")
  
-        # ── Profile info form ────────────────────────────────────────────────
         if form_type == "profile":
             profile_form = ProfileUpdateForm(request.POST, instance=user)
             if profile_form.is_valid():
@@ -232,8 +229,7 @@ def profile(request):
                 return redirect("profile")
             else:
                 messages.error(request, "Please fix the errors below.")
- 
-        # ── Password change form ─────────────────────────────────────────────
+
         elif form_type == "password":
             password_form = PasswordChangeForm(user=user, data=request.POST)
             if password_form.is_valid():
@@ -251,11 +247,7 @@ def profile(request):
     })
 
 @login_required
-@login_required
 def report_issue(request):
-    captcha_text = generate_captcha_text()
-    captcha_image = generate_captcha_image(captcha_text)
-
     if request.method == 'POST':
         form = IssueReportForm(request.POST, request.FILES)
         files = request.FILES.getlist('images')
@@ -279,74 +271,51 @@ def report_issue(request):
             issue.ward_number = request.user.ward_number
             issue.visibility = request.POST.get('visibility', 'public')
             issue.save()
+
             for photo in files:
-                 IssuePhoto.objects.create(issue=issue, image=photo)
+                IssuePhoto.objects.create(issue=issue, image=photo)
 
             duplicate = find_duplicate_issue(issue)
 
             if duplicate:
-                    issue.merged_into = duplicate
-                    issue.is_duplicate = True
-                    issue.status = 'duplicate'
-                    issue.save()
-                    notify(
-                        issue.citizen,
-                        'Issue Merged',
-                        f'Your issue "{issue.title}" is similar to existing report #{duplicate.id}. '
-                        f'It has been merged and will be resolved together.',
-                        'general',
-                        issue
-                    )
-                    issue_id = f"CR-{issue.submitted_at.year}-{issue.id:04d}"
-                    return render(request, 'citizen/report_success.html', {'issue_id': issue_id, 'merged': True, 'merged_into': duplicate.id})
-            else:
-                    assign_issue(issue)
-                    notify(
-                        request.user,
-                        'Issue Submitted',
-                        f'Your issue "{issue.title}" has been submitted successfully.',
-                        'issue_submitted',
-                        issue
-                    )
-                    for admin in User.objects.filter(role='admin'):
-                        notify(
-                            admin,
-                            'New Issue Submitted',
-                            f'A new issue "{issue.title}" was submitted by {request.user.get_full_name() or request.user.username}.',
-                            'issue_submitted',
-                            issue
-                        )
-                    issue_id = f"CR-{issue.submitted_at.year}-{issue.id:04d}"
-                    return render(request, 'citizen/report_success.html', {'issue_id': issue_id})
-        
-            assign_issue(issue)
-            messages.success(request, 'Issue reported successfully! We will look into it.')
-            return redirect('my_issues')
-
-             
-
-            # Notify citizen confirmation
-            notify(
-                request.user,
-                'Issue Submitted',
-                f'Your issue "{issue.title}" has been submitted successfully.',
-                'issue_submitted',
-                issue
-            )
-
-            # Notify all admins
-            for admin in User.objects.filter(role='admin'):
+                issue.merged_into = duplicate
+                issue.is_duplicate = True
+                issue.status = 'duplicate'
+                issue.save()
                 notify(
-                    admin,
-                    'New Issue Submitted',
-                    f'A new issue "{issue.title}" was submitted by {request.user.get_full_name() or request.user.username}.',
+                    issue.citizen,
+                    'Issue Merged',
+                    f'Your issue "{issue.title}" is similar to existing report #{duplicate.id}. '
+                    f'It has been merged and will be resolved together.',
+                    'general',
+                    issue
+                )
+                issue_id = f"CR-{issue.submitted_at.year}-{issue.id:04d}"
+                return render(request, 'citizen/report_success.html', {
+                    'issue_id': issue_id,
+                    'merged': True,
+                    'merged_into': duplicate.id,
+                })
+            else:
+                assign_issue(issue)
+                notify(
+                    request.user,
+                    'Issue Submitted',
+                    f'Your issue "{issue.title}" has been submitted successfully.',
                     'issue_submitted',
                     issue
                 )
-
-            issue_id = f"CR-{issue.submitted_at.year}-{issue.id:04d}"
-            return render(request, 'citizen/report_success.html', {'issue_id': issue_id})
-
+                for admin in User.objects.filter(role='admin'):
+                    notify(
+                        admin,
+                        'New Issue Submitted',
+                        f'A new issue "{issue.title}" was submitted by '
+                        f'{request.user.get_full_name() or request.user.username}.',
+                        'issue_submitted',
+                        issue
+                    )
+                issue_id = f"CR-{issue.submitted_at.year}-{issue.id:04d}"
+                return render(request, 'citizen/report_success.html', {'issue_id': issue_id})
 
     else:
         form = IssueReportForm()
@@ -377,8 +346,8 @@ def my_issues(request):
     return render(request, 'citizen/myissues.html', {
         "issues": page_obj,
         "page_obj": page_obj,
-        "status_filter": status,        # ← added
-        "category_filter": category,    # ← added
+        "status_filter": status,        
+        "category_filter": category,   
         "category_choices": Issue.CATEGORY_CHOICES,
     })
 
@@ -388,11 +357,9 @@ def issue_detail(request, issue_id):
     return render(request, 'citizen/issue_detail.html', {'issue': issue})
 
 @citizen_required
-@citizen_required
 def submit_feedback(request, issue_id):
     issue = get_object_or_404(Issue, id=issue_id, citizen=request.user)
 
-    # ← was 'Resolved' (wrong), status value is 'resolved'
     if issue.status != 'resolved':
         messages.error(request, 'You can only give feedback on resolved issues.')
         return redirect('my_issues')
@@ -420,6 +387,19 @@ def submit_feedback(request, issue_id):
                     issue
                 )
 
+            # Notify the assigned officer about the feedback
+            if issue.assigned_officer:
+                notify(
+                    issue.assigned_officer,
+                    'Citizen Feedback Received',
+                    f'Citizen {request.user.get_full_name() or request.user.username} '
+                    f'rated your resolution of "{issue.title}" '
+                    f'{feedback.rating}/5'
+                    + (f': "{feedback.comment}"' if feedback.comment else '.'),
+                    'general',
+                    issue
+                )
+
             messages.success(request, 'Thank you for your feedback!')
             return redirect('my_issues')
     else:
@@ -433,25 +413,23 @@ def submit_feedback(request, issue_id):
 @officer_required
 def officer_dashboard(request):
     all_issues = Issue.objects.filter(
-        assigned_department=request.user.department
+        assigned_department=request.user.department,
+        assigned_officer=request.user
     ).order_by('-submitted_at')
 
     now = timezone.now()
     seven_days_ago = now - timedelta(days=7)
 
-    # Annotate each issue with days_old for priority queue
     issues_with_age = []
     for issue in all_issues[:10]:
         issue.days_old = (now - issue.submitted_at).days
         issues_with_age.append(issue)
 
-    # Overdue = submitted status + older than 7 days
     overdue_count = all_issues.filter(
         status='submitted',
         submitted_at__lt=seven_days_ago
     ).count()
 
-    # Resolved this week
     resolved_this_week = all_issues.filter(
         status='resolved',
         submitted_at__gte=seven_days_ago
@@ -478,7 +456,6 @@ def update_issue_status(request, pk):
     issue.status = new_status
     issue.save()
 
-    # ✅ notify goes HERE
     if new_status == 'resolved':
         notify(issue.citizen, 'Issue Resolved',
                f'Your issue "{issue.title}" has been resolved!',
@@ -493,15 +470,12 @@ def update_issue_status(request, pk):
 @login_required
 @officer_required
 def officer_issue_queue(request):
-    """
-    Renders a searchable, filterable master list of issues
-    assigned specifically to the logged-in officer's department.
-    """
+   
     issue_list = Issue.objects.filter(
-        assigned_department=request.user.department
+        assigned_department=request.user.department,
+        assigned_officer=request.user
     ).order_by('-submitted_at')
 
-    # Search Query Filter
     query = request.GET.get('q', '').strip()
     if query:
         if query.isdigit():
@@ -528,8 +502,8 @@ def officer_issue_queue(request):
     page_obj = paginator.get_page(page_number)
 
     context = {
-        'issues':   page_obj,   # template iterates {% for issue in issues %}
-        'page_obj': page_obj,   # template uses page_obj for pagination controls
+        'issues':   page_obj,   
+        'page_obj': page_obj,  
     }
     return render(request, 'officer/officer_issue_queue.html', context)
 
@@ -537,15 +511,12 @@ def officer_issue_queue(request):
 @login_required
 @officer_required
 def officer_profile(request):
-    """
-    Handles updating basic officer profile fields along with a secure
-    password mutation form on the same page.
-    """
+   
     profile_form = ProfileUpdateForm(instance=request.user)
     password_form = PasswordChangeForm(user=request.user)
 
     if request.method == 'POST':
-        form_type = request.POST.get('form_type')  # matches hidden input in template
+        form_type = request.POST.get('form_type')  
 
         if form_type == 'profile':
             profile_form = ProfileUpdateForm(request.POST, instance=request.user)
@@ -560,7 +531,7 @@ def officer_profile(request):
             password_form = PasswordChangeForm(user=request.user, data=request.POST)
             if password_form.is_valid():
                 user = password_form.save()
-                update_session_auth_hash(request, user)  # keeps the officer logged in
+                update_session_auth_hash(request, user)  
                 messages.success(request, "Your password has been securely updated.")
                 return redirect('officer_profile')
             else:
@@ -570,16 +541,16 @@ def officer_profile(request):
         'profile_form': profile_form,
         'password_form': password_form,
     }
-    # Fixed: Points explicitly inside your 'officer' folder structure
+
     return render(request, 'officer/officer_profile.html', context)
 
-@officer_required
 @officer_required
 def officer_update_status(request, issue_id):
     issue = get_object_or_404(
         Issue,
         id=issue_id,
-        assigned_department=request.user.department
+        assigned_department=request.user.department,
+        assigned_officer=request.user
     )
 
     if request.method == 'POST':
@@ -600,7 +571,6 @@ def officer_update_status(request, issue_id):
                 remarks=remarks,
             )
 
-            # Map status → notification type + citizen message
             status_map = {
                 'in_progress': ('status_changed', 'In Progress',
                     f'Your issue "{issue.title}" is now being worked on.'),
@@ -617,14 +587,21 @@ def officer_update_status(request, issue_id):
                  f'Your issue "{issue.title}" status changed to "{issue.get_status_display()}".')
             )
 
-            # Notify duplicate issue citizens too
+            # Sync ALL duplicate issues to the new status (not just resolved)
             for dup in issue.duplicates.all():
-                    notify(dup.citizen, notif_title, notif_msg, notif_type, dup)
-                    if new_status == 'resolved':
-                                dup.status = 'resolved'
-                                dup.assigned_officer = issue.assigned_officer
-                                dup.save()
-            # Notify citizen
+                dup.status = new_status
+                dup.assigned_officer = issue.assigned_officer
+                dup.officer_remarks = issue.officer_remarks
+                dup.save()
+                IssueStatusLog.objects.create(
+                    issue=dup,
+                    updated_by=request.user,
+                    status=new_status,
+                    remarks=remarks,
+                )
+                notify(dup.citizen, notif_title, notif_msg, notif_type, dup)
+
+            # Notify the original issue's citizen
             notify(issue.citizen, notif_title, notif_msg, notif_type, issue)
 
             # Notify all admins
@@ -638,14 +615,13 @@ def officer_update_status(request, issue_id):
                     issue
                 )
 
-
             messages.success(request, 'Status updated and citizen notified.')
             return redirect('officer_issue_queue')
 
     context = {'issue': issue}
     return render(request, 'officer/officer_update_status.html', context)
 
-# ── ADMIN VIEWS ─────────────────────────────────────────────────
+#Admin Views
 
 @login_required
 def admin_dashboard(request):
@@ -662,13 +638,11 @@ def admin_dashboard(request):
     assigned    = Issue.objects.filter(status='assigned').count()
     rejected    = Issue.objects.filter(status='rejected').count()
 
-    # Overdue issues (submitted > 7 days, unassigned)
     overdue_count = Issue.objects.filter(
         status='submitted',
         submitted_at__lt=seven_days_ago
     ).count()
 
-    # Recent issues with days_old + overdue flag
     recent_issues_qs = Issue.objects.order_by('-submitted_at')[:8]
     recent_issues = []
     for issue in recent_issues_qs:
@@ -697,32 +671,18 @@ def admin_dashboard(request):
         label = d.strftime('%b')
         monthly_trend.append({'month': label, 'count': month_map.get(label, 0)})
 
-    # Officer performance
-    officers = User.objects.filter(role='officer')
-    officer_performance = []
-    for officer in officers:
-        assigned_count     = Issue.objects.filter(assigned_officer=officer).count()
-        resolved_count_off = Issue.objects.filter(assigned_officer=officer, status='resolved').count()
-        rate = round((resolved_count_off / assigned_count) * 100) if assigned_count > 0 else 0
-        officer.assigned_count  = assigned_count
-        officer.resolved_count  = resolved_count_off
-        officer.resolution_rate = rate
-        officer_performance.append(officer)
-    officer_performance.sort(key=lambda o: o.resolution_rate, reverse=True)
-
     context = {
-        'total':               total,
-        'pending':             pending,
-        'in_progress':         in_progress,
-        'resolved':            resolved,
-        'assigned':            assigned,
-        'rejected':            rejected,
-        'overdue_count':       overdue_count,
-        'recent_issues':       recent_issues,
-        'categories':          categories,
-        'max_count':           max_count,
-        'monthly_trend':       monthly_trend,
-        'officer_performance': officer_performance,
+        'total': total,
+        'pending': pending,
+        'in_progress': in_progress,
+        'resolved': resolved,
+        'assigned': assigned,
+        'rejected': rejected,
+        'overdue_count': overdue_count,
+        'recent_issues': recent_issues,
+        'categories': categories,
+        'max_count': max_count,
+        'monthly_trend': monthly_trend,
     }
     return render(request, 'admin/admin_dashboard.html', context)
 
@@ -755,8 +715,6 @@ def admin_all_issues(request):
     }
     return render(request, 'admin/all_issues.html', context)
 
-
-@login_required
 @login_required
 def admin_assign_issue(request, issue_id):
     if not request.user.is_admin():
@@ -905,11 +863,18 @@ def admin_issue_detail(request, pk):
     issue = get_object_or_404(Issue, pk=pk)
     feedback = getattr(issue, 'feedback', None)
 
+    officers = User.objects.filter(
+        role='officer',
+        department=issue.assigned_department,
+        is_active=True,
+    )
+
     context = {
         'issue': issue,
         'feedback': feedback,
         'status_logs': issue.status_logs.all().order_by('created_at'),
         'photos': issue.photos.all(),
+        'officers': officers,
     }
     return render(request, 'admin/issue_detail.html', context)
 
@@ -919,3 +884,78 @@ def refresh_captcha(request):
     request.session['captcha_text'] = captcha_text
     captcha_image = generate_captcha_image(captcha_text)
     return JsonResponse({'image': captcha_image})
+
+User = get_user_model()
+
+def password_reset_view(request):
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            users = User.objects.filter(email__iexact=email, is_active=True)
+
+            for user in users:
+                uid   = urlsafe_base64_encode(force_bytes(user.pk))
+                token = default_token_generator.make_token(user)
+
+                reset_url = request.build_absolute_uri(
+                    f'/password-reset/confirm/{uid}/{token}/'
+                )
+
+                # Render the HTML email template
+                html_message = render_to_string('reset/reset_email.html', {
+                    'user':     user,
+                    'uid':      uid,
+                    'token':    token,
+                    'protocol': 'https' if request.is_secure() else 'http',
+                    'domain':   request.get_host(),
+                })
+
+                send_mail(
+                    subject='Reset your CivicReport password',
+                    message=f'Reset your password here: {reset_url}',  # plain-text fallback
+                    from_email=None,   # uses DEFAULT_FROM_EMAIL from settings
+                    recipient_list=[user.email],
+                    html_message=html_message,
+                    fail_silently=False,
+                )
+            return redirect('password_reset_done')
+    else:
+        form = PasswordResetForm()
+
+    return render(request, 'reset/password_reset.html', {'form': form})
+
+def password_reset_done_view(request):
+    return render(request, 'reset/reset_done.html')
+
+def password_reset_confirm_view(request, uidb64, token):
+    validlink = False
+    user      = None
+
+    try:
+        uid  = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        validlink = True
+
+        if request.method == 'POST':
+            form = SetPasswordForm(user, request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Your password has been reset.')
+                return redirect('password_reset_complete')
+        else:
+            form = SetPasswordForm(user)
+    else:
+        form = None
+
+    return render(request, 'reset/reset_confirm.html', {
+        'form':      form,
+        'validlink': validlink,
+    })
+
+def password_reset_complete_view(request):
+    return render(request, 'reset/reset_complete.html')

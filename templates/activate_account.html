@@ -1,9 +1,13 @@
 {% autoescape off %}
 Hi {{ user }},
 
+Thank you for registering on CivicReport!
+
 Please click the link below to activate your account:
 
-{{ protocol }}://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+{{ activation_link }}
 
-If you did not register, ignore this email.
+This link will expire after use. If you did not register, you can safely ignore this email.
+
+— CivicReport Team, Ward 12, Pokhara Metropolitan City
 {% endautoescape %}

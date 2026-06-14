@@ -1,0 +1,12 @@
+ {% load static %}
+<link rel="stylesheet" href="{% static 'css/p.css' %}"/>
+ <footer class="site-footer {% block footer_class %}{% endblock %}">
+    <p>© {% now "Y" %} Pokhara Ward {{ request.user.ward_number|default:"12" }}. All rights reserved.</p>
+    <div class="site-footer__links">
+      {% block footer_links %}
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact Us</a>
+      {% endblock %}
+    </div>
+  </footer>

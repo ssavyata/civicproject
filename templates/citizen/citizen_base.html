@@ -1,5 +1,5 @@
 {% load static %}
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
@@ -75,22 +75,16 @@
           {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
         {% endif %}
       </div>
-      <div style="min-width:0;">
-        <p class="sidebar__user-name">
-          {{ request.user.get_full_name|default:request.user.username }}
-        </p>
-        <p style="font-size:10px;color:rgba(110,231,183,.6);">
-          Citizen · Ward {{ request.user.ward_number|default:"12" }}
+      <div style="min-width:0; flex:1;">
+        <p class="sidebar__user-name">{{ request.user.get_full_name|default:request.user.username }}</p>
+        <p style="font-size:10px; color:rgba(110,231,183,.6); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; margin-top:2px;">
+          Citizen Account
         </p>
       </div>
     </div>
-
     <form method="post" action="{% url 'logout' %}">
       {% csrf_token %}
-      <button type="submit" class="sidebar__logout-btn">
-        <span class="material-symbols-outlined">logout</span>
-        LOGOUT
-      </button>
+      <button type="submit" class="sidebar-logout-btn">Log Out</button>
     </form>
   </div>
 
@@ -112,14 +106,6 @@
         </h2>
       {% endblock %}
     </div>
-
-    <div class="topbar__actions">
-      <a href="{% url 'notifications' %}" class="notif-wrap topbar__icon-btn" style="text-decoration:none;">
-        <span class="material-symbols-outlined">notifications</span>
-        {% if unread_count > 0 %}
-          <span class="notif-badge">{{ unread_count }}</span>
-        {% endif %}
-      </a>
 
       <div class="topbar__divider"></div>
 
@@ -153,17 +139,7 @@
   </div>
 
   {# ─── Footer ──────────────────────────────────────────────── #}
-  <footer class="site-footer {% block footer_class %}{% endblock %}">
-    <p>© {% now "Y" %} Pokhara Ward {{ request.user.ward_number|default:"12" }}. All rights reserved.</p>
-    <div class="site-footer__links">
-      {% block footer_links %}
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
-        <a href="#">Contact Us</a>
-      {% endblock %}
-    </div>
-  </footer>
-
+  {% include 'partials/pfooter.html' %}
 </main>
 
 {# ─── Scripts ─────────────────────────────────────────────── #}

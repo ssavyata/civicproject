@@ -250,22 +250,68 @@
     </div>
   </div>
 
-  <!-- Map View -->
-  <div class="map-card">
-    <div class="map-card__header">
-      <span class="map-card__title">Your Issues on Map</span>
-      <span style="font-size:0.78rem;color:#9ca3af;">Ward {{ request.user.ward_number|default:"12" }}</span>
-    </div>
-    <div id="issueMap"></div>
-    <div class="map-legend">
-      <span><span class="map-legend-dot" style="background:#f97316;"></span>Pending</span>
-      <span><span class="map-legend-dot" style="background:#3b82f6;"></span>In Progress</span>
-      <span><span class="map-legend-dot" style="background:#22c55e;"></span>Resolved</span>
-      <span><span class="map-legend-dot" style="background:#ef4444;"></span>Rejected</span>
-    </div>
-  </div>
+  <!-- Right column: Category + Recent Activity stacked -->
+  <div style="display:flex; flex-direction:column; gap:1.25rem;">
 
-</div>
+    <!-- Category Breakdown -->
+    <div class="chart-card">
+      <div class="chart-card__title">Issues by Category</div>
+      <div class="chart-canvas-wrap" style="height:160px;">
+        <canvas id="categoryChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Activity Feed -->
+    <div class="chart-card" style="padding:0; overflow:hidden;">
+      <div style="padding:14px 20px; border-bottom:1px solid #f3f4f6;">
+        <span class="chart-card__title" style="margin:0;">Recent Activity</span>
+      </div>
+      <ul style="margin:0; padding:0; list-style:none; max-height:200px; overflow-y:auto;">
+        {% for issue in recent_issues %}
+        {% with ds=issue.merged_into|default:issue %}
+        <li style="display:flex; align-items:flex-start; gap:12px; padding:12px 20px; border-bottom:1px solid #f9fafb;">
+          <span style="
+            width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:5px;
+            background:
+              {% if ds.status == 'resolved' %}#22c55e
+              {% elif ds.status == 'in_progress' %}#3b82f6
+              {% elif ds.status == 'rejected' %}#ef4444
+              {% elif ds.status == 'assigned' %}#6366f1
+              {% else %}#f97316{% endif %};
+          "></span>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:0.85rem; font-weight:600; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              {{ issue.title }}{% if issue.is_duplicate %} <span style="font-size:0.7rem;color:#d97706;font-weight:600;">(Merged)</span>{% endif %}
+            </div>
+            <div style="font-size:0.75rem; color:#9ca3af; margin-top:2px;">
+              {{ issue.get_category_display }} · {{ issue.submitted_at|date:"M d" }}
+              <span style="
+                margin-left:6px; font-weight:600;
+                color:
+                  {% if ds.status == 'resolved' %}#16a34a
+                  {% elif ds.status == 'in_progress' %}#2563eb
+                  {% elif ds.status == 'rejected' %}#dc2626
+                  {% elif ds.status == 'assigned' %}#4f46e5
+                  {% else %}#ea580c{% endif %};
+              ">
+                {% if ds.status == 'submitted' %}Pending
+                {% elif ds.status == 'in_progress' %}In Progress
+                {% else %}{{ ds.get_status_display }}{% endif %}
+              </span>
+            </div>
+          </div>
+          <a href="{% url 'issue_detail' issue.pk %}" style="font-size:0.75rem; color:#6366f1; flex-shrink:0; align-self:center;">→</a>
+        </li>
+        {% endwith %}
+        {% empty %}
+        <li style="padding:20px; text-align:center; color:#9ca3af; font-size:0.85rem;">No activity yet.</li>
+        {% endfor %}
+      </ul>
+    </div><!-- /activity feed card -->
+
+  </div><!-- /right flex column -->
+
+</div><!-- /citizen-grid -->
 
 <!-- ⑤ Recent Issues Table -->
 <section class="table-section">
@@ -293,17 +339,27 @@
           <td>{{ issue.get_category_display }}</td>
           <td style="color:var(--clr-on-surface-variant);">{{ issue.submitted_at|date:"M d, Y" }}</td>
           <td>
-            {% if issue.status == 'submitted' %}
+            {% with ds=issue.merged_into|default:issue %}
+            {% if ds.status == 'submitted' %}
               <span class="badge badge--submitted">PENDING</span>
-            {% elif issue.status == 'assigned' %}
+            {% elif ds.status == 'assigned' %}
               <span class="badge badge--assigned">ASSIGNED</span>
-            {% elif issue.status == 'in_progress' %}
+            {% elif ds.status == 'in_progress' %}
               <span class="badge badge--progress">IN PROGRESS</span>
-            {% elif issue.status == 'resolved' %}
+            {% elif ds.status == 'resolved' %}
               <span class="badge badge--resolved">RESOLVED</span>
-            {% elif issue.status == 'rejected' %}
+            {% elif ds.status == 'rejected' %}
               <span class="badge badge--rejected">REJECTED</span>
             {% endif %}
+            {% if issue.is_duplicate %}
+              <span style="display:inline-flex;align-items:center;gap:0.2rem;
+                           background:#fffbeb;border:1px solid #fde68a;color:#d97706;
+                           border-radius:999px;font-size:0.65rem;font-weight:600;
+                           padding:0.1rem 0.4rem;margin-left:4px;vertical-align:middle;">
+                <span class="material-symbols-outlined" style="font-size:0.75rem;">merge</span>Merged
+              </span>
+            {% endif %}
+            {% endwith %}
           </td>
           <td>
             <a href="{% url 'issue_detail' issue.pk %}" class="table-action-link">View Details</a>
@@ -326,6 +382,34 @@
 <!-- ── Scripts ── -->
 <script>
 // ── Resolution Ring ──
+// ── Category Breakdown Donut ──
+(function() {
+  const labels = [{% for c in category_stats %}'{{ c.label }}'{% if not forloop.last %},{% endif %}{% endfor %}];
+  const data   = [{% for c in category_stats %}{{ c.count }}{% if not forloop.last %},{% endif %}{% endfor %}];
+  new Chart(document.getElementById('categoryChart'), {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: ['#6366f1','#f97316','#22c55e','#3b82f6','#f59e0b','#ef4444','#8b5cf6','#14b8a6'],
+        borderWidth: 2,
+        borderColor: '#fff',
+      }]
+    },
+    options: {
+      cutout: '60%',
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: { font: { size: 10 }, boxWidth: 10, padding: 8 }
+        }
+      },
+      maintainAspectRatio: false,
+    }
+  });
+})();
+
 (function() {
   const rate = {{ resolution_rate|default:"0" }};
   new Chart(document.getElementById('resolutionRing'), {

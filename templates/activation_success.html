@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Account Activated – CivicReport{% endblock %}
+
+{% block content %}
+<main style="min-height:80vh; display:flex; align-items:center; justify-content:center; background:#F0FDF4;">
+  <div style="text-align:center; max-width:440px; padding:40px 24px;">
+
+    <!-- Animated checkmark -->
+    <div style="
+      width:80px; height:80px; border-radius:50%;
+      background:#D1FAE5; display:flex; align-items:center;
+      justify-content:center; margin:0 auto 24px;
+      animation: popIn .4s ease;">
+      <span class="material-symbols-outlined"
+        style="font-size:44px; color:#065F46;
+               font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 48;">
+        check_circle
+      </span>
+    </div>
+
+    <h1 style="font-size:24px; font-weight:700; color:#065F46; margin:0 0 12px;">
+      Account Activated!
+    </h1>
+    <p style="color:#475569; font-size:15px; line-height:1.6; margin:0 0 8px;">
+      Hi <strong>{{ username }}</strong>, your CivicReport account is now active.
+    </p>
+    <p style="color:#64748b; font-size:13px; margin:0 0 28px;">
+      You'll be redirected to the login page in <strong id="countdown">5</strong> seconds…
+    </p>
+
+    <a href="{% url 'login' %}"
+       style="display:inline-block; padding:12px 32px; background:#065F46;
+              color:#fff; border-radius:8px; text-decoration:none;
+              font-weight:600; font-size:15px;">
+      Login Now
+    </a>
+
+  </div>
+</main>
+
+<style>
+  @keyframes popIn {
+    from { transform: scale(.5); opacity: 0; }
+    to   { transform: scale(1);  opacity: 1; }
+  }
+</style>
+
+<script>
+  let seconds = 5;
+  const el = document.getElementById('countdown');
+  const timer = setInterval(() => {
+    seconds--;
+    el.textContent = seconds;
+    if (seconds <= 0) {
+      clearInterval(timer);
+      window.location.href = "{% url 'login' %}";
+    }
+  }, 1000);
+</script>
+{% endblock %}

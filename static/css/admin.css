@@ -44,6 +44,13 @@
 
   --sidebar-width: 256px;
   --topbar-height: 64px;
+
+  /* Aliases used by shared p.css footer */
+  --clr-app-bg:          var(--background);
+  --clr-border-light:    var(--outline-variant);
+  --clr-emerald-900:     var(--emerald-900);
+  --sp-page-padding-x:   2rem;
+  --clr-outline:         var(--on-surface-variant);
 }
 
 /* ---------------------------------------------------------
@@ -93,7 +100,7 @@ table { border-collapse: collapse; }
   z-index: 40;
   display: flex;
   flex-direction: column;
-  padding: 24px 24px 0 24px; /* no bottom padding — sidebar-user acts as footer */
+  padding: 24px 16px 0 16px;
 }
 
 .sidebar-brand {
@@ -142,56 +149,46 @@ table { border-collapse: collapse; }
   border-left-color: var(--emerald-300);
 }
 
-.sidebar-user {
+
+.sidebar__footer {
+  padding: 0.875rem 0;
   margin-top: auto;
-  padding: 0.875rem 0; /* matches admin-footer vertical padding */
-  border-top: 1px solid var(--emerald-800);
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
-.sidebar-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: var(--emerald-300);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+.sidebar__user {
+  display: flex; align-items: center; gap: 0.75rem;
+  min-width: 0;
+  flex: 1;
 }
-.sidebar-avatar span {
-  color: var(--emerald-900);
-  font-weight: 700;
-  font-size: 0.875rem;
+.sidebar__avatar {
+  width: 2rem; height: 2rem;
+  border-radius: 9999px;
+  background: var(--emerald-800);
+  border: 1px solid var(--emerald-700);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700; color: var(--emerald-300);
+  overflow: hidden; flex-shrink: 0;
 }
-.sidebar-user-info {
-  overflow: hidden;
-  flex-grow: 1;
-}
-.sidebar-user-name {
-  color: #fff;
-  font-size: 0.875rem;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.sidebar-user-role {
-  color: var(--emerald-300);
-  font-size: 10px;
-  font-weight: 700;
+.sidebar__avatar img { width: 100%; height: 100%; object-fit: cover; }
+.sidebar__user-name {
+  font-size: 0.75rem; font-weight: 600; color: #fff;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .sidebar-logout-btn {
   background: none;
   border: none;
-  color: var(--emerald-300);
+  color: #fff;
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
   padding: 0;
+  white-space: nowrap;
 }
-.sidebar-logout-btn:hover { text-decoration: underline; }
+.sidebar-logout-btn:hover { color: var(--emerald-300); }
+
 
 /* ---------------------------------------------------------
    Layout — Top Bar
@@ -262,32 +259,13 @@ table { border-collapse: collapse; }
 .flash-message.info    { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
 
 /* ---------------------------------------------------------
-   Footer
-   --------------------------------------------------------- */
-.admin-footer {
-  flex-shrink: 0;
-  padding: 0.875rem 32px;
-  border-top: 1px solid var(--slate-200);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  color: var(--slate-500);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  background: var(--background);
-}
-.admin-footer-links { display: flex; gap: 24px; text-transform: uppercase; letter-spacing: 0.05em; }
-.admin-footer-links a:hover { color: var(--emerald-700); }
-
-/* ---------------------------------------------------------
    Page Container & Spacing
    --------------------------------------------------------- */
 .admin-scroll-area {
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 .page-container {
   max-width: 1280px;
@@ -328,6 +306,12 @@ table { border-collapse: collapse; }
   align-items: center;
   justify-content: space-between;
 }
+
+/* ---------------------------------------------------------
+   Site Footer  (shared with citizen via p.css)
+   admin.css only provides the CSS-variable aliases above;
+   the actual .site-footer rules live in p.css.
+   --------------------------------------------------------- */
 
 /* Accent left border variants */
 .card--pending    { border-left: 4px solid #EF4444; }
@@ -869,6 +853,13 @@ table { border-collapse: collapse; }
     padding: 0.75rem 1rem;
     gap: 0.5rem;
   }
+
+  .site-footer__inner {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem 1rem;
+  }
+  .site-footer__nav { flex-wrap: wrap; justify-content: center; gap: 1rem; }
 
   .filter-row { flex-direction: column; align-items: stretch; }
   .form-select, .form-input-lg { width: 100%; }

@@ -15,7 +15,7 @@
 <!-- Page Header -->
 <div class="page-header">
   <h2>Issue Queue</h2>
-  <p>All issues assigned to your department — {{ request.user.officer.department }}, Ward {{ request.user.officer.ward }}.</p>
+  <p>All issues assigned to you — {{ request.user.department }}, Ward {{ request.user.ward_number }}.</p>
 </div>
 
 <!-- Filters -->
@@ -65,16 +65,22 @@
       <tbody>
         {% for issue in issues %}
         <tr>
+          <td class="mono">CR-{{ issue.submitted_at|date:"Y" }}-{{ issue.id|stringformat:"04d" }}</td>
           <td>
-  {% if issue.visibility == 'confidential' %}
-    <span style="color:#6b7280;font-style:italic;font-size:0.85rem;">
-      <span class="material-symbols-outlined" style="font-size:0.9rem;vertical-align:middle;">lock</span>
-      Anonymous
-    </span>
-  {% else %}
-    {{ issue.citizen.get_full_name|default:issue.citizen.username }}
-  {% endif %}
-</td>
+            <div style="font-weight:500;color:#111827;">{{ issue.title }}</div>
+            <div style="font-size:0.75rem;color:#9ca3af;margin-top:2px;">
+              {{ issue.get_category_display }}
+              {% if issue.visibility == 'confidential' %}
+                · <span style="color:#6b7280;font-style:italic;">
+                    <span class="material-symbols-outlined" style="font-size:0.8rem;vertical-align:middle;">lock</span>
+                    Anonymous
+                  </span>
+              {% else %}
+                · {{ issue.citizen.get_full_name|default:issue.citizen.username }}
+              {% endif %}
+            </div>
+          </td>
+          <td style="color:#6b7280;">{{ issue.submitted_at|date:"M d, Y" }}</td>
           <td>{% include "partials/badge_status.html" with status=issue.status %}</td>
           <td>
             <a href="{% url 'officer_update_status' issue.id %}" class="td-action">Manage</a>

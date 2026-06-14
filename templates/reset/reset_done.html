@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Check Your Email - CivicReport{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/login.css' %}"/>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background-color: #F0FDF4;
+    }
+    .page-main {
+      flex: 1 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px 32px;
+    }
+    .site-footer { flex-shrink: 0; }
+
+    .login-brand { text-align: center; margin-bottom: 24px; }
+    .login-logo  { height: 90px; width: auto; display: inline-block; mix-blend-mode: multiply; }
+    .login-wrap  { width: 100%; max-width: 448px; }
+
+    .success-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background-color: #DCFCE7;
+      margin: 0 auto 20px;
+    }
+    .success-icon .material-symbols-outlined {
+      font-size: 32px;
+      color: #16a34a;
+    }
+
+    .card-heading {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .card-heading h1 {
+      font-size: 1.375rem;
+      font-weight: 700;
+      color: #14532d;
+      margin: 0;
+    }
+    .card-subtext {
+      text-align: center;
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin: 0 0 24px;
+      line-height: 1.6;
+    }
+
+    .info-box {
+      background-color: #F0FDF4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+    }
+    .info-box p {
+      margin: 0;
+      font-size: 0.8125rem;
+      color: #166534;
+      line-height: 1.55;
+    }
+    .info-box p + p { margin-top: 6px; }
+  </style>
+{% endblock %}
+
+{% block content %}
+<main class="page-main">
+  <div class="login-wrap">
+
+    <!-- Branding -->
+    <div class="login-brand">
+      <a href="/">
+        <img src="{% static 'images/logo.png' %}" alt="CivicReport" class="login-logo" />
+      </a>
+    </div>
+
+    <!-- Card -->
+    <div class="card">
+
+      <div class="success-icon">
+        <span class="material-symbols-outlined">mark_email_read</span>
+      </div>
+
+      <div class="card-heading">
+        <h1>Check your email</h1>
+      </div>
+      <p class="card-subtext">
+        We've sent a password reset link to your email address. It should arrive within a few minutes.
+      </p>
+
+      <div class="info-box">
+        <p>📬 Can't find the email? Check your spam or junk folder.</p>
+        <p>🔗 The link expires in <strong>24 hours</strong> for your security.</p>
+      </div>
+
+      <a href="{% url 'password_reset' %}" class="btn btn-primary" style="display:block; text-align:center; text-decoration:none;">
+        Resend reset link
+      </a>
+
+      <hr class="card-divider"/>
+      <div class="login-footer">
+        <p>Remember your password? <a href="{% url 'login' %}">Back to login</a></p>
+      </div>
+
+    </div>
+    <!-- End Card -->
+
+    <!-- City image -->
+    <div class="city-strip">
+      <img
+        alt="Pokhara Cityscape"
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFSaHEpZKH2Qd1DmkfLDmxMdeO7LpNO_Kk3_yLBHs2MmyvPA0WF46AuhlsY623puVek6I4ByJnYCKNm3e7C_AGdjCY6-UPQh2j6qYLtmayQGJJVGNb06xFFsiaBQZKECJwp8QEmkpc7M8NKTRfZ0qX3-WhqqG_t1DcnXwEBy5XIj_WilkC0gUmE0nPKqHGaBcANhpz0xsRqPtxLtJRJm_TBqxqtYH_3a-UJw5XSJImJvrfa1TDm67jI_KMNMWGgeKOkdosa2phO1E"
+      />
+    </div>
+
+  </div>
+</main>
+{% endblock %}

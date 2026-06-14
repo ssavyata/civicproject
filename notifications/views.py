@@ -1,12 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Notification
+from accounts.models import User
 
 @login_required
 def notifications(request):
-     notifs = Notification.objects.filter(user=request.user).order_by('-created_at')
-     notifs.update(is_read=True)
-     return render(request, 'issues/notifications.html', {'notifications': notifs})  
     notifs = Notification.objects.filter(user=request.user).order_by('-created_at')
     notifs.filter(is_read=False).update(is_read=True)
     return render(request, 'citizen/notifications.html', {'notifications': notifs})

@@ -10,17 +10,11 @@
 {% endblock %}
 
 {% block topbar_content %}
-<div style="display:flex; align-items:center; gap:16px;">
+<div style="display:flex; align-items:center; gap:16px; width:100%; justify-content:space-between;">
   <a href="{% url 'officer_issue_queue' %}" class="topbar-back-link">
     <span class="material-symbols-outlined" style="font-size:20px; margin-right:4px;">arrow_back</span>
     Issue Queue
   </a>
-  <span class="topbar-divider"></span>
-  <span class="topbar-issue-id">ISSUE ID: {{ issue.issue_id }}</span>
-</div>
-<div class="notif-btn" id="notifBtn" onclick="toggleNotif()">
-  <span class="material-symbols-outlined">notifications</span>
-  <span class="notif-dot"></span>
 </div>
 {% endblock %}
 
@@ -28,7 +22,7 @@
 <!-- Issue Page Header -->
 <div class="issue-page-header">
   <div>
-    <p class="issue-id-label">Issue ID: {{ issue.issue_id }}</p>
+    <p class="issue-id-label">Issue ID: CR-{{ issue.submitted_at|date:"Y" }}-{{ issue.id|stringformat:"04d" }}</p>
     <h1>{{ issue.title }}</h1>
   </div>
   {% include "partials/badge_status.html" with status=issue.status %}
@@ -78,12 +72,19 @@
 
         <div class="detail-meta-group">
           <p class="meta-label">Submitted Date</p>
-          <p class="meta-value">{{ issue.submitted_date|date:"M d, Y" }}</p>
+          <p class="meta-value">{{ issue.submitted_at|date:"M d, Y" }}</p>
         </div>
 
         <div class="detail-meta-group">
           <p class="meta-label">Reported By</p>
-          <p class="meta-value">{{ issue.reported_by.get_full_name }} (Citizen)</p>
+          <p class="meta-value">
+            {% if issue.visibility == 'confidential' %}
+              <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;">lock</span>
+              Anonymous
+            {% else %}
+              {{ issue.citizen.get_full_name|default:issue.citizen.username }} 
+            {% endif %}
+          </p>
         </div>
       </div>
 
@@ -159,12 +160,42 @@
             <div class="timeline-dot dot-green"></div>
             <p class="timeline-item-status">Submitted</p>
             <p class="timeline-item-note">Issue reported by citizen.</p>
-            <p class="timeline-item-date">{{ issue.submitted_date|date:"M d, Y" }}</p>
+            <p class="timeline-item-date">{{ issue.submitted_at|date:"M d, Y" }}</p>
           </li>
           {% endfor %}
         </ul>
       </div>
     </section>
+
+    <!-- Citizen Feedback Card -->
+{% if issue.feedback %}
+<section class="card">
+  <div class="card-body">
+    <h3 style="font-size:20px; font-weight:600; margin-bottom:24px;">Citizen Feedback</h3>
+
+    <div class="detail-meta-group" style="margin-bottom:16px;">
+      <p class="meta-label">Rating</p>
+      <p class="meta-value">
+        {% for i in "12345" %}
+          {% if forloop.counter <= issue.feedback.rating %}
+            <span class="material-symbols-outlined" style="font-size:18px; color:#f59e0b; font-variation-settings:'FILL' 1;">star</span>
+          {% else %}
+            <span class="material-symbols-outlined" style="font-size:18px; color:#cbd5e1;">star</span>
+          {% endif %}
+        {% endfor %}
+        <span style="margin-left:6px; font-weight:600;">{{ issue.feedback.rating }}/5</span>
+      </p>
+    </div>
+
+    <p class="desc-label">Comment</p>
+    <p class="desc-text">{{ issue.feedback.comment|default:"No comment provided." }}</p>
+
+    <p class="timeline-item-date" style="margin-top:12px;">
+      Submitted {{ issue.feedback.created_at|date:"M d, Y – H:i" }}
+    </p>
+  </div>
+</section>
+{% endif %}
 
   </div>
 </div>

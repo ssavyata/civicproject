@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Set New Password - CivicReport{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/login.css' %}"/>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background-color: #F0FDF4;
+    }
+    .page-main {
+      flex: 1 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px 32px;
+    }
+    .site-footer { flex-shrink: 0; }
+
+    .login-brand { text-align: center; margin-bottom: 24px; }
+    .login-logo  { height: 90px; width: auto; display: inline-block; mix-blend-mode: multiply; }
+    .login-wrap  { width: 100%; max-width: 448px; }
+
+    .reset-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background-color: #DCFCE7;
+      margin: 0 auto 20px;
+    }
+    .reset-icon .material-symbols-outlined {
+      font-size: 28px;
+      color: #16a34a;
+    }
+
+    .card-heading {
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .card-heading h1 {
+      font-size: 1.375rem;
+      font-weight: 700;
+      color: #14532d;
+      margin: 0;
+    }
+    .card-subtext {
+      text-align: center;
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin: 0 0 24px;
+      line-height: 1.5;
+    }
+
+    /* Password strength meter */
+    .strength-bar-wrap {
+      margin-top: 8px;
+      height: 4px;
+      background-color: #e5e7eb;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .strength-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      transition: width 0.3s, background-color 0.3s;
+    }
+    .strength-label {
+      font-size: 0.75rem;
+      margin-top: 4px;
+      color: #9ca3af;
+    }
+
+    /* Expired link state */
+    .expired-box {
+      text-align: center;
+      padding: 8px 0 16px;
+    }
+    .expired-box .material-symbols-outlined {
+      font-size: 40px;
+      color: #ef4444;
+      display: block;
+      margin-bottom: 12px;
+    }
+    .expired-box h2 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #14532d;
+      margin: 0 0 8px;
+    }
+    .expired-box p {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin: 0 0 20px;
+      line-height: 1.5;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<main class="page-main">
+  <div class="login-wrap">
+
+    <!-- Branding -->
+    <div class="login-brand">
+      <a href="/">
+        <img src="{% static 'images/logo.png' %}" alt="CivicReport" class="login-logo" />
+      </a>
+    </div>
+
+    <!-- Card -->
+    <div class="card">
+
+      {% if validlink %}
+
+        <div class="reset-icon">
+          <span class="material-symbols-outlined">key</span>
+        </div>
+
+        <div class="card-heading">
+          <h1>Set a new password</h1>
+        </div>
+        <p class="card-subtext">
+          Choose a strong password for your CivicReport account.
+        </p>
+
+        {% if form.errors %}
+          <div class="alert alert-error">
+            {% for field in form %}
+              {% for error in field.errors %}<p>{{ error }}</p>{% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+          </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="form-group" style="margin-bottom: 0">
+            <label class="form-label" for="id_new_password1">New password</label>
+            <div class="input-wrap">
+              <input
+                class="form-input {% if form.new_password1.errors %}is-error{% endif %}"
+                id="id_new_password1"
+                name="new_password1"
+                type="password"
+                placeholder="••••••••"
+                autocomplete="new-password"
+                autofocus
+                required
+              />
+              <button type="button" class="pwd-toggle" onclick="togglePassword('id_new_password1','icon1')" aria-label="Toggle password visibility">
+                <span class="material-symbols-outlined" id="icon1">visibility</span>
+              </button>
+            </div>
+            <!-- Strength meter -->
+            <div class="strength-bar-wrap">
+              <div class="strength-bar" id="strength-bar"></div>
+            </div>
+            <p class="strength-label" id="strength-label"></p>
+            {% if form.new_password1.errors %}
+              <p class="field-error">{{ form.new_password1.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0">
+            <label class="form-label" for="id_new_password2">Confirm new password</label>
+            <div class="input-wrap">
+              <input
+                class="form-input {% if form.new_password2.errors %}is-error{% endif %}"
+                id="id_new_password2"
+                name="new_password2"
+                type="password"
+                placeholder="••••••••"
+                autocomplete="new-password"
+                required
+              />
+              <button type="button" class="pwd-toggle" onclick="togglePassword('id_new_password2','icon2')" aria-label="Toggle password visibility">
+                <span class="material-symbols-outlined" id="icon2">visibility</span>
+              </button>
+            </div>
+            {% if form.new_password2.errors %}
+              <p class="field-error">{{ form.new_password2.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="margin-top: 20px;">
+            Save new password
+          </button>
+        </form>
+
+      {% else %}
+
+        <!-- Invalid / expired link -->
+        <div class="expired-box">
+          <span class="material-symbols-outlined">link_off</span>
+          <h2>Link expired or invalid</h2>
+          <p>
+            This password reset link has already been used or has expired.
+            Please request a new one.
+          </p>
+          <a href="{% url 'password_reset' %}" class="btn btn-primary" style="display:inline-block; text-decoration:none;">
+            Request new link
+          </a>
+        </div>
+
+      {% endif %}
+
+      <hr class="card-divider"/>
+      <div class="login-footer">
+        <p>Remember your password? <a href="{% url 'login' %}">Back to login</a></p>
+      </div>
+
+    </div>
+    <!-- End Card -->
+
+    <!-- City image -->
+    <div class="city-strip">
+      <img
+        alt="Pokhara Cityscape"
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFSaHEpZKH2Qd1DmkfLDmxMdeO7LpNO_Kk3_yLBHs2MmyvPA0WF46AuhlsY623puVek6I4ByJnYCKNm3e7C_AGdjCY6-UPQh2j6qYLtmayQGJJVGNb06xFFsiaBQZKECJwp8QEmkpc7M8NKTRfZ0qX3-WhqqG_t1DcnXwEBy5XIj_WilkC0gUmE0nPKqHGaBcANhpz0xsRqPtxLtJRJm_TBqxqtYH_3a-UJw5XSJImJvrfa1TDm67jI_KMNMWGgeKOkdosa2phO1E"
+      />
+    </div>
+
+  </div>
+</main>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Toggle for each password field independently
+  function togglePassword(fieldId, iconId) {
+    const input = document.getElementById(fieldId);
+    const icon  = document.getElementById(iconId);
+    if (!input) return;
+    if (input.type === 'password') {
+      input.type = 'text';
+      if (icon) icon.textContent = 'visibility_off';
+    } else {
+      input.type = 'password';
+      if (icon) icon.textContent = 'visibility';
+    }
+  }
+
+  // Password strength meter
+  const pwdInput   = document.getElementById('id_new_password1');
+  const strengthBar = document.getElementById('strength-bar');
+  const strengthLabel = document.getElementById('strength-label');
+
+  if (pwdInput) {
+    pwdInput.addEventListener('input', () => {
+      const val = pwdInput.value;
+      let score = 0;
+      if (val.length >= 8)                    score++;
+      if (/[A-Z]/.test(val))                  score++;
+      if (/[0-9]/.test(val))                  score++;
+      if (/[^A-Za-z0-9]/.test(val))           score++;
+
+      const levels = [
+        { label: '',          color: '#e5e7eb', width: '0%'   },
+        { label: 'Weak',      color: '#ef4444', width: '25%'  },
+        { label: 'Fair',      color: '#f97316', width: '50%'  },
+        { label: 'Good',      color: '#eab308', width: '75%'  },
+        { label: 'Strong',    color: '#22c55e', width: '100%' },
+      ];
+      const level = levels[score];
+      strengthBar.style.width           = level.width;
+      strengthBar.style.backgroundColor = level.color;
+      strengthLabel.textContent         = level.label;
+      strengthLabel.style.color         = level.color;
+    });
+  }
+</script>
+{% endblock %}

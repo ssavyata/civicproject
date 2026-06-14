@@ -53,19 +53,28 @@
     </nav>
 
     <!-- Admin user + logout -->
-    <div class="sidebar-user">
-        <div class="sidebar-avatar">
-            <span>{{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}</span>
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <div class="sidebar__avatar">
+          {% if request.user.profile_picture %}
+            <img src="{{ request.user.profile_picture.url }}" alt="{{ request.user.get_full_name }}"/>
+          {% else %}
+            {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
+          {% endif %}
         </div>
-        <div class="sidebar-user-info">
-            <p class="sidebar-user-name">{{ request.user.get_full_name|default:request.user.username }}</p>
-            <p class="sidebar-user-role">Admin Account</p>
+        <div style="min-width:0; flex:1;">
+          <p class="sidebar__user-name">{{ request.user.get_full_name|default:request.user.username }}</p>
+          <p style="font-size:10px; color:rgba(110,231,183,.6); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; margin-top:2px;">
+            Admin Account
+          </p>
         </div>
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="sidebar-logout-btn">Logout</button>
-        </form>
+      </div>
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="sidebar-logout-btn">Log Out</button>
+      </form>
     </div>
+
 </aside>
 
 <!-- Top Bar -->
@@ -141,18 +150,12 @@
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Footer -->
-    <footer class="admin-footer">
-        <p>© 2026 Pokhara Ward 12. All rights reserved.</p>
-        <div class="admin-footer-links">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Contact Us</a>
-        </div>
-    </footer>
+    {% include 'partials/pfooter.html' %}
 </main>
 
 <script src="{% static 'js/admin.js' %}"></script>
+
+{% block extra_js %}
 <script>
   const toggle = document.getElementById('sidebarToggle');
   const sidebar = document.querySelector('.admin-sidebar');
@@ -184,6 +187,6 @@
   });
 
 </script>
-{% block extra_js %}{% endblock %}
+{% endblock %}
 </body>
 </html>

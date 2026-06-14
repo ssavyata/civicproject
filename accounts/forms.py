@@ -3,7 +3,6 @@ from .models import User
 from django.contrib.auth.forms import UserCreationForm
 
 class CitizenRegistrationForm(UserCreationForm):
-    # captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox)
 
     class Meta:
         model = User

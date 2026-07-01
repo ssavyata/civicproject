@@ -1,6 +1,6 @@
-def find_duplicate_issue(new_issue):
-    from .models import Issue
+from .models import Issue
 
+def find_duplicate_issue(new_issue):
     # Only check against open issues of the same category
     existing_issues = Issue.objects.filter(
         category=new_issue.category,

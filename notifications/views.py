@@ -23,4 +23,4 @@ def mark_notification_read(request, pk):
 def mark_all_read(request):
     Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
     next_url = request.GET.get('next', 'notifications')
-
+    return redirect(next_url)

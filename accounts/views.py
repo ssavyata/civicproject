@@ -104,7 +104,7 @@ def user_login(request):
         if user is not None:
             if not user.is_active:
                 messages.error(request, 'Please verify your email before logging in.')
-                return render(request, 'login.html')
+                return render(request, 'login.html', {})
 
             login(request, user)
 

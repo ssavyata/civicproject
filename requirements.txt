@@ -8,3 +8,4 @@ tzdata
 six
 gunicorn
 whitenoise
+django-allauth

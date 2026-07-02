@@ -10,3 +10,4 @@ gunicorn
 whitenoise
 django-allauth
 requests
+openai

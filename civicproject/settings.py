@@ -32,7 +32,9 @@ ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'civicproject-f1e7.onrender.com',
+    'civicreport.com',
+    'www.civicreport.com']
 
 
 # Application definition
